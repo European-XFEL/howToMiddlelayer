@@ -1,33 +1,32 @@
 Connecting and Reconnecting in the Middle Layer
 ###############################################
 
-MonitorRemote is a middle layer device documenting best practice for
+MonitorMotor is a middle layer device documenting best practice for
 connecting and maintaining connection to a single `remote device`, that is, a
 device written with either of the C++ or Python API.
 
-In this example, the device will initialise a `connection` with a `remote
+In this example, the device will initialise a `connection` with a `remote motor
 device`, respawn this connection would the remote device disappear or be
-restarted, and display the `remoteValue` integer property of that device.
+restarted, and display the `motorPosition` integer property of that device.
 
 This example introduces the concepts of `Device, connectDevice, isAlive,
 waitUntilNew,` and `wait_for`.
 
 Base Class
 ++++++++++
-We begin by creating our class, inheriting from `Device`
+We begin by creating our class, inheriting from `Device`:
 ::
     from karabo.middlelayer import Device, State
 
-    class MonitorRemote(Device):
+    class MonitorMotor(Device):
 
     def __init__(self, configuration):
         #Boilerplate initialisation
-        super(MonitorRemote, self).__init__(configuration)
-        self.state = State.INIT
+        super(MonitorMotor, self).__init__(configuration)
 
     @coroutine
     def onInitialization(self):
-        continue
+        self.state = State.INIT
 
 :class:`Device` is the base class for all middle layer devices. It inherits from
 :class:`~karabo.middlelayer.Configurable` and thus you can define expected
@@ -43,26 +42,26 @@ We must first import the :func:`connectDevice` function
 ::
     from karabo.middlelayer import connectDevice, Device, State
 
-    REMOTE_DEVICE = "some_server_device_1"
+    REMOTE_ADDRESS = "some_server/1_device_1"
 
 Device are typically connected to only once during the initialisation
 ::
     def __init__(self, configuration):
         #Boilerplate initialisation
         super(MonitorRemote, self).__init__(configuration)
-        self.state = State.INIT
         self.remoteDevice = None
 
     @coroutine
     def onInitialization(self):
+        self.state = State.INIT
         self.status = "Waiting for external device"
-        self.remoteDevice = yield from(connectDevice(REMOTE_DEVICE))
+        self.remoteDevice = yield from connectDevice(REMOTE_ADDRESS)
         self.status = "Connection established"
         self.remoteDevice = State.STOPPED
 
 
-Obtaining Data
-++++++++++++++
+Continuous Monitoring
++++++++++++++++++++++
 You now have a connection to a remote device! You may start awaiting its
 updates by defining a slot and using the waitUntilNew function
 ::
@@ -86,7 +85,7 @@ before proceeding to the print statement.
 
 Reconnecting After a Mishap
 +++++++++++++++++++++++++++
-It may happen that, for some reason, the remote device gets reinitialised,
+It may happen that, for some reason, the remote device gets reinitialized,
 such as after a server restart.
 With the current implementation, we would be left without any mechanism to
 recover. When interacting with a single remote device, we could manually
@@ -119,10 +118,11 @@ so that we do not simultaneously do several attempts to reconnect.::
             if self.reconnecting:
                 continue
             if not isAlive(self.device):
+                self.reconnecting = True
                 background(self.reconnectDevice())
 
 The Reconnect Coroutine
-------------------------
+-----------------------
 Signalling to the user that a connection has been lost, and that we're
 attempting a reconnect, is often done by changing state. It is typically
 done by going back to an INIT state.
@@ -134,15 +134,13 @@ the status.
 
 We then proceed to use the connectDevice coroutine to instantiate a new
 connection, with an added timeout, to fail gracefully, would the device not
-be available for a longer period of time, and then try again.::
-   @coroutine
+be available for a longer period of time, and then try again::
+    @coroutine
     def reconnectDevice(self):
-        self.reconnecting = True
-
         if not self.reconnecting:
             return
 
-        self.state = State.INIT
+        self.state = State.UNKNOWN
         self.status = "Lost remote device"
         while self.reconnecting:
             try:
@@ -163,3 +161,128 @@ Wrap-up
 Finally, here is the completed monitoring device, capable of connection,
 reconnection, and ready for further usage:
 .. literalinclude::../mlsource/MonitorRemote.py
+
+
+Controlling Several Device
+##########################
+
+Now that a device can be remotely monitored, and the connection kept alive,
+let's see how to connect to several devices at once, and then control them.
+
+In this example, we will build upon the previous chapter and initialise
+several connections with three `remote motor devices`, get their positions,
+and set them to a specific position.
+
+The concepts of `gather`, ... are introduced here.
+
+Updated Connection Handling
++++++++++++++++++++++++++++
+In order to handle several devices, we must make a few changes to the watchdog
+and reconnection coroutines.
+
+
+Let us define three motors we want to monitor and control:
+::
+    MOTOR_1 = "motor_server/motor_1"
+    MOTOR_2 = "motor_server/motor_2"
+    MOTOR_3 = "motor_server/motor_3"
+
+    class ControlMotors(Device):
+
+        motor1Pos = Int32(
+            displayedName="Motor 1 position",
+            description="The current position for Motor 1",
+            accessMode=AccessMode.READONLY
+        )
+        motor2Pos = Int32(
+            displayedName="Motor 2 position",
+            description="The current position for Motor 2",
+            accessMode=AccessMode.READONLY
+        )
+        motor3Pos = Int32(
+            displayedName="Motor 3 position",
+            description="The current position for Motor 3",
+            accessMode=AccessMode.READONLY
+        )
+
+        def __init__ self, configuration):
+            super(ControlMotors, self).__init__(configuration)
+            self.device_addresses = {MOTOR_1, MOTOR_2, MOTOR_3}
+            self.reconnecting = False
+
+        def onInitialization(self):
+            self.state = State.INIT
+
+            try:
+                devices_to_connect = [connectDevice(device) for device
+                                      in self.device_addresses]
+                connections = yield from wait_for(gather(*devices_to_connect),
+                                                   timeout=2)
+
+By using :func:`karabo.middlelayer.gather`, we simultaneously execute all the
+tasks in `devices_to_connect` and await their outcomes.
+
+Following this design, we can update the watchdog to check on all the devices:
+::
+    @coroutine
+    def watchdog(self):
+        while True:
+            yield from sleep(5)
+            if self.reconnecting:
+                continue
+            alive = [isAlive(device) for device in self.device_addresses]
+            if any(conn == False for conn in alive):
+                background(self.reconnectDevices())
+                self.reconnecting = True
+                continue
+
+Likewise, :func:`reconnect` can be modified to work with many devices:
+::
+    @coroutine
+    def reconnectDevices(self):
+        if not self.reconnecting:
+            return
+
+        self.state = State.UNKNOWN
+        self.status = "Lost remote device"
+        while self.reconnecting:
+            try:
+                devices_to_connect = [connectDevice(device) for device in
+                                      self.device_addresses]
+
+                self.devices = yield from wait_for(gather(*devices_to_connect),
+                                              timeout=2)
+
+            except TimeoutError:
+                yield from sleep(2)
+
+Monitoring Multiple Sources
++++++++++++++++++++++++++++
+
+
+Controlling Multiple Sources
+++++++++++++++++++++++++++++
+Setting properties of a device is done directly by assigning the property a
+value, for instance:
+::
+    self.remoteMotor.targetPosition = 42
+
+This, however, blindly sets the property. It is possible to wait for
+acknowledgment, if required, using :func:`setWait`:
+::
+    yield from setWait(device, targetPosition=42)
+
+It may be desirable to do so, when the parameter needs to be set before further
+action should be taken. In this example, setting the desired target position is
+done with setWait such that we proceed to moving the motor `only after` we have
+confirmation that the device knows where to stop.
+
+As with properties, functions are directly called. To move the motor to the
+aforementioned position, call the move function:
+::
+    self.remoteMotor.move()
+
+Once you've established your parameters, :func:`background` can be used to 
+To control a device independently from others, :func:`background` can be used.
+
+
