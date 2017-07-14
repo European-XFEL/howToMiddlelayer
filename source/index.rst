@@ -9,7 +9,9 @@ Welcome to HowToMiddlelayer's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   middle_layer_devices
+   fundamentals
+   :maxdepth: 1
 
 
 
