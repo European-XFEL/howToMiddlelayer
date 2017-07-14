@@ -23,7 +23,7 @@ Below is the source code of a Hello World! device::
 
     class HelloWorld(Device):
 
-        __version__ = "1.0"
+        __version__ = "2.0"
 
         greeting = String(
             defaultValue="Hello World!",
@@ -42,11 +42,16 @@ Below is the source code of a Hello World! device::
             pass
 
 The middlelayer device is created by inheriting from the middlelayer's ``Device`` base class.
-A class property `__version__` can indicate the lowest Karabo version in which this device is supposed to run.
-In this device we create a Karabo property `greeting` which is
-Here we create a single slot by decorating a member function accordingly. This
-will render as a button labeled "hello" in the GUI or be accessible using
-``remote().execute("/some/remote/device", "hello")`` from the CLI.
+Below the device class definition are the expected parameters, containing the static schema of the device.
+A property `__version__` can indicate the lowest Karabo version in which this device is supposed to run.
+In this device we create a Karabo property `greeting` which is also referred to as ``KaraboValue``.
+This property has an assigned ``descriptor`` `String` containing the ``attributes``.
+In this example the `defaultValue` and the `description` attribute are defined, which is rendered in the karabo GUI
+as a text box showing "Hello World!".
+
+Additionally, we create a single ``slot`` `hello` by using a decorator.
+This slot will be rendered in the karabo GUI as a button enabling us to print
+the greeting string to console.
 
 .. note::
 
@@ -54,13 +59,75 @@ will render as a button labeled "hello" in the GUI or be accessible using
     using ``from foo import \* ``.
 
 
-The device ``HelloYou`` now has a string expected parameter, which is rendered in the GUI
-as a text box, and accessible from the CLI via ``remote().get("InstanceID", "name")``.
-Attributes assignable in the expected parameter declarations of the ``core`` APIs may also
-be specified in the middlelayer API property definitions::
+Descriptors
++++++++++++
 
-Property Attributes
-+++++++++++++++++++
++------------------+-------------------------------------------+
+|**Descriptor**    |  **Description**                          |
++------------------+-------------------------------------------+
+| String           |                                           |
++------------------+-------------------------------------------+
+| VectorChar       |                                           |
++------------------+-------------------------------------------+
+| ComplexDouble    |                                           |
++------------------+-------------------------------------------+
+| ComplexFloat     |                                           |
++------------------+-------------------------------------------+
+| Double           |                                           |
++------------------+-------------------------------------------+
+| Float            |                                           |
++------------------+-------------------------------------------+
+| Int16            |                                           |
++------------------+-------------------------------------------+
+| Int32            |                                           |
++------------------+-------------------------------------------+
+| Int64            |                                           |
++------------------+-------------------------------------------+
+| Int8             |                                           |
++------------------+-------------------------------------------+
+| UInt16           |                                           |
++------------------+-------------------------------------------+
+| UInt32           |                                           |
++------------------+-------------------------------------------+
+| UInt64           |                                           |
++------------------+-------------------------------------------+
+| UInt8            |                                           |
++------------------+-------------------------------------------+
+| Bool             |                                           |
++------------------+-------------------------------------------+
+| VectorDouble     |                                           |
++------------------+-------------------------------------------+
+| VectorFloat      |                                           |
++------------------+-------------------------------------------+
+| VectorInt16      |                                           |
++------------------+-------------------------------------------+
+| VectorInt32      |                                           |
++------------------+-------------------------------------------+
+| VectorInt64      |                                           |
++------------------+-------------------------------------------+
+| VectorInt8       |                                           |
++------------------+-------------------------------------------+
+| VectorUInt16     |                                           |
++------------------+-------------------------------------------+
+| VectorUInt32     |                                           |
++------------------+-------------------------------------------+
+| VectorUInt64     |                                           |
++------------------+-------------------------------------------+
+| VectorUInt8      |                                           |
++------------------+-------------------------------------------+
+| VectorComplexDouble     |                                    |
++------------------+-------------------------------------------+
+| VectorComplexFloat     |                                     |
++------------------+-------------------------------------------+
+| VectorBool       |                                           |
++------------------+-------------------------------------------+
+| VectorString     |                                           |
++------------------+-------------------------------------------+
+| Char             |                                           |
++------------------+-------------------------------------------+
+
+Attributes
+++++++++++
 
 Attributes of properties may be accessed during runtime as members of the property descriptor.
 

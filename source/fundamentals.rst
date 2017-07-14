@@ -2,8 +2,6 @@
 Middlelayer API Fundamentals
 ****************************
 
-
-
 The design of the Karabo Middle-Layer API
 =========================================
 In Karabo, every device has a *schema*, which contains all the details
@@ -370,7 +368,7 @@ background:
 Sleep nicely!
 +++++++++++++
 
-You should always prefer this sleep function over
+You should always prefer the middlelayer sleep function over
 ``time.sleep``. As described above, this sleep can be canceled,
 while ``time.sleep`` cannot.
 
@@ -382,47 +380,6 @@ while ``time.sleep`` cannot.
    schedule the calling of a callback function at a later time.
 
    synchronized_ method.
-
-Accessing Remote Property Attributes
-+++++++++++++++++++++++++++++++++++++
-
-Attribute interaction on remote devices is intentionally very similar to
-interacting with the calling device. However, attributes on remote devices are always
-read-only! Thus the following works::
-
-    someDevice.a.unitSymbol
-
-but ``setAttribute`` is not implemented. If there is a need to actually alter an attribute
-from a middlelayer device this functionality should be explicitly exposed by the remote
-device in terms of a slot for the middlelayer device to call.
-
-..  code-block:: Python
-
-    class RemoteDevice(Device):
-
-        digitizerValue = Integer(displayedName = "Digitizer Value",
-                                 metricPrefix = metric_prefixes.KILO)
-
-        ...
-
-        @Slot()
-        def amplificationChanged(amp):
-            if amp == 1000:
-                self.digitizerValue.setAttribute("metric_prefix", metric_prefixes.KILO)
-            elif amp == 100:
-                self.digitizerValue.setAttribute("metric_prefix", metric_prefixes.CENTI)
-            else:
-                raise AttributeError("Unknown amplification")
-
-    class MiddleLayerDevice(Device):
-
-        ...
-
-        @Slot()
-        def changeAmplification()
-            with getDevice("remote") as remoteDevice:
-                remoteDevice.amplificationChanged(self.amplification)
-
 
 
 Locking
