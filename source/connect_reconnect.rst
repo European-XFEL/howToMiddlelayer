@@ -268,15 +268,21 @@ Likewise, :func:`reconnect` can be modified to work with many devices:
 
 Monitoring Multiple Sources
 +++++++++++++++++++++++++++
-
+Monitoring multiple resources is done very much the same way as monitoring a
+single one, passing a list of devices as a starred expression:
 ::
-    tasks = []
-    for device in self.devices:
-        tasks.append(background(waitUntilNew(device.x))
+    @coroutine
+    def monitorPosition(self):
+        while True:
+            if self.reconnecting:
+                yield from sleep(1)
 
-    yield from gather(*tasks)
+            positions_list = [dev.position for dev in self.devices]
+            yield from waitUntilNew(*positions_list)
 
-
+            motorPos1 = self.devices[0].position
+            motorPos2 = self.devices[1].position
+            motorPos3 = self.devices[2].position
 
 Controlling Multiple Sources
 ++++++++++++++++++++++++++++
@@ -328,7 +334,6 @@ develop an unexpected behaviour or, more commonly, a user cancelling the task.
 Cancellation raises an :class:`asyncio.CancelledError`, thus extending the above
 function with a try-except:
 ::
-
     def moveSeveral(self, positions):
         futures = []
         for device, position in zip(self.devices, positions):
