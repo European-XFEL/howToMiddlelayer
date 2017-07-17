@@ -173,7 +173,7 @@ In this example, we will build upon the previous chapter and initialise
 several connections with three `remote motor devices`, get their positions,
 and set them to a specific position.
 
-The concepts of `gather`, ... are introduced here.
+The concepts of `gather`, `background` are introduced here.
 
 Updated Connection Handling
 +++++++++++++++++++++++++++
@@ -258,6 +258,14 @@ Likewise, :func:`reconnect` can be modified to work with many devices:
 
 Monitoring Multiple Sources
 +++++++++++++++++++++++++++
+???
+::
+    tasks = []
+    for device in self.devices:
+        tasks.append(background(waitUntilNew(device.x))
+
+    yield from gather(*tasks)
+
 
 
 Controlling Multiple Sources
@@ -274,15 +282,53 @@ acknowledgment, if required, using :func:`setWait`:
 
 It may be desirable to do so, when the parameter needs to be set before further
 action should be taken. In this example, setting the desired target position is
-done with setWait such that we proceed to moving the motor `only after` we have
-confirmation that the device knows where to stop.
+done with setWait such that we proceed to moving the motor `only after` the
+device has acknowledged the new target position.
 
 As with properties, functions are directly called. To move the motor to the
 aforementioned position, call the move function:
 ::
     self.remoteMotor.move()
 
-Once you've established your parameters, :func:`background` can be used to 
-To control a device independently from others, :func:`background` can be used.
+Once the parameters are set, :func:`karabo.middlelayer.background` can be used
+to run the task:
+::
+    background(self.remoteMotor.move())
+
+This will create a :class:`KaraboFuture` object of which the status can easily
+be tracked or cancelled.
+
+As with reconnections, expending this methodology to cover several device is
+done using :func:`gather`:
+::
+    def moveSeveral(self, positions):
+        tasks = []
+        for device, position in zip(self.devices, positions):
+            yield from setWait(device, targetPosition=position)
+            tasks.append(background(device.move())
+
+        yield from gather(*tasks)
+
+Exception Handling with Multiple Sources
+++++++++++++++++++++++++++++++++++++++++
+A problem that now arises is handling exception should one of the motors
+develop an unexpected behaviour or, more commonly, a user cancelling the task.
+Cancellation raises an :class:`asyncio.CancelledError`, thus extending the above
+function with a try-catch
+::
+
+    def moveSeveral(self, positions):
+        tasks = []
+        for device, position in zip(self.devices, positions):
+            yield from setWait(device, targetPosition=position)
+            tasks.append(background(device.move())
+
+        try:
+            yield from gather(*tasks)
+        except CancelledError:
+            toCancel = [device.stop() for device in self.devices
+                        if device.state == State.MOVING]
+            yield from gather(*toCancel)
 
 
+Note that the appropriate policy to adopt is left to the device developer.
