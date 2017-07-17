@@ -44,7 +44,8 @@ We must first import the :func:`connectDevice` function
 
     REMOTE_ADDRESS = "some_server/1_device_1"
 
-Device are typically connected to only once during the initialisation
+Device are typically connected to only once during the initialisation, using
+:func:`karabo.middlelayer.connectDevice`
 ::
     def __init__(self, configuration):
         #Boilerplate initialisation
@@ -58,6 +59,13 @@ Device are typically connected to only once during the initialisation
         self.remoteDevice = yield from connectDevice(REMOTE_ADDRESS)
         self.status = "Connection established"
         self.remoteDevice = State.STOPPED
+
+This function keeps the connection open until explicitly closing it.
+For a more local and temporary usage, :func:`karabo.middlelayer.getDevice`, can
+be used within a :class:`with` statement:
+::
+    with getDevice(REMOTE_ADDRESS as remote_device:
+        print(remote_device.property)
 
 
 Continuous Monitoring
@@ -75,13 +83,13 @@ updates by defining a slot and using the waitUntilNew function
     @coroutine
     def start(self):
         self.state = State.STARTED
-        while self.state is State.STARTED:
+        while True:
             yield from waitUntilNew(self.remoteDevice.remoteValue)
             print(self.remoteDevice.remoteValue)
 
-On line 11, we do a `yield from` from the waitUnitNew coroutine. By doing
-so, we do a non-blocking wait for the updated value of the property we want,
-before proceeding to the print statement.
+By doing a `yield from` in  the waitUnitNew coroutine, a non-blocking wait
+for the updated value of the property we want is executed before proceeding
+to the print statement.
 
 Reconnecting After a Mishap
 +++++++++++++++++++++++++++
@@ -102,15 +110,15 @@ To implement a watchdog, we need the following imports
     for karabo.middlelayer import background, isAlive
 
 The isAlive function allows us to check whether the connection to the remote
- device is still valid. If the remote device is shut down, then isAlive
- will return False.
- Likewise, if the remote device would had been reinitialised,
- then the connection would be invalid, as it would be a different instance.
- Therefore, the isAlive function would return False.
+device is still valid. If the remote device is shut down, then isAlive
+will return False.
+Likewise, if the remote device would had been reinitialised,
+then the connection would be invalid, as it would be a different instance.
+Therefore, the isAlive function would return False.
 
 What we want to do in case the device's gone, is to set reconnect to the
 device, in the background, so as to not block other tasks, and set a flag,
-so that we do not simultaneously do several attempts to reconnect.::
+so that we do not simultaneously do several attempts to reconnect::
     @coroutine
     def watchdog(self):
         while True:
@@ -140,7 +148,7 @@ be available for a longer period of time, and then try again::
         if not self.reconnecting:
             return
 
-        self.state = State.UNKNOWN
+        self.state = State.INIT
         self.status = "Lost remote device"
         while self.reconnecting:
             try:
@@ -175,8 +183,8 @@ and set them to a specific position.
 
 The concepts of `gather`, `background` are introduced here.
 
-Updated Connection Handling
-+++++++++++++++++++++++++++
+Multiple Connection Handling
+++++++++++++++++++++++++++++
 In order to handle several devices, we must make a few changes to the watchdog
 and reconnection coroutines.
 
@@ -210,6 +218,7 @@ Let us define three motors we want to monitor and control:
             self.device_addresses = {MOTOR_1, MOTOR_2, MOTOR_3}
             self.reconnecting = False
 
+        @coroutine
         def onInitialization(self):
             self.state = State.INIT
 
@@ -219,8 +228,9 @@ Let us define three motors we want to monitor and control:
                 connections = yield from wait_for(gather(*devices_to_connect),
                                                    timeout=2)
 
-By using :func:`karabo.middlelayer.gather`, we simultaneously execute all the
-tasks in `devices_to_connect` and await their outcomes.
+By using :func:`karabo.middlelayer.gather` and
+:func:`karabo.middlelayer.background`, we simultaneously execute all the tasks
+in `devices_to_connect` and await their outcomes.
 
 Following this design, we can update the watchdog to check on all the devices:
 ::
@@ -243,7 +253,7 @@ Likewise, :func:`reconnect` can be modified to work with many devices:
         if not self.reconnecting:
             return
 
-        self.state = State.UNKNOWN
+        self.state = State.INIT
         self.status = "Lost remote device"
         while self.reconnecting:
             try:
@@ -258,7 +268,7 @@ Likewise, :func:`reconnect` can be modified to work with many devices:
 
 Monitoring Multiple Sources
 +++++++++++++++++++++++++++
-???
+
 ::
     tasks = []
     for device in self.devices:
@@ -275,8 +285,8 @@ value, for instance:
 ::
     self.remoteMotor.targetPosition = 42
 
-This, however, blindly sets the property. It is possible to wait for
-acknowledgment, if required, using :func:`setWait`:
+This guarantees to set the property. It is possible, however, to do a blocking
+wait, if required, using :func:`setWait`:
 ::
     yield from setWait(device, targetPosition=42)
 
@@ -301,34 +311,52 @@ be tracked or cancelled.
 As with reconnections, expending this methodology to cover several device is
 done using :func:`gather`:
 ::
+    @coroutine
     def moveSeveral(self, positions):
-        tasks = []
+        futures = []
+
         for device, position in zip(self.devices, positions):
             yield from setWait(device, targetPosition=position)
-            tasks.append(background(device.move())
+            futures.append(device.move())
 
-        yield from gather(*tasks)
+        yield from gather(*futures)
 
 Exception Handling with Multiple Sources
 ++++++++++++++++++++++++++++++++++++++++
 A problem that now arises is handling exception should one of the motors
 develop an unexpected behaviour or, more commonly, a user cancelling the task.
 Cancellation raises an :class:`asyncio.CancelledError`, thus extending the above
-function with a try-catch
+function with a try-except:
 ::
 
     def moveSeveral(self, positions):
-        tasks = []
+        futures = []
         for device, position in zip(self.devices, positions):
             yield from setWait(device, targetPosition=position)
-            tasks.append(background(device.move())
+            futures.append(device.move())
 
         try:
-            yield from gather(*tasks)
+            yield from gather(*futures)
+            yield from self.guardian_yielf(self.devices)
+
         except CancelledError:
             toCancel = [device.stop() for device in self.devices
                         if device.state == State.MOVING]
             yield from gather(*toCancel)
 
-
 Note that the appropriate policy to adopt is left to the device developer.
+
+The try-except introduces a :func:`guardian_yield` function. This is required in
+order to remain within the :class:`try` statement, such that any cancellation
+happening whilst executing the futures, will be caught by the :class:`except`.
+
+The suggested solution for the guardian yield is to wait until all the device go
+from their busy state (`State.STARTED`) to their idle (`State.ON`) as follows:
+::
+    @coroutine
+    def guardian_yield(self, devices):
+        yield from waitUntil(lambda: self.reconnecting or
+                             all(dev.state == State.ON for dev in devices))
+
+The reconnecting flag is there in case something went really wrong, and one of
+the devices went offline. It is then not reasonable to expect task completion.
