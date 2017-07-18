@@ -3,7 +3,7 @@ from asyncio import coroutine, sleep, TimeoutError, wait_for
 from karabo.middlelayer import (AccessMode, background, connectDevice, Device,
                                 isAlive, Int32, Slot, State, waitUntilNew)
 
-REMOTE_DEVICE = "dev0"
+REMOTE_DEVICE = "remote_server1/remote_dev0"
 
 
 class MonitorRemote(Device):
@@ -53,29 +53,29 @@ class MonitorRemote(Device):
 
     @coroutine
     def reconnectDevice(self):
-        self.reconnecting = True
 
-        if not self.reconnecting:
+        if self.reconnecting:
             return
 
+        self.reconnecting = True
         self.state = State.INIT
         self.status = "Lost remote device"
+
         while self.reconnecting:
             try:
                 self.device = yield from wait_for(connectDevice(REMOTE_DEVICE),
                                                   timeout=2)
-            except TimeoutError:
-                yield from sleep(1)
-
-            finally:
                 self.reconnecting = False
                 self.status = "Connection established"
                 self.state = State.STARTED
 
+            except TimeoutError:
+                yield from sleep(1)
+
     @coroutine
     def watchdog(self):
         while True:
-            yield from sleep(5)
+            yield from sleep(7)
             if self.reconnecting:
                 continue
             if not isAlive(self.device):
