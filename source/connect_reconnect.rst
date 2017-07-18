@@ -79,10 +79,10 @@ updates by defining a slot and using the waitUntilNew function
 
     @Slot(displayedName="Start",
           description="Start monitoring the remote device",
-          allowedStates={State.STOPPED})
+          allowedStates={State.OFF})
     @coroutine
     def start(self):
-        self.state = State.STARTED
+        self.state = State.ON
         while True:
             yield from waitUntilNew(self.remoteDevice.remoteValue)
             print(self.remoteDevice.remoteValue)
