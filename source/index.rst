@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
    connect_reconnect
    overwrite
+   decorators
 
 
 
