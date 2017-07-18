@@ -6,8 +6,8 @@ connecting and maintaining connection to a single `remote device`, that is, a
 device written with either of the C++ or Python API.
 
 In this example, the device will initialise a `connection` with a `remote motor
-device`, respawn this connection would the remote device disappear or be
-restarted, and display the `motorPosition` integer property of that device.
+device`, restart the connection if the remote device disappears or resets, and
+display the `motorPosition` integer property of that device.
 
 This example introduces the concepts of `Device, connectDevice, isAlive,
 waitUntilNew,` and `wait_for`.
@@ -20,13 +20,13 @@ We begin by creating our class, inheriting from `Device`:
 
     class MonitorMotor(Device):
 
-    def __init__(self, configuration):
-        #Boilerplate initialisation
-        super(MonitorMotor, self).__init__(configuration)
+        def __init__(self, configuration):
+            #Boilerplate initialisation
+            super(MonitorMotor, self).__init__(configuration)
 
-    @coroutine
-    def onInitialization(self):
-        self.state = State.INIT
+        @coroutine
+        def onInitialization(self):
+            self.state = State.INIT
 
 :class:`Device` is the base class for all middle layer devices. It inherits from
 :class:`~karabo.middlelayer.Configurable` and thus you can define expected
@@ -36,7 +36,7 @@ parameters for it.
 Connecting to the Remote Device
 +++++++++++++++++++++++++++++++
 To connect to the remote device, we must have its name, as registered with
-the broker, in this example, it is registered as "some_server_device_1".
+the broker, in this example, it is registered as "some_server/1_device_1".
 
 We must first import the :func:`connectDevice` function
 ::
