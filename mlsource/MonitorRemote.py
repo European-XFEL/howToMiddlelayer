@@ -41,8 +41,8 @@ class MonitorRemote(Device):
     def start(self):
         self.state = State.STARTED
         while self.state != State.STOPPED:
-            yield from waitUntilNew(self.device.x)
             self.remoteValue = self.device.x
+            yield from waitUntilNew(self.device.x)
 
     @Slot(displayedName="Stop",
           description="Stop monitoring the remote device",

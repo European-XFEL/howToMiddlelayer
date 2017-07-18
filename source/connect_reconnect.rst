@@ -64,7 +64,7 @@ This function keeps the connection open until explicitly closing it.
 For a more local and temporary usage, :func:`karabo.middlelayer.getDevice`, can
 be used within a :class:`with` statement:
 ::
-    with getDevice(REMOTE_ADDRESS as remote_device:
+    with getDevice(REMOTE_ADDRESS) as remote_device:
         print(remote_device.property)
 
 
@@ -79,7 +79,7 @@ updates by defining a slot and using the waitUntilNew function
 
     @Slot(displayedName="Start",
           description="Start monitoring the remote device",
-          allowedStates={State.STOPPED}
+          allowedStates={State.STOPPED})
     @coroutine
     def start(self):
         self.state = State.STARTED
@@ -154,13 +154,13 @@ be available for a longer period of time, and then try again::
             try:
                 self.device = yield from wait_for(connectDevice(REMOTE_DEVICE),
                                                   timeout=2)
+                self.reconnecting = False
+                self.status = "Connection established"
+                self.state = State.STARTED
             except TimeoutError:
                 yield from sleep(1)
 
             finally:
-                self.reconnecting = False
-                self.status = "Connection established"
-                self.state = State.STARTED
 
 
 
@@ -292,7 +292,7 @@ value, for instance:
     self.remoteMotor.targetPosition = 42
 
 This guarantees to set the property. It is possible, however, to do a blocking
-wait, if required, using :func:`setWait`:
+wait, using :func:`setWait`:
 ::
     yield from setWait(device, targetPosition=42)
 
@@ -356,7 +356,7 @@ order to remain within the :class:`try` statement, such that any cancellation
 happening whilst executing the futures, will be caught by the :class:`except`.
 
 The suggested solution for the guardian yield is to wait until all the device go
-from their busy state (`State.STARTED`) to their idle (`State.ON`) as follows:
+from their busy state (`State.MOVING`) to their idle (`State.ON`) as follows:
 ::
     @coroutine
     def guardian_yield(self, devices):
