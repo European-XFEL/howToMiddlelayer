@@ -160,9 +160,6 @@ be available for a longer period of time, and then try again::
             except TimeoutError:
                 yield from sleep(1)
 
-            finally:
-
-
 
 Wrap-up
 +++++++
@@ -342,7 +339,7 @@ function with a try-except:
 
         try:
             yield from gather(*futures)
-            yield from self.guardian_yielf(self.devices)
+            yield from self.guardian_yield(self.devices)
 
         except CancelledError:
             toCancel = [device.stop() for device in self.devices
