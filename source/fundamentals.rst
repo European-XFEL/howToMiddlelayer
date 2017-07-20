@@ -269,6 +269,7 @@ the newer timestamp of ``self.distance`` or ``self.times``::
     i.e. use ``speed_timestamp = self.speed.timestamp`` and re-assign this
     as necessary using ``timestamp(value, timestamp).
 
+
 Synchronized Functions
 ======================
 
@@ -297,7 +298,7 @@ callback
 
 
 What is a Karabo Future
-+++++++++++++++++++++++
+=======================
 
 MORE IS REQUIRED HERE. HOW TO IMPORT. MAYBE AN EXAMPLE HOW TO SET THIS
 
@@ -335,52 +336,66 @@ operations:
         the future as the single parameter.
 
     .. py:method:: wait()
+
         wait for the function to finish
 
-What does background do?
-++++++++++++++++++++++++
 
-You can call your own synchronized_ functions and launch them in the
+
+Create tasks: background
+========================
+
+You can call your own ``synchronized`` functions and launch them in the
 background:
 
-.. py:function:: background(func(*args, **kwargs))
+.. py:function:: background(func, *args, **kwargs)
 
    Call the function *func* with *args* and *kwargs*.
 
-   The function passed is wrapped as a synchronized_ function.
+   The function passed is wrapped as a ``synchronized`` function.
    In a very simple description the *func* gets called in the background.
 
+   The background function will create and return a task which can
+   be cancelled. A ``CancelledError`` is raised in the called function,
+   which allows you to react to the cancellation, including ignoring it::
 
+    @Slot(displayedName="Start",
+          description="Starts task")
+    @coroutine
+    def start(self):
+        self.task = background(self.start_scan)
 
-   and the caller is notified
-   via a the callback upon completion, with any return values passed as a future.
+    @Slot(displayedName="Stop",
+          description="Stops task")
+    @coroutine
+    def stop(self):
+        if self.task:
+            self.task.cancel()
+            self.task = None
 
-   The called function can be canceled. This happens the next time it
-   calls a synchronized_ function. A ``CancelledError`` is raised in
-   the called function, which allows you to react to the cancellation,
-   including ignoring it.
+    @coroutine
+    def start_scan(self):
+        try:
+            ... do something here ...
+        except CancelledError:
+            ... react on cancellation ...
 
-    .. note::
-        It is not possible to cancel any other operation than calls to
-        synchronized_ functions, as interventions in third party code
-        are not possible.
 
 Sleep nicely!
-+++++++++++++
+=============
 
-You should always prefer the middlelayer sleep function over
-``time.sleep``. As described above, this sleep can be canceled,
-while ``time.sleep`` cannot.
+You should always prefer the middlelayer ``sleep`` function over
+``time.sleep``. The asyncio sleep can be canceled and is not a blocking call.
 
 .. py:function:: sleep(delay)
 
    Stop execution for at least *delay* seconds.
 
-   This is a synchronized_ function, so it may also be used to
+   This is a ``synchronized`` function, so it may also be used to
    schedule the calling of a callback function at a later time.
 
-   synchronized_ method.
+.. note::
 
+    If a unit is provided, the sleep function will account for it.
 
 Locking
 =======
@@ -442,14 +457,12 @@ As shown in the code example a non-blocking property retrieval is realized by su
 a callback when the value is available. The callback for ``executeNoWait`` is optional and
 will be triggered when the execute completes.
 
-.. ifconfig:: includeDevInfo is True
+The ``executeNoWait`` method without callback is internally implemented by sending
+a fire-and-forget signal to the remote device.
 
-    The ``executeNoWait`` method without callback is internally implemented by sending
-    a fire-and-forget signal to the remote device.
-
-    If a callback is given, instead a blocking signal is launched in co-routine,
-    triggering the callback upon completion. The ``executeNoWait`` call will immediately
-    return though.
+If a callback is given, instead a blocking signal is launched in co-routine,
+triggering the callback upon completion. The ``executeNoWait`` call will immediately
+return though.
 
 
 Error Handling
