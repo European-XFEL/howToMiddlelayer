@@ -58,7 +58,7 @@ Device are typically connected to only once during the initialisation, using
         self.status = "Waiting for external device"
         self.remoteDevice = yield from connectDevice(REMOTE_ADDRESS)
         self.status = "Connection established"
-        self.remoteDevice = State.STOPPED
+        self.state = State.STOPPED
 
 This function keeps the connection open until explicitly closing it.
 For a more local and temporary usage, :func:`karabo.middlelayer.getDevice`, can
