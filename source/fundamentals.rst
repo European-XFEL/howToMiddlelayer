@@ -190,6 +190,11 @@ However, the device developer is free to start threads using background, which
 starts a thread if used with a function which is not a coroutine.
 The event loop thread pool executor can have 200 threads.
 
+What is a coroutine or task
+===========================
+
+MARTIN PLEASE ADD SOMETHING
+
 Bulk-set of properties
 ======================
 
@@ -403,6 +408,45 @@ background:
     coroutine, otherwise the coroutine is simply scheduled on the event loop.
 
 
+Sleep nicely!
+=============
+
+You should always prefer the middlelayer ``sleep`` function over
+``time.sleep``. The asyncio sleep can be canceled and is not a blocking call.
+
+.. py:function:: sleep(delay)
+
+   Stop execution for at least *delay* seconds.
+
+   This is a ``synchronized`` function, so it may also be used to
+   schedule the calling of a callback function at a later time.
+
+.. note::
+
+   If a unit is provided, the sleep function will account for it.
+
+
+How to properly monitor
+=======================
+
+Karabo is different from many other control systems. By living the karabo spirit means
+no polling of parameters, we simply wait for new updates as the hardware
+will notify the proxies::
+
+    @coroutine
+    def onInitialization(self):
+        self.dev = yield from connectDevice(someDevice)
+        background(self.monitor())
+
+    @coroutine
+    def monitor(self):
+        while True:
+            pressure = self.dev.value
+            print(pressure)
+            yield from waitUntilNew(pressure)
+            # Here we simply wait for new hardware updates without actively blocking the device
+
+
 Error Handling
 ==============
 
@@ -449,22 +493,7 @@ defined, safe state. This can be done by overwriting the following device method
             yield from dev.disable()
 
 
-Sleep nicely!
-=============
 
-You should always prefer the middlelayer ``sleep`` function over
-``time.sleep``. The asyncio sleep can be canceled and is not a blocking call.
-
-.. py:function:: sleep(delay)
-
-   Stop execution for at least *delay* seconds.
-
-   This is a ``synchronized`` function, so it may also be used to
-   schedule the calling of a callback function at a later time.
-
-.. note::
-
-   If a unit is provided, the sleep function will account for it.
 
 Locking
 =======
