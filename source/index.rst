@@ -9,12 +9,12 @@ Welcome to HowToMiddlelayer's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
-   middle_layer_devices
+   introduction_device
    fundamentals
    connect_reconnect
    overwrite
    decorators
+   schema_injection
    :maxdepth: 1
 
 

@@ -179,12 +179,34 @@ no relation to the original anymore, so ``waitUntilNew(3 *
 device.speed)`` wouldn't make much sense, thus it loses the descriptor.
 
 
-Eventloop
-=========
+Device server: Eventloop
+========================
 
+Karabo middlelayer uses Python's asyncio, installing a custom event loop.
+All devices in a device server share the same event loop which is run in a
+single thread. Hence, every blocking call in any device instance results in
+blocking every other device in the same device server.
+However, the device developer is free to start threads using background, which
+starts a thread if used with a function which is not a coroutine.
+The event loop thread pool executor can have 200 threads.
 
 Bulk-set of properties
 ======================
+
+In a synchronous context, setting a parameter is synchronous, hence the code blocks
+until the parameter is properly set or an error is raised.
+
+In a coroutine, however, all parameter settings are automatically cached and will
+not be sent before the next ``yield from``. It is guaranteed that parameter
+settings are properly ordered and are sent before the next slot call in bulk.
+
+As a corollary, setting a parameter multiple times results in only one
+setting on the device of the last value. If this is not desired, use update
+device as follows::
+
+    proxy.someValue = 3
+    yield from updateDevice(proxy)
+    proxy.someValue = 5
 
 
 Unit Handling
@@ -232,7 +254,6 @@ attribute::
     is not silently dropped.
 
 
-
 Timestamps
 ==========
 
@@ -249,7 +270,7 @@ assignment of a value that does not have a timestamp::
 A different timestamp may be attached using the ``timestamp``
 function::
 
-    self.steps = timestamp(5, "2009-09-01 12:34 UTC")
+    self.steps.timestamp = Timestamp("2009-09-01 12:34 UTC")
 
 If a value already has a timestamp, it is conserved, even through
 calculations. If several timestamps are used in a calculation, the
@@ -277,7 +298,7 @@ There are many functions in Karabo which do not instantaneously execute.
 Frequently, it is important that other code can continue running
 while such a function is still executing. For the ease of
 use, all those functions, which are documented here as
-*synchronized*, follow the same calling convention, namely, they have
+**synchronized**, follow the same calling convention, namely, they have
 a set of additional keyword parameters to allow for non-blocking calls to them:
 
 timeout
@@ -299,8 +320,6 @@ callback
 
 What is a Karabo Future
 =======================
-
-MORE IS REQUIRED HERE. HOW TO IMPORT. MAYBE AN EXAMPLE HOW TO SET THIS
 
 The future object contains everything to manage asynchronous
 operations:
@@ -340,9 +359,8 @@ operations:
         wait for the function to finish
 
 
-
-Create tasks: background
-========================
+Tasks: background
+=================
 
 You can call your own ``synchronized`` functions and launch them in the
 background:
@@ -379,6 +397,57 @@ background:
         except CancelledError:
             ... react on cancellation ...
 
+.. note::
+
+    :func:`background` creates and runs a thread if and only if the passed function is not a
+    coroutine, otherwise the coroutine is simply scheduled on the event loop.
+
+
+Error Handling
+==============
+
+Errors happen and When they happen in Python typically an exception is
+raised. The best way to do error handling is to use the usual Python
+try-except-statements.
+
+In the middlelayer API we basically have to take care about the ``CancelledError``
+and the ``TimeoutError``
+
+..  code-block:: Python
+
+    from asyncio import coroutine, CancelledError, TimeoutError
+    from karabo.middlelayer import Slot
+
+    @Slot()
+    @coroutine
+    def do_something(self):
+        try:
+            # start something here, e.g. move some motor
+        except CancelledError:
+            # clean up stuff
+        finally:
+            # something which should always be done, e.g. move the motor
+            # back to its original position
+
+    @Slot()
+    @coroutine
+    def do_one_more_thing(self):
+        try:
+            yield from wait_for(connectDevice(somedevice), timeout=2)
+        except TimeoutError:
+            # notify we received a timeout error
+        finally:
+            # reconnect to the device
+
+Sometimes, however, an exception happens unexpectedly, or should be handled in a quite
+generic fashion. In either case it might be advisable to bring the system back into a
+defined, safe state. This can be done by overwriting the following device methods::
+
+    def onCancelled(self, slot):
+        """to be called if a user canceled the operation"""
+        for dev in self.devices:
+            yield from dev.disable()
+
 
 Sleep nicely!
 =============
@@ -395,7 +464,7 @@ You should always prefer the middlelayer ``sleep`` function over
 
 .. note::
 
-    If a unit is provided, the sleep function will account for it.
+   If a unit is provided, the sleep function will account for it.
 
 Locking
 =======
@@ -413,22 +482,16 @@ restricted to the lock holder::
                 # do something useful here
 
 
-.. py:function:: lock(device, timeout=0)
+.. py:function:: lock(device)
 
-   lock the *device* for exclusive use by this device. If the lock
-   cannot be acquired within *timeout* seconds, a ``TimeoutError``
-   will be raised. A *timeout* of ``-1`` signifies an unlimited wait.
+   lock the *device* for exclusive use by this owner device.
 
-   the function returns a context manager to be used in a ``with``
+   The function returns a context manager to be used in a ``with``
    statement.
 
-    The parameter ``lockedBy`` of a device contains the current owner
-    of the lock, or an empty string if nobody holds a lock.
+   The parameter ``lockedBy`` of a device contains the current owner
+   of the lock, or an empty string if nobody holds a lock.
 
-.. warning::
-
-    Device locks are not thread-safe locks. If you need
-    to lock threads thread-safe, use the appropriate locks from the threading library.
 
 Synchronous or Asynchronous
 ===========================
@@ -437,11 +500,10 @@ Although property access via device proxies is usually to be preferred, there ar
 where only a single or very few interactions with a remote device are necessary. In such
 a case the following shorthands may be used::
 
-   setWait("deviceId", "someOtherParameter", a)
-   execute("deviceId", "someSlot", timeout=10)
+   yield from setWait("deviceId", "someOtherParameter", a)
+   yield from execute("deviceId", "someSlot")
 
-The aforementioned commands are blocking and all accept an optional timeout parameter.
-They raise a ``TimeoutError`` if the specified duration has passed.
+The aforementioned commands are blocking and synchronized coroutines.
 
 Additionally, non-blocking methods are provided, indicated by the suffix ``NoWait`` to
 each command::
@@ -451,7 +513,7 @@ each command::
        ...
 
    setNoWait("deviceId", "someOtherParameter", a)
-   executeNoWait("deviceId", "someSlot", callback = callback)
+   executeNoWait("deviceId", "someSlot", callback=callback)
 
 As shown in the code example a non-blocking property retrieval is realized by supplying
 a callback when the value is available. The callback for ``executeNoWait`` is optional and
@@ -463,41 +525,4 @@ a fire-and-forget signal to the remote device.
 If a callback is given, instead a blocking signal is launched in co-routine,
 triggering the callback upon completion. The ``executeNoWait`` call will immediately
 return though.
-
-
-Error Handling
-==============
-
-Errors do happen. When they happen, in Python typically an exception is
-raised. The best way to do error handling is to use the usual Python
-try-except-statements.
-
-So far we have introduced and taken care of time-out errors. Another recurring situation
-is that a user cancels a operation currently in progress. In such cases a ``CancelledError``
-is raised:
-
-..  code-block:: Python
-
-    @Slot
-    def do_something(self):
-        try:
-            # start something here, e.g. move some motor
-        except CancelledError:
-            # clean up stuff
-        finally:
-            # something which should always be done, e.g. move the motor
-            # back to its original position
-
-Sometimes, however, an exception happens unexpectedly, or should be handled in a quite
-generic fashion. In either case it might be advisable to bring the system back into a
-defined, safe state. This can be done by overwriting the following device methods::
-
-    def onCancelled(self, slot):
-        """to be called if a user canceled the operation"""
-
-The ``slot`` is the slot that had been executed.
-
-
-Injecting Parameters
-====================
 
