@@ -129,6 +129,12 @@ so that we do not simultaneously do several attempts to reconnect::
                 self.reconnecting = True
                 background(self.reconnectDevice())
 
+The watchdog shall then be launched in the background from 
+:func:`onInitialization`::
+    def onInitalization(slef):
+        [setup]
+        background(self.watchdog())
+
 The Reconnect Coroutine
 -----------------------
 Signalling to the user that a connection has been lost, and that we're
