@@ -1,5 +1,5 @@
-Properties Overriding
-=====================
+Overwrite Properties
+====================
 
 Classes in Karabo may have default properties. A type of motors may have a
 default speed, a camera may have a default frame rate, and so forth.
