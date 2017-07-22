@@ -193,7 +193,8 @@ The event loop thread pool executor can have 200 threads.
 What is a coroutine or task
 ===========================
 
-MARTIN PLEASE ADD SOMETHING
+Martin please add something ...
+
 
 Bulk-set of properties
 ======================
@@ -433,9 +434,11 @@ Karabo is different from many other control systems. By living the karabo spirit
 no polling of parameters, we simply wait for new updates as the hardware
 will notify the proxies::
 
+    from asyncio import coroutine, connectDevice, waitUntilNew
+
     @coroutine
     def onInitialization(self):
-        self.dev = yield from connectDevice(someDevice)
+        self.dev = yield from connectDevice("some_device")
         background(self.monitor())
 
     @coroutine
@@ -477,7 +480,7 @@ and the ``TimeoutError``
     @coroutine
     def do_one_more_thing(self):
         try:
-            yield from wait_for(connectDevice(somedevice), timeout=2)
+            yield from wait_for(connectDevice("some_device"), timeout=2)
         except TimeoutError:
             # notify we received a timeout error
         finally:
@@ -493,8 +496,6 @@ defined, safe state. This can be done by overwriting the following device method
             yield from dev.disable()
 
 
-
-
 Locking
 =======
 
@@ -506,7 +507,6 @@ restricted to the lock holder::
     @coroutine
     def perform(self):
         with getDevice("some_device") as device:
-
             with (yield from lock(device)):
                 # do something useful here
 
