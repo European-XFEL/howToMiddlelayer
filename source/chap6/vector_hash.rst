@@ -5,12 +5,14 @@ Known as :class:`TABLE_ELEMENT` in the bound API, :class:`VectorHash` allows
 users to specify custom entries, in the form of a table, that are,
 programmatically, available later in the form of an iterable.
 
-Like other karabo properties, :class:`VectorHash` is initialised by a
+Like other karabo properties, :class:`VectorHash` is initialised by
 displayedName, description, defaultValue, and accessMode. As well, it has a
 `rows` field that describes what each row in the table contains.
 
 This `rows` field expects a class that inherits from :class:`Configurable`.
-::
+
+.. code-block:: Python
+
     class UserDefinedDevice(Configurable):
         deviceId = String(
                 displayedName="DeviceId",
@@ -34,12 +36,14 @@ Note that it is possible to provide the user with predefined entries, such as
 default values or reading a configuration file, by providing a populated array
 in the ``defaultValue`` option.
 
-Actions on Entries
-------------------
+Using Entries
+-------------
 Once the VectorHash has been populated, it is possible to iterate through its
 entries.
 As with any Karabo datatypes, data are stored in VectorHash.value:
-::
+
+.. code-block:: Python
+
     @Slot(displayedName="Save to file")
     @coroutine
     def saveToFile(self):
@@ -48,7 +52,7 @@ As with any Karabo datatypes, data are stored in VectorHash.value:
         with open("outputfile.txt", "a") as outfile:
             outfile.write(len(self.userConfig.value))
             for row in self.userConfig.value:
-                f.write("{},{}\n".format(row[0], row[1]))
+                outfile.write("{},{}\n".format(row[0], row[1]))
 
         self.status = "Saved"
 
@@ -57,8 +61,8 @@ Action on Update
 ----------------
 If an action is required on VectorHash update, when the user adds, removes, or
 edits a row, then the VectorHash should be defined within a decorator:
-::
 
+.. code-block:: Python
     @VectorHash(rows=UserDefinedDevice,
                 displayedName="Hot Initialisation",
                 defaultValue=[])
