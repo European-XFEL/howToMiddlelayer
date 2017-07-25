@@ -24,12 +24,15 @@ This class can have as many parameters as desired, and these will be represented
 as columns in the table.
 
 With :class:`UserDefinedDevice`, the definition of the VectorHash is as follows:
-::
+
+.. code-block:: Python
+
     class MyMLDevice(Device):
-        userConfig = VectorHash(rows=UserDefinedDevice,
+        self.userConfig = VectorHash(rows=UserDefinedDevice,
                                 displayedName="Hot Initialisation",
                                 defaultValue=[])
 The user will now be presented with an editable table:
+
 .. image:: graphics/VectorHash.png
 
 Note that it is possible to provide the user with predefined entries, such as
@@ -39,7 +42,7 @@ in the ``defaultValue`` option.
 Using Entries
 -------------
 Once the VectorHash has been populated, it is possible to iterate through its
-entries.
+rows, which are themselves internally stored as tuples and so iterable.
 As with any Karabo datatypes, data are stored in VectorHash.value:
 
 .. code-block:: Python
@@ -63,6 +66,7 @@ If an action is required on VectorHash update, when the user adds, removes, or
 edits a row, then the VectorHash should be defined within a decorator:
 
 .. code-block:: Python
+
     @VectorHash(rows=UserDefinedDevice,
                 displayedName="Hot Initialisation",
                 defaultValue=[])
