@@ -13,6 +13,8 @@ Not all are listed here, but these will be, initially, split into six chapters:
     - background() Mechanism
 
 - 3.Basic ML Device Single Device Monitoring
+    - Class basics: Slots and Properties
+    - Nodes
     - Device vs DeviceNode
     - Reading and Setting Device Properties
     - waitUntil()
@@ -35,6 +37,8 @@ Not all are listed here, but these will be, initially, split into six chapters:
     - Access Levels
     - Schema Injection
     - Overwrite Elements
+    - Queues
+    - Table elements
 
 Each chapter will have its own simple example device, and will refer to
 existing devices that are on Gitlab (Dave's work and fastValve, for instance)
