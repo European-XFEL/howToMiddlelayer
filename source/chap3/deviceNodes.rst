@@ -64,4 +64,12 @@ Function and parameter calls are now exactly as they were when using
 :func:`getDevice` or :func:`connectDevice`, but now details regarding the
 connection to remote devices are left to the middle layer API.
 
+Reference Implementations
+-------------------------
+The following devices implement the functionalities described above in a working
+environment, and can be considered reference implementations:
 
+* `fastValve`_ is a middle layer device interfacing with several remote devices
+   through the use of :class:`DeviceNode`
+
+.. _fastValve: http://in.xfel.eu/gitlab/karaboDevices/fastValve
