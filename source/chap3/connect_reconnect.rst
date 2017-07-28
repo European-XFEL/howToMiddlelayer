@@ -118,7 +118,10 @@ Therefore, the isAlive function would return False.
 
 What we want to do in case the device's gone, is to set reconnect to the
 device, in the background, so as to not block other tasks, and set a flag,
-so that we do not simultaneously do several attempts to reconnect::
+so that we do not simultaneously do several attempts to reconnect:
+
+.. code-block:: Python
+
     @coroutine
     def watchdog(self):
         while True:
@@ -129,8 +132,11 @@ so that we do not simultaneously do several attempts to reconnect::
                 self.reconnecting = True
                 background(self.reconnectDevice())
 
-The watchdog shall then be launched in the background from 
-:func:`onInitialization`::
+The watchdog shall then be launched in the background from
+:func:`onInitialization`:
+
+.. code-block:: Python
+
     def onInitalization(slef):
         [setup]
         background(self.watchdog())
@@ -193,7 +199,9 @@ and reconnection coroutines.
 
 
 Let us define three motors we want to monitor and control:
-::
+
+.. code-block:: Python
+
     MOTOR_1 = "motor_server/motor_1"
     MOTOR_2 = "motor_server/motor_2"
     MOTOR_3 = "motor_server/motor_3"
@@ -236,7 +244,9 @@ By using :func:`karabo.middlelayer.gather` and
 in `devices_to_connect` and await their outcomes.
 
 Following this design, we can update the watchdog to check on all the devices:
-::
+
+.. code-block:: Python
+
     @coroutine
     def watchdog(self):
         while True:
@@ -250,7 +260,9 @@ Following this design, we can update the watchdog to check on all the devices:
                 continue
 
 Likewise, :func:`reconnect` can be modified to work with many devices:
-::
+
+.. code-block:: Python
+
     @coroutine
     def reconnectDevices(self):
         if not self.reconnecting:
@@ -273,7 +285,9 @@ Monitoring Multiple Sources
 +++++++++++++++++++++++++++
 Monitoring multiple resources is done very much the same way as monitoring a
 single one, passing a list of devices as a starred expression:
-::
+
+.. code-block:: Python
+
     @coroutine
     def monitorPosition(self):
         while True:
@@ -291,7 +305,9 @@ Controlling Multiple Sources
 ++++++++++++++++++++++++++++
 Setting properties of a device is done directly by assigning the property a
 value, for instance:
-::
+
+.. code-block:: Python
+
     self.remoteMotor.targetPosition = 42
 
 This guarantees to set the property. It is possible, however, to do a blocking
@@ -317,9 +333,11 @@ to run the task:
 This will create a :class:`KaraboFuture` object of which the status can easily
 be tracked or cancelled.
 
-As with reconnections, expending this methodology to cover several device is
+As with reconnections, expending this methodology to cover several devices is
 done using :func:`gather`:
-::
+
+.. code-block:: Python
+
     @coroutine
     def moveSeveral(self, positions):
         futures = []
@@ -368,3 +386,7 @@ from their busy state (`State.MOVING`) to their idle (`State.ON`) as follows:
 
 The reconnecting flag is there in case something went really wrong, and one of
 the devices went offline. It is then not reasonable to expect task completion.
+
+Excellent, you say, but should all of this truly be the device developer's
+problem?
+Not nessessarily, enters :class:`DeviceNode`
