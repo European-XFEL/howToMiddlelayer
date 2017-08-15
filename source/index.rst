@@ -9,12 +9,16 @@ Welcome to HowToMiddlelayer's documentation!
 Contents:
 
 .. toctree::
-   introduction_device
-   fundamentals
-   connect_reconnect
-   overwrite
-   decorators
-   schema_injection
+   chap2/decorators
+   chap2/fundamentals
+   chap2/introduction_device
+   chap3/connect_reconnect
+   chap3/deviceNodes
+   chap3/sal_option_list
+   chap4/allCompleted
+   chap6/overwrite
+   chap6/schema_injection
+   chap6/vector_hash
    :maxdepth: 1
 
 
