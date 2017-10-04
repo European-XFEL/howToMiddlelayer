@@ -95,12 +95,13 @@ Reconnecting After a Mishap
 +++++++++++++++++++++++++++
 It may happen that, for some reason, the remote device gets reinitialized,
 such as after a server restart.
-With the current implementation, we would be left without any mechanism to
-recover. When interacting with a single remote device, we could manually
-reinitialise ourselves, but this would not scale up.
+With the current implementation, we will be automatically notified
+and our proxy is reconnected automatically.
 
-For this, two things are required: a watchdog system, and a way to reconnect
-the lost device, in the background, as to not interrupt other tasks at hand.
+However, for the transition period, e.g. while the remote device is not
+initialized when do not get updates. Hence, our middlelayer device would
+still indicate functionality. For this reason, we can implement a watchdog
+system to provide us an indicator if our middlelayer device is still functional.
 
 A Watchdog
 ----------
@@ -116,21 +117,20 @@ Likewise, if the remote device would had been reinitialised,
 then the connection would be invalid, as it would be a different instance.
 Therefore, the isAlive function would return False.
 
-What we want to do in case the device's gone, is to set reconnect to the
-device, in the background, so as to not block other tasks, and set a flag,
-so that we do not simultaneously do several attempts to reconnect:
+What we want to do in case the device is gone is to set a reconnect boolean
+in our middlelayer device and set the state to **State.INIT** as a visual
+indicator in our GUI. It will also block all the **Slots** with a proper state
+machine behavior:
 
 .. code-block:: Python
 
     @coroutine
     def watchdog(self):
         while True:
-            yield from sleep(5)
-            if self.reconnecting:
-                continue
             if not isAlive(self.device):
                 self.reconnecting = True
-                background(self.reconnectDevice())
+                self.state = State.INIT
+            yield from sleep(5)
 
 The watchdog shall then be launched in the background from
 :func:`onInitialization`:
@@ -141,36 +141,6 @@ The watchdog shall then be launched in the background from
         [setup]
         background(self.watchdog())
 
-The Reconnect Coroutine
------------------------
-Signalling to the user that a connection has been lost, and that we're
-attempting a reconnect, is often done by changing state. It is typically
-done by going back to an INIT state.
-The reconnect coroutine seems to be a good place to do so.
-
-We thus begin by setting the flag that we are reconnecting, to prevent the
-watchdog to spawn more reconnection attempts, and then notifying the user of
-the status.
-
-We then proceed to use the connectDevice coroutine to instantiate a new
-connection, with an added timeout, to fail gracefully, would the device not
-be available for a longer period of time, and then try again::
-    @coroutine
-    def reconnectDevice(self):
-        if not self.reconnecting:
-            return
-
-        self.state = State.INIT
-        self.status = "Lost remote device"
-        while self.reconnecting:
-            try:
-                self.device = yield from wait_for(connectDevice(REMOTE_DEVICE),
-                                                  timeout=2)
-                self.reconnecting = False
-                self.status = "Connection established"
-                self.state = State.STARTED
-            except TimeoutError:
-                yield from sleep(1)
 
 
 Wrap-up
@@ -232,54 +202,15 @@ Let us define three motors we want to monitor and control:
         @coroutine
         def onInitialization(self):
             self.state = State.INIT
+            devices_to_connect = [connectDevice(device) for device
+                                  in self.device_addresses]
+            connections = yield from gather(*devices_to_connect)
 
-            try:
-                devices_to_connect = [connectDevice(device) for device
-                                      in self.device_addresses]
-                connections = yield from wait_for(gather(*devices_to_connect),
-                                                   timeout=2)
 
 By using :func:`karabo.middlelayer.gather` and
 :func:`karabo.middlelayer.background`, we simultaneously execute all the tasks
 in `devices_to_connect` and await their outcomes.
 
-Following this design, we can update the watchdog to check on all the devices:
-
-.. code-block:: Python
-
-    @coroutine
-    def watchdog(self):
-        while True:
-            yield from sleep(5)
-            if self.reconnecting:
-                continue
-            alive = [isAlive(device) for device in self.device_addresses]
-            if any(conn == False for conn in alive):
-                background(self.reconnectDevices())
-                self.reconnecting = True
-                continue
-
-Likewise, :func:`reconnect` can be modified to work with many devices:
-
-.. code-block:: Python
-
-    @coroutine
-    def reconnectDevices(self):
-        if not self.reconnecting:
-            return
-
-        self.state = State.INIT
-        self.status = "Lost remote device"
-        while self.reconnecting:
-            try:
-                devices_to_connect = [connectDevice(device) for device in
-                                      self.device_addresses]
-
-                self.devices = yield from wait_for(gather(*devices_to_connect),
-                                              timeout=2)
-
-            except TimeoutError:
-                yield from sleep(2)
 
 Monitoring Multiple Sources
 +++++++++++++++++++++++++++
@@ -291,8 +222,6 @@ single one, passing a list of devices as a starred expression:
     @coroutine
     def monitorPosition(self):
         while True:
-            if self.reconnecting:
-                yield from sleep(1)
 
             positions_list = [dev.position for dev in self.devices]
             yield from waitUntilNew(*positions_list)
