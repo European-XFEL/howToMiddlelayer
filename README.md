@@ -11,6 +11,7 @@ Not all are listed here, but these will be, initially, split into six chapters:
     - Karabo Futures
     - Decorators
     - background() Mechanism
+    - Blocking Calls: Using Synchronous Functions in Coroutines
 
 - 3.Basic ML Device Single Device Monitoring
     - Class basics: Slots and Properties
