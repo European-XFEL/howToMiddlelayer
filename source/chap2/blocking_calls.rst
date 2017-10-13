@@ -24,7 +24,7 @@ brackets*, and any arguments used by that function:
     # Do a blocking sleep for a second
     background(sleep, 1)
 
-NB. outside of this example, `asyncio.sleep` really should be used.
+NB. outside of this example, `asyncio.sleep` should be used.
 
 Note that `background` does not support keyworded arguments. As such, all
 arguments need to be provided:
@@ -44,17 +44,18 @@ Example Implementation
 
 The `caller_` device mixes synchronous and asynchronous calls in all possible
 ways:
-    * coroutines are called normally.
 
-    * `background` is used within `onInitialization` to start the
-      `monitor` coroutine as a permanent background task.
+* coroutines are called normally.
 
-    * `background` is used within `emergencyCall` to allow the use
-      of a synchronous third-party library (`calls.create` and
-      `messages.create`).
+* `background` is used within `onInitialization` to start the
+  `monitor` coroutine as a permanent background task.
 
-    * the simpler `get_human_time` function does not need to be wrapped as a
-      background task, as its result is returned quasi-instantly.
+* `background` is used within `emergencyCall` to allow the use
+  of a synchronous third-party library (`calls.create` and
+  `messages.create`).
+
+* the simpler `get_human_time` function does not need to be wrapped as a
+  background task, as its result is returned quasi-instantly.
 
 .. _caller: http://in.xfel.eu/gitlab/karaboDevices/caller
 
