@@ -24,6 +24,10 @@ brackets*, and any arguments used by that function:
     # Do a blocking sleep for a second
     background(sleep, 1)
 
+This will create a thread which will be safely added to the event loop.
+Note that if you were to place the `sleep` function with brackets, then
+`background` would wait for its result and attempt to execute that.
+
 NB. outside of this example, `asyncio.sleep` should be used.
 
 Note that `background` does not support keyworded arguments. As such, all
