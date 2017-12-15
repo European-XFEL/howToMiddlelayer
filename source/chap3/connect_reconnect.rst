@@ -139,7 +139,7 @@ The watchdog shall then be launched in the background from
 
     def onInitalization(slef):
         [setup]
-        background(self.watchdog())
+        background(self.watchdog)
 
 
 

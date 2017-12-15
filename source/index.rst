@@ -12,6 +12,7 @@ Contents:
    chap2/decorators
    chap2/fundamentals
    chap2/introduction_device
+   chap2/blocking_calls
    chap3/connect_reconnect
    chap3/deviceNodes
    chap3/sal_option_list
