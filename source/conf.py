@@ -17,9 +17,6 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
 
 # -- General configuration ------------------------------------------------
 
@@ -57,7 +54,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'HowToMiddlelayer'
+project = 'HowToMiddleLayer'
 copyright = '2017, CAS'
 author = 'CAS'
 
@@ -242,7 +239,7 @@ html_static_path = ['_static']
 # html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'CAS-HowToMiddlelayerdoc'
+htmlhelp_basename = 'CAS-HowToMiddlelayer'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -268,7 +265,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'HowToMiddlelayer.tex', 'HowToMiddlelayer',
+    (master_doc, 'HowToMiddleLayer.tex', 'HowToMiddleLayer',
      'CAS', 'manual'),
 ]
 
@@ -310,7 +307,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'cas-howtomiddlelayer', 'HowToMiddlelayer Documentation',
+    (master_doc, 'cas-howtomiddlelayer', 'HowToMiddleLayer Documentation',
      [author], 1)
 ]
 
@@ -323,7 +320,7 @@ man_pages = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'howtomiddlelayer', 'HowToMiddlelayer Documentation',
+    (master_doc, 'howtomiddlelayer', 'HowToMiddleLayer Documentation',
      [author], 1)
 ]
 
@@ -338,8 +335,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'HowToMiddlelayer', 'HowToMiddlelayer Documentation',
-     author, 'HowToMiddlelayer', 'One line description of project.',
+    (master_doc, 'HowToMiddleLayer', 'HowToMiddleLayer Documentation',
+     author, 'HowToMiddleLayer', 'One line description of project.',
      'Miscellaneous'),
 ]
 
