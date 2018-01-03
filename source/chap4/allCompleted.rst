@@ -1,3 +1,6 @@
+Complete Futures
+================
+
 Synchronizing to single karabo-future completion within a set of
 karabo-futures, or completion of all karabo-futures of the set is supported
 by `firstCompleted`, `firstException`, and `allCompleted`. As the set may
