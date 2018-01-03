@@ -14,6 +14,7 @@ Contents:
    chap2/introduction_device
    chap2/blocking_calls
    chap3/connect_reconnect
+   chap3/node
    chap3/deviceNodes
    chap3/sal_option_list
    chap4/allCompleted
