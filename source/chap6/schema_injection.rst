@@ -34,7 +34,8 @@ that::
         )
 
 
-Note that calling inject_something again resets the values of proprties to their defaults.
+Note that calling inject_something again resets the values of properties to 
+their defaults.
 Middlelayer class based injection differs strongly from C++ and
 bound api parameter injection, and the following points should
 be remembered:
