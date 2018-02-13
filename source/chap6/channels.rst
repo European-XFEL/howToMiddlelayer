@@ -1,25 +1,26 @@
 Channels
 ========
-Fast data in karabo is typically shared using p2p channel connections.
+Fast or big data in Karabo is typically shared using Pipeline Channel 
+connections.
 This section explores how to share data in such fashion.
 
-The data is send on output channels and received on input channels.
+The data is sent on output channels and received on input channels.
 An output channel can send data to several input channels on several devices,
 and likewise an input channel can receive data from many outputs.
 
-Ouput Channels
---------------
+Output Channels
+---------------
 Firstly, import the required classes::
 
     from karabo.middlelayer import (
         AccessMode, Configurable, DaqDataType, Float, OutputChannel
     )
 
-Then, define an ouput channel in your device::
+Then, define an output channel in your device::
 
     output = OutputChannel(DataNode,
                            displayedName="Output",
-                           description="P2P Output channel")
+                           description="Pipeline Output channel")
 
 You'll notice that we referenced **DataNode**. This is the schema of our
 output channel that defines what data we send and permits other devices 
@@ -34,21 +35,21 @@ To define that schema, create a class that inherits from
                               accessMode=AccessMode.READONLY)
 
 Notice that this class has a variable `daqDataType` defined. This is to 
-enable the DAQ to triage the data. The type can either be of PULSE or TRAIN
+enable the DAQ to triage the data. The type can be of either PULSE or TRAIN
 resolution.
 
 Now that the schema is defined, here's how to send data over the output 
 channel::
 
-    @Slot(displayedName="Send P2P Data")
+    @Slot(displayedName="Send Pipeline Data")
     @coroutine
-    def sendP2P(self):
+    def sendPipeline(self):
         self.output.schema.floatProperty = 3.5
         yield from self.output.writeData()
 
 Input Channels
 --------------
-Receiving data from a p2p channel connection is done by decorating a function
+Receiving data from a Pipeline Channel is done by decorating a function
 with `InputChannel`::
 
     @InputChannel(displayedName="Input")
@@ -57,7 +58,7 @@ with `InputChannel`::
         print("Meta", meta)
 
 The metadata contains information about the data, such as the source,
-whether the data is timestamp, and a timestamp if so.
+whether the data is timestamped, and a timestamp if so.
 
 Good channels share a schema. In the middlelayer API, this is enforced as 
 described above. However, devices written in other APIs may not share a schema,
@@ -87,17 +88,11 @@ The various behaviours are:
 - queue: put the data in a queue;
 - drop: discard the data;
 - wait: create a background task that waits until the data can be sent;
-- throw: discard the data.
-
-.. note:: 
-    
-   In other APIs, throw raises an exception, whereas the behaviour here
-   is similar to *drop*.
+- throw: discard the data when serving the data, raises an exception when
+        receiving. 
 
 The default is *wait*, which preserves data integrity. 
 
-However, on an output channel, the data will be stored in a buffer, and could 
-take up quite some memory would no device connect.
 The mode can be set in the GUI, before device instantiation, or as follows::
 
     self.output.noInputShared = "drop"
@@ -121,9 +116,9 @@ instance of a time server.
 
 Then, generate a Timestamp matching your data, and send it along::
 
-    @Slot(displayedName="Send P2P Data")
+    @Slot(displayedName="Send Pipeline Data")
     @coroutine
-    def sendP2P(self):
+    def sendPipeline(self):
         ts = self.getActualTimestamp()
         self.output.schema.floatProperty = 3.6
         yield from self.output.writeData(timestamps=ts)
