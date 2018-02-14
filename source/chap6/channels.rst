@@ -68,7 +68,9 @@ and thus the data has to be treated as *raw*::
     def onInput(self, data, meta):
         """ Very Important Processing """
 
-For instance, receiving an image from a raw channel is done so::
+For instance, it could be that a device sends an image on a raw channel,
+encoded not as an image object, but as a *byte array*.
+Deserialising it is done so::
     
     from karabo.midddlelayer import NDArray
 
@@ -76,7 +78,8 @@ For instance, receiving an image from a raw channel is done so::
     def onInput(self, data, meta):
         # Explicitly convert the image data from byte array to numpy array
         image_data = NDArray().toKaraboValue(data["image.data"])
-        isinstance(np.array, image_data)  # True
+        print(isinstance(np.array, image_data))  # prints True
+        image_data = image_data.reshape(data["image.shape"])
 
 Policies
 --------
