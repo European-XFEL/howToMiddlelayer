@@ -1,11 +1,14 @@
 Schema injection
 ================
 
+
 A parameter injection is a modification of the class of an object. Since
 we do not want to modify the classes of all instances, we generate a
 fresh class for every object, which inherits from our class. This new
 class is completely empty, so we can modify it at will. Once we have done
 that::
+
+    from karabo.middlelayer_api.injectable import Injectable
 
     class MyDevice(Injectable, Device):
         @coroutine
@@ -32,6 +35,37 @@ that::
                        defaultValue=True,
                        accessMode=AccessMode.RECONFIGURABLE
         )
+
+
+Injecting Slots
+---------------
+Slots are decorating functions.
+If you want to add a Slot, or change the function it is bound to (decorating),
+the following will do the trick::
+
+    @coroutine
+    def very_private(self):
+        self.log.INFO("This very private function is now exposed!!")
+
+    @Slot("Inject a slot")
+    @coroutine
+    def inject_slot(self):
+        # Inject a new slot in our schema
+        self.__class__.injectedSlot = Slot(displayedName="Injected Slot")
+        self.__class__.injectedSlot.__call__(type(self).very_private)
+        yield from self.publishInjectedParameters()
+
+.. note::
+    They key to that slot will not be `very_private` but instead `injectedSlot`
+    So yes, cool that we can change the behaviour of a slot on the fly by
+    changing the function the slot calls, but they key won't reflect that.
+
+    If you do change the functions that are called, do put in a log message.
+
+.. warning::
+    Before you do that, take a hard look at yourself.
+    Consider instead injecting a node with a proper Slot definition.
+
 
 
 Note that calling inject_something again resets the values of properties to 
