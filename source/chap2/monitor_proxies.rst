@@ -1,5 +1,5 @@
 Middlelayer device with proxies
-###############################
+===============================
 MonitorMotor is a middle layer device documenting best practice for
 monitoring a single `remote device`, that is, a device written with either
 of the C++ or Python API.
@@ -97,8 +97,8 @@ such as after a server restart.
 With the current implementation, we will be automatically notified
 and our proxy is reconnected automatically.
 
-Controlling Several Device
-##########################
+Controlling Several Devices with proxies
+========================================
 
 Now that a device can be remotely monitored, and the connection kept alive,
 let's see how to connect to several devices at once, and then control them.
@@ -176,6 +176,7 @@ single one, passing a list of devices as a starred expression:
             motorPos1 = self.devices[0].position
             motorPos2 = self.devices[1].position
             motorPos3 = self.devices[2].position
+
 
 Controlling Multiple Sources
 ++++++++++++++++++++++++++++

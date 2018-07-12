@@ -10,7 +10,8 @@ Contents:
 
 .. toctree::
    chap1/introduction_device
-   chap1/decorators
+   chap1/slots
+   chap1/error
    chap1/blocking_calls
    chap2/monitor_proxies
    chap2/node

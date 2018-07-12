@@ -1,5 +1,6 @@
 Decorators and their order
 ==========================
+
 Often, it is needed to define a :class:`Slot`, associated to a function, perhaps
 for users to start a device:
 ::
