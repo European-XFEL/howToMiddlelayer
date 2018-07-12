@@ -1,9 +1,8 @@
-Connecting and Reconnecting in the Middle Layer
-###############################################
-
+Middlelayer device with proxies
+###############################
 MonitorMotor is a middle layer device documenting best practice for
-connecting and maintaining connection to a single `remote device`, that is, a
-device written with either of the C++ or Python API.
+monitoring a single `remote device`, that is, a device written with either
+of the C++ or Python API.
 
 In this example, the device will initialise a `connection` with a `remote motor
 device`, restart the connection if the remote device disappears or resets, and
@@ -97,58 +96,6 @@ It may happen that, for some reason, the remote device gets reinitialized,
 such as after a server restart.
 With the current implementation, we will be automatically notified
 and our proxy is reconnected automatically.
-
-However, for the transition period, e.g. while the remote device is not
-initialized when do not get updates. Hence, our middlelayer device would
-still indicate functionality. For this reason, we can implement a watchdog
-system to provide us an indicator if our middlelayer device is still functional.
-
-A Watchdog
-----------
-To implement a watchdog, we need the following imports
-::
-    from asyncio import coroutine, sleep
-    for karabo.middlelayer import background, isAlive
-
-The isAlive function allows us to check whether the connection to the remote
-device is still valid. If the remote device is shut down, then isAlive
-will return False.
-Likewise, if the remote device would had been reinitialised,
-then the connection would be invalid, as it would be a different instance.
-Therefore, the isAlive function would return False.
-
-What we want to do in case the device is gone is to set a reconnect boolean
-in our middlelayer device and set the state to **State.INIT** as a visual
-indicator in our GUI. It will also block all the **Slots** with a proper state
-machine behavior:
-
-.. code-block:: Python
-
-    @coroutine
-    def watchdog(self):
-        while True:
-            if not isAlive(self.device):
-                self.reconnecting = True
-                self.state = State.INIT
-            yield from sleep(5)
-
-The watchdog shall then be launched in the background from
-:func:`onInitialization`:
-
-.. code-block:: Python
-
-    def onInitalization(slef):
-        [setup]
-        background(self.watchdog)
-
-
-
-Wrap-up
-+++++++
-Finally, here is the completed monitoring device, capable of connection,
-reconnection, and ready for further usage:
-.. literalinclude::../mlsource/MonitorRemote.py
-
 
 Controlling Several Device
 ##########################
