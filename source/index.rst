@@ -9,18 +9,19 @@ Welcome to HowToMiddlelayer's documentation!
 Contents:
 
 .. toctree::
-   chap2/decorators
-   chap2/fundamentals
-   chap2/introduction_device
-   chap2/blocking_calls
-   chap3/connect_reconnect
-   chap3/node
-   chap3/deviceNodes
-   chap3/sal_option_list
-   chap4/allCompleted
-   chap6/overwrite
-   chap6/schema_injection
-   chap6/vector_hash
+   chap1/introduction_device
+   chap1/slots
+   chap1/error
+   chap1/blocking_calls
+   chap2/monitor_proxies
+   chap2/node
+   chap2/deviceNodes
+   chap2/sal_option_list
+   chap3/allCompleted
+   chap4/overwrite
+   chap4/channels
+   chap4/schema_injection
+   chap4/vector_hash
    :maxdepth: 1
 
 

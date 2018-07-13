@@ -1,38 +1,31 @@
 There are 21 elements on the Kanban board that are to be documented.
 Not all are listed here, but these will be, initially, split into six chapters:
 
-- 1.Introduction
+- 1. Introduction
     - Motivation
-    - Middle layer vs Macros
-    - Architecture Overview
-
-- 2.Middle Layer Fundamentals
-    - Coroutines
-    - Karabo Futures
+    - Middle layer device
     - Decorators
-    - background() Mechanism
-    - Blocking Calls: Using Synchronous Functions in Coroutines
+    - Error handling
 
-- 3.Basic ML Device Single Device Monitoring
+- 2. Basic ML Device Single Device Monitoring
     - Class basics: Slots and Properties
     - Nodes
     - Device vs DeviceNode
     - Reading and Setting Device Properties
     - waitUntil()
+    - background() Mechanism
+    - Blocking Calls: Using Synchronous Functions in Coroutines
 
-- 4.Controlling Several Devices
-    - Connect / Reconnect
-    - State aggregation
-    - Usage of background()
+- 2. Middle Layer Fundamentals
+    - Coroutines
+    - Karabo Futures
+    - Decorators
+
+- 3. Controlling Several Devices
     - firstCompleted()
     - allCompleted()
 
-- 5.Self Management
-    - Initialisation
-    - Deletion
-    - onCancelled()
-
-- 6.Advanced Usage
+- 4. Advanced Features
     - External Processes
     - Keeping a Slot
     - Access Levels
