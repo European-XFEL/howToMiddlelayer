@@ -4,22 +4,16 @@ Not all are listed here, but these will be, initially, split into six chapters:
 - 1. Introduction
     - Motivation
     - Middle layer device
-    - Decorators
+    - Class basics: Properties and descriptors
+    - Class basics: Slots
+    - Nodes
     - Error handling
 
 - 2. Basic ML Device Single Device Monitoring
-    - Class basics: Slots and Properties
-    - Nodes
     - Device vs DeviceNode
     - Reading and Setting Device Properties
     - waitUntil()
     - background() Mechanism
-    - Blocking Calls: Using Synchronous Functions in Coroutines
-
-- 2. Middle Layer Fundamentals
-    - Coroutines
-    - Karabo Futures
-    - Decorators
 
 - 3. Controlling Several Devices
     - firstCompleted()
