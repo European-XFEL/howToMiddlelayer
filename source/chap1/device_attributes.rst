@@ -45,6 +45,10 @@ The definition of such a slot is then as follows:
 
         ... do something
 
+.. note::
+
+    The default requiredAccesslevel is `OBSERVER (level 0)`.
+
 Allowed States
 ++++++++++++++
 In a similar philosophy, it is possible to limit slot calls to specific states
@@ -82,3 +86,40 @@ It is possible to define an arbitrary quantity of states:
           allowedStates={State.ON, State.OFF}
 
 Note that if the list is empty, then the slot will never be callable.
+
+.. note::
+
+    By default every property and Slot may reconfigured or executed for all
+    states, respectively.
+
+AccessMode
+++++++++++
+The `accessMode` attribute allows to set if a property in a device is a
+**READONLY**, **RECONFIGURABLE** or **INITONLY**.
+
+Init only properties can only be modified during before instantiation of the
+device.
+
+First, import :class:`AccessMode`:
+
+.. code-block:: Python
+
+    from karabo.middlelayer import AccessMode
+
+Based on the previous example, we add a read only property for the current
+voltage of our voltage controller:
+
+.. code-block:: Python
+
+    currentVoltage = Double(
+        accessMode=AccessMode.READONLY,
+        requiredAccessLevel=AccessLevel.OPERATOR)
+
+    targetVoltage = Double(
+        defaultValue=20.0
+        requiredAccessLevel=AccessLevel.EXPERT)
+
+.. note::
+
+    The default `accessMode` is `RECONFIGURABLE`, hence the read only nature
+    nature of a property has to be explicitly provided.
