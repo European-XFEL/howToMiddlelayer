@@ -13,8 +13,8 @@ Contents:
    chap1/slots
    chap1/error
    chap1/blocking_calls
+   chap1/node
    chap2/monitor_proxies
-   chap2/node
    chap2/deviceNodes
    chap2/sal_option_list
    chap3/allCompleted
