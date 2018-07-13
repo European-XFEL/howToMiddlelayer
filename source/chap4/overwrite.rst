@@ -7,7 +7,8 @@ default speed, a camera may have a default frame rate, and so forth.
 Let's say a base class for a motor has a default max speed of 60 rpms:
 ::
     class MotorTemplate(Configurable):
-        maxrpm = Int32(displayedName="Max Rotation Per Minutes",
+        maxrpm = Int32(
+                    displayedName="Max Rotation Per Minutes",
                     accessMode=AccessMode.READONLY,
                     allowedStates={State.ON},
                     unitSymbol=Unit.NUMBER)
@@ -26,8 +27,10 @@ It is possible to do so by inheriting from :class:`MotorTemplate`, and using the
 :class:`karabo.middlelayer.Overwrite` element:
 ::
     class CustomMotor(MotorTemplate):
-        maxrpm = Overwrite(minExc=1, accessMode=AccessMode.RECONFIGURABLE,
-                           allowedStates={State.OFF, State.INIT})
+        maxrpm = Overwrite(
+                    minExc=1,
+                    accessMode=AccessMode.RECONFIGURABLE,
+                    allowedStates={State.OFF, State.INIT})
 
 Note that only the required fields are modified. Others, such as
 :class:`displayedName` will retain their original values.

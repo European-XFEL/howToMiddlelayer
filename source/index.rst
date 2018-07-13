@@ -9,21 +9,16 @@ Welcome to HowToMiddlelayer's documentation!
 Contents:
 
 .. toctree::
+   :maxdepth: 2
+
    chap1/introduction_device
    chap1/slots
    chap1/error
    chap1/blocking_calls
    chap1/node
-   chap2/monitor_proxies
-   chap2/device_nodes
-   chap2/sal_option_list
+   chap2/intro_device_proxies
    chap3/allCompleted
-   chap4/overwrite
-   chap4/channels
-   chap4/schema_injection
-   chap4/table_element
-   :maxdepth: 1
-
+   chap4/intro_advanced
 
 
 Indices and tables
