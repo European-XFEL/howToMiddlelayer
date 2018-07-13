@@ -57,7 +57,7 @@ Descriptors
 
 As shown by the example, every device has a *schema*, which contains all the details
 about the expected parameters, its types, comments, units, everything. In the
-middlelayer this schema is built by so-called *karabo descriptors*.
+middlelayer this schema is built by so-called **karabo descriptors**.
 A schema is only broadcasted rarely over the network, typically only during
 the initial handshake with the device. Once the schema is known, only
 *configurations*, or even only parts of configurations, are sent over
