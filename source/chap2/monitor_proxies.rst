@@ -255,7 +255,6 @@ happening whilst executing the futures, will be caught by the :class:`except`.
 
 The suggested solution for the guardian yield is to wait until all the device go
 from their busy state (`State.MOVING`) to their idle (`State.ON`) as follows:
-
 ::
     @coroutine
     def guardian_yield(self, devices):
