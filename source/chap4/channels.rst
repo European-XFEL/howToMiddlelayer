@@ -111,4 +111,4 @@ Reference Implementation
 A reference implementation can be found in pipelineMDL_, where both receiving and
 sending data is shown.
 
-.. _pipelineMDL: https://git.xfel.eu/gitlab/karaboDevices/pipeML
+.. _pipelineMDL: https://git.xfel.eu/gitlab/karaboDevices/pipelineMDL
