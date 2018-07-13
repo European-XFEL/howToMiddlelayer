@@ -1,6 +1,6 @@
-Channels
-========
-Fast or big data in Karabo is typically shared using Pipeline Channel 
+Pipelining Channels
+===================
+Fast or big data in Karabo is typically shared using Pipeline Channel
 connections.
 This section explores how to share data in such fashion.
 
@@ -23,10 +23,10 @@ Then, define an output channel in your device::
                            description="Pipeline Output channel")
 
 You'll notice that we referenced **DataNode**. This is the schema of our
-output channel that defines what data we send and permits other devices 
+output channel that defines what data we send and permits other devices
 to manage their expectations.
 
-To define that schema, create a class that inherits from 
+To define that schema, create a class that inherits from
 `Configurable`::
 
     class DataNode(Configurable):
@@ -34,11 +34,11 @@ To define that schema, create a class that inherits from
         floatProperty = Float(defaultValue=0,
                               accessMode=AccessMode.READONLY)
 
-Notice that this class has a variable `daqDataType` defined. This is to 
+Notice that this class has a variable `daqDataType` defined. This is to
 enable the DAQ to triage the data. The type can be of either PULSE or TRAIN
 resolution.
 
-Now that the schema is defined, here's how to send data over the output 
+Now that the schema is defined, here's how to send data over the output
 channel::
 
     @Slot(displayedName="Send Pipeline Data")
@@ -60,7 +60,7 @@ with `InputChannel`::
 The metadata contains information about the data, such as the source,
 whether the data is timestamped, and a timestamp if so.
 
-Good channels share a schema. In the middlelayer API, this is enforced as 
+Good channels share a schema. In the middlelayer API, this is enforced as
 described above. However, devices written in other APIs may not share a schema,
 and thus the data has to be treated as *raw*::
 
@@ -71,7 +71,7 @@ and thus the data has to be treated as *raw*::
 For instance, it could be that a device sends an image on a raw channel,
 encoded not as an image object, but as a *byte array*.
 Deserialising it is done so::
-    
+
     from karabo.midddlelayer import NDArray
 
     @InputChannel(raw=True, displayedName="Input")
@@ -92,9 +92,9 @@ The various behaviours are:
 - drop: discard the data;
 - wait: create a background task that waits until the data can be sent;
 - throw: discard the data when serving the data, raises an exception when
-        receiving. 
+        receiving.
 
-The default is *wait*, which preserves data integrity. 
+The default is *wait*, which preserves data integrity.
 
 The mode can be set in the GUI, before device instantiation, or as follows::
 
@@ -105,36 +105,10 @@ data rate, but in copy mode only::
 
     self.onInput.onSlowness = "drop"
 
-Timing informations
--------------------
-
-.. note:: 
-
-    The following requires functionalities currently in development, that are
-    not yet available in the framework, and might be subject to changes
-    until release.
-
-At device instantiation, set `useTimeserver` to `True` and `timeServerId` to an
-instance of a time server.
-
-Then, generate a Timestamp matching your data, and send it along::
-
-    @Slot(displayedName="Send Pipeline Data")
-    @coroutine
-    def sendPipeline(self):
-        ts = self.getActualTimestamp()
-        self.output.schema.floatProperty = 3.6
-        yield from self.output.writeData(timestamps=ts)
-
-The timestamp will contain the complete information of epoch time and train id.
-On an input channel, the timing information is included in the meta data.
 
 Reference Implementation
 ------------------------
-A reference implementation can be found in pipeML_, where both receiving and
+A reference implementation can be found in pipelineMDL_, where both receiving and
 sending data is shown.
 
-A use of middlelayer pipeline can be found in karabacon_.
-
-.. _pipeML: https://git.xfel.eu/gitlab/karaboDevices/pipeML
-.. _karabacon: https://git.xfel.eu/gitlab/karaboDevices/Karabacon
+.. _pipelineMDL: https://git.xfel.eu/gitlab/karaboDevices/pipeML

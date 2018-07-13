@@ -15,13 +15,13 @@ Contents:
    chap1/blocking_calls
    chap1/node
    chap2/monitor_proxies
-   chap2/deviceNodes
+   chap2/device_nodes
    chap2/sal_option_list
    chap3/allCompleted
    chap4/overwrite
    chap4/channels
    chap4/schema_injection
-   chap4/vector_hash
+   chap4/table_element
    :maxdepth: 1
 
 
