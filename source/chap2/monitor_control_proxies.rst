@@ -1,5 +1,5 @@
-Start with a simple example
-===========================
+Start simple: A single proxy
+============================
 We recapitulate our knowledge and start simple by creating our device class,
 inheriting from `Device`:
 ::
@@ -17,7 +17,6 @@ inheriting from `Device`:
 :class:`Device` is the base class for all middle layer devices. It inherits from
 :class:`~karabo.middlelayer.Configurable` and thus you can define expected
 parameters for it.
-
 
 Connecting to the Remote Device
 +++++++++++++++++++++++++++++++
@@ -51,7 +50,6 @@ be used within a :class:`with` statement:
 ::
     with (yield from getDevice(REMOTE_ADDRESS)) as remote_device:
         print(remote_device.property)
-
 
 Continuous Monitoring
 +++++++++++++++++++++

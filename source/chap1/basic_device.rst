@@ -1,19 +1,5 @@
-**********************
-Karabo middlelayer API
-**********************
-
-The Karabo ``middlelayer`` API is written in pure `Python <http://www.python.org>`_
-deriving its name from the main design aspect: controlling and monitoring
-driver devices while providing state aggegration and additional functionality.
-The same interface is also used for the macros.
-Hence, this api exposes an efficient interface for tasks such as
-interacting with other devices via device proxies to enable monitoring of properties,
-executing commands and waiting on their completion, either synchronously
-or asynchronously.
-
-
-Start simple: Hello World!
-==========================
+Start simple: Hello World Device!
+=================================
 
 Below is the source code of a Hello World! device::
 
@@ -52,8 +38,8 @@ Additionally, we create a single ``Slot`` `hello` by using a decorator.
 This slot will be rendered in the karabo GUI as a button enabling us to print
 the greeting string to console.
 
-Descriptors
------------
+Properties: Karabo Descriptors
+++++++++++++++++++++++++++++++
 
 As shown by the example, every device has a *schema*, which contains all the details
 about the expected parameters, its types, comments, units, everything. In the
@@ -82,7 +68,7 @@ and for the vector properties:
 **VectorUInt16**, **VectorUInt32**, **VectorUInt64**
 
 Attributes
-----------
+++++++++++
 
 Attributes of properties may be accessed during runtime as members of the property descriptor.
 
@@ -124,7 +110,7 @@ Attributes of properties may be accessed during runtime as members of the proper
 
 
 Handling units
---------------
+++++++++++++++
 
 You can define a unit for a property, which is then used in the
 calculations of this property. In the middlelayer API, units, amongst other
@@ -168,7 +154,7 @@ attribute::
     is not silently dropped.
 
 Handling timestamps
--------------------
++++++++++++++++++++
 
 When a user operates on a :class:`~karabo.middlelayer.KaraboValue`, the
 timestamp of the result is the newest timestamp of all timestamps that

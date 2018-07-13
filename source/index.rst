@@ -11,11 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   chap1/introduction_device
-   chap1/slots
-   chap1/error
-   chap1/blocking_calls
-   chap1/node
+   chap1/intro_device
    chap2/intro_device_proxies
    chap3/allCompleted
    chap4/intro_advanced

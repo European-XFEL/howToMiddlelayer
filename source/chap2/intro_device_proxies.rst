@@ -1,6 +1,6 @@
-******************************
-Middlelayer Device and Proxies
-******************************
+*******************************
+Middlelayer Device with Proxies
+*******************************
 
 MonitorMotor is a middle layer device documenting best practice for
 monitoring a single `remote device`, that is, a device written with either
@@ -13,6 +13,5 @@ display the `motorPosition` integer property of that device.
 This example introduces the concepts of `Device, connectDevice, isAlive,
 waitUntilNew,` and `wait_for`.
 
-.. include:: mdl_proxies.rst
+.. include:: monitor_control_proxies.rst
 .. include:: device_nodes.rst
-.. include:: sal_option_list.rst

@@ -1,5 +1,5 @@
-Node Properties
-===============
+Nodes
+=====
 
 Nodes allow a device's properties to be organized in a hierarchical tree-like structure:
 Devices have properties - node properties - which themselves have properties.
@@ -63,8 +63,8 @@ The resulting device will have, for example, a node property with key `axis1`
 and a double property with key `axis2.targetPostion`.
 
 
-Required Access Level
-++++++++++++++++++++++
+Node: Required Access Level
++++++++++++++++++++++++++++
 
 To be able to access a property, a user must have access rights equal to or above
 the required level for the property, specified by the `requiredAccessLevel` descriptor.

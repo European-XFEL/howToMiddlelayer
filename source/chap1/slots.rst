@@ -4,6 +4,7 @@ Karabo Slots
 Often, it is needed to define a :class:`Slot`, associated to a function, perhaps
 for users to start a device:
 ::
+
     @Slot(displayedName="Start",
           description="Prints an integer",
           allowedStates={State.OFF})
@@ -31,10 +32,12 @@ first, and then **@Slot**.
 
 The above slot is thus excecuted as:
 ::
+
     Slot(coroutine(start), **kwargs)
 
 and not
 ::
+
     coroutine(Slot(start, **kwargs))
 
 Changes in the ordering will result in code that will run, but lead to
