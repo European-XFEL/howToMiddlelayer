@@ -1,11 +1,11 @@
-Vector Hash
-===========
+Table Element (VectorHash)
+==========================
 
 Known as :class:`TABLE_ELEMENT` in the bound API, :class:`VectorHash` allows
 users to specify custom entries, in the form of a table, that are,
 programmatically, available later in the form of an iterable.
 
-Like other karabo properties, :class:`VectorHash` is initialised by
+Like other karabo properties, :class:`VectorHash` is initialized by
 displayedName, description, defaultValue, and accessMode. As well, it has a
 `rows` field that describes what each row in the table contains.
 
@@ -13,7 +13,7 @@ This `rows` field expects a class that inherits from :class:`Configurable`.
 
 .. code-block:: Python
 
-    class UserDefinedDevice(Configurable):
+    class RowSchema(Configurable):
         deviceId = String(
                 displayedName="DeviceId",
                 defaultValue="")
@@ -23,14 +23,15 @@ This `rows` field expects a class that inherits from :class:`Configurable`.
 This class can have as many parameters as desired, and these will be represented
 as columns in the table.
 
-With :class:`UserDefinedDevice`, the definition of the VectorHash is as follows:
+With :class:`RowSchema`, the definition of the VectorHash is as follows:
 
 .. code-block:: Python
 
     class MyMLDevice(Device):
-        self.userConfig = VectorHash(rows=UserDefinedDevice,
-                                displayedName="Hot Initialisation",
-                                defaultValue=[])
+        self.userConfig = VectorHash(
+                            rows=RowSchema,
+                            displayedName="Hot Initialisation",
+                            defaultValue=[])
 The user will now be presented with an editable table:
 
 .. image:: graphics/VectorHash.png
@@ -67,7 +68,7 @@ edits a row, then the VectorHash should be defined within a decorator:
 
 .. code-block:: Python
 
-    @VectorHash(rows=UserDefinedDevice,
+    @VectorHash(rows=RowSchema,
                 displayedName="Hot Initialisation",
                 defaultValue=[])
     @coroutine

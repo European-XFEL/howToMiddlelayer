@@ -1,5 +1,5 @@
 Device Nodes or How to Orchestrate Devices the `Middle Layer` Way
-=================================================================
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Using :func:`connectDevice` or :func:`getDevice` are practical from within
 macros. Unless it is required by strict constraints, the monitoring as
 described in the previous section should be left to the API.

@@ -1,5 +1,7 @@
+*******************************
 Middlelayer device with proxies
-===============================
+*******************************
+
 MonitorMotor is a middle layer device documenting best practice for
 monitoring a single `remote device`, that is, a device written with either
 of the C++ or Python API.
@@ -11,16 +13,17 @@ display the `motorPosition` integer property of that device.
 This example introduces the concepts of `Device, connectDevice, isAlive,
 waitUntilNew,` and `wait_for`.
 
-Base Class
-++++++++++
-We begin by creating our class, inheriting from `Device`:
+
+Start with a simple example
+===========================
+We recapitulate our knowledge and start simple by creating our device class,
+inheriting from `Device`:
 ::
     from karabo.middlelayer import Device, State
 
     class MonitorMotor(Device):
 
         def __init__(self, configuration):
-            #Boilerplate initialisation
             super(MonitorMotor, self).__init__(configuration)
 
         @coroutine
@@ -34,20 +37,19 @@ parameters for it.
 
 Connecting to the Remote Device
 +++++++++++++++++++++++++++++++
-To connect to the remote device, we must have its name, as registered with
-the broker, in this example, it is registered as "some_server/1_device_1".
+To connect to the remote device, we must have its control address.
+In this example, it is registered as "SA1_XTD9_MONO/MOTOR/X".
 
 We must first import the :func:`connectDevice` function
 ::
     from karabo.middlelayer import connectDevice, Device, State
 
-    REMOTE_ADDRESS = "some_server/1_device_1"
+    REMOTE_ADDRESS = "SA1_XTD9_MONO/MOTOR/X"
 
 Device are typically connected to only once during the initialisation, using
 :func:`karabo.middlelayer.connectDevice`
 ::
     def __init__(self, configuration):
-        #Boilerplate initialisation
         super(MonitorRemote, self).__init__(configuration)
         self.remoteDevice = None
 
@@ -63,7 +65,7 @@ This function keeps the connection open until explicitly closing it.
 For a more local and temporary usage, :func:`karabo.middlelayer.getDevice`, can
 be used within a :class:`with` statement:
 ::
-    with getDevice(REMOTE_ADDRESS) as remote_device:
+    with (yield from getDevice(REMOTE_ADDRESS)) as remote_device:
         print(remote_device.property)
 
 
@@ -86,20 +88,19 @@ updates by defining a slot and using the waitUntilNew function
             yield from waitUntilNew(self.remoteDevice.remoteValue)
             print(self.remoteDevice.remoteValue)
 
-By doing a `yield from` in  the waitUnitNew coroutine, a non-blocking wait
-for the updated value of the property we want is executed before proceeding
+By doing a `yield from` in the waitUnitNew coroutine, a non-blocking wait
+for the updated value of the property is executed before proceeding
 to the print statement.
 
-Reconnecting After a Mishap
-+++++++++++++++++++++++++++
-It may happen that, for some reason, the remote device gets reinitialized,
-such as after a server restart.
-With the current implementation, we will be automatically notified
-and our proxy is reconnected automatically.
+.. note::
 
-Controlling Several Devices with proxies
-========================================
+    It may happen that the remote device gets reinitialized, e.g. the underlying
+    device of the proxy is gone, such as after a server restart.
+    The proxy will automatically switch the state property to **State.UNKNOWN**
+    once the device is gone and reestablish all connections when it comes back.
 
+Grow stronger: Several proxies in a device
+==========================================
 Now that a device can be remotely monitored, and the connection kept alive,
 let's see how to connect to several devices at once, and then control them.
 
@@ -119,9 +120,9 @@ Let us define three motors we want to monitor and control:
 
 .. code-block:: Python
 
-    MOTOR_1 = "motor_server/motor_1"
-    MOTOR_2 = "motor_server/motor_2"
-    MOTOR_3 = "motor_server/motor_3"
+    MOTOR_1 = "SA1_XTD9_MONO/MOTOR/X"
+    MOTOR_2 = "SA1_XTD9_MONO/MOTOR/Y"
+    MOTOR_3 = "SA1_XTD9_MONO/MOTOR/Z"
 
     class ControlMotors(Device):
 
@@ -144,7 +145,6 @@ Let us define three motors we want to monitor and control:
         def __init__ self, configuration):
             super(ControlMotors, self).__init__(configuration)
             self.device_addresses = {MOTOR_1, MOTOR_2, MOTOR_3}
-            self.reconnecting = False
 
         @coroutine
         def onInitialization(self):
@@ -255,15 +255,10 @@ happening whilst executing the futures, will be caught by the :class:`except`.
 
 The suggested solution for the guardian yield is to wait until all the device go
 from their busy state (`State.MOVING`) to their idle (`State.ON`) as follows:
+
 ::
     @coroutine
     def guardian_yield(self, devices):
-        yield from waitUntil(lambda: self.reconnecting or
-                             all(dev.state == State.ON for dev in devices))
+        yield from waitUntil(lambda: all(dev.state == State.ON for dev in devices))
 
-The reconnecting flag is there in case something went really wrong, and one of
-the devices went offline. It is then not reasonable to expect task completion.
 
-Excellent, you say, but should all of this truly be the device developer's
-problem?
-Not nessessarily, enters :class:`DeviceNode`
