@@ -68,11 +68,18 @@ These configurations know nothing anymore about the meaning of the
 values they contain, yet they are very strictly typed: even different
 bit sizes of integers are conserved.
 
-The following descriptors in the middlelayer api are available
+The following descriptors in the middlelayer api are available for 'simple' types
 
-Bool, Char, String, ComplexDouble, ComplexFloat, Double, Float, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32, UInt64
+**Bool**, **Char**, **String**, **ComplexDouble**, **ComplexFloat**, **Double**,
+**Float**, **Int8**, **Int16**, **Int32**, **Int64**, **UInt8**, **UInt16**,
+**UInt32**, **UInt64**
 
-VectorBool, VectorChar, VectorString, VectorComplexDouble, VectorComplexFloat, VectorDouble, VectorFloat, VectorInt8, VectorInt16, VectorInt32, VectorInt64, VectorUInt8, VectorUInt16, VectorUInt32, VectorUInt64
+and for the vector properties:
+
+**VectorBool**, **VectorChar**, **VectorString**, **VectorComplexDouble**,
+**VectorComplexFloat**, **VectorDouble**, **VectorFloat**, **VectorInt8**,
+**VectorInt16**, **VectorInt32**, **VectorInt64**, **VectorUInt8**,
+**VectorUInt16**, **VectorUInt32**, **VectorUInt64**
 
 Attributes
 ----------
