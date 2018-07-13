@@ -123,3 +123,47 @@ voltage of our voltage controller:
 
     The default `accessMode` is `RECONFIGURABLE`, hence the read only nature
     nature of a property has to be explicitly provided.
+
+Handling units
+++++++++++++++
+
+You can define a unit for a property, which is then used in the
+calculations of this property. In the middlelayer API, units, amongst other
+things, are implemented using the ``pint`` module.
+
+A unit is declared using the ``unitSymbol`` and optionally, the
+``metricPrefixSymbol`` attributes::
+
+    distance = Float(
+        unitSymbol=Unit.METER,
+        metricPrefixSymbol=MetricPrefix.MICRO)
+    times = VectorFloat(
+        unitSymbol=Unit.SECOND,
+        metricPrefixSymbol=MetricPrefix.MILLI)
+    speed = Float(
+        unitSymbol=Unit.METER_PER_SECOND)
+    steps = Float()
+
+Once declared, all calculations have correct units::
+
+    self.speed = self.distance / self.times[3]
+
+In this code units are  converted automatically. An error is
+raised if the units don't match up::
+
+    self.speed = self.distance + self.times[2]  # Ooops! raises error
+
+If you need to add a unit to a value which doesn't have one, or remove
+it, there is the ``unit`` object which has all relevant units as its
+attribute::
+
+    self.speed = self.steps * (unit.meters / unit.seconds)
+    self.steps = self.distance / (3.5 * unit.meters)
+
+.. warning::
+
+    While the middlelayer API of Karabo in principle allows for automatic
+    unit conversion, developers are strongly discouraged to use this feature for
+    critical applications: the Karabo team simply cannot guarantee that
+    ``pint`` unit handling is preserved in all scenarios, e.g. that a unit
+    is not silently dropped.

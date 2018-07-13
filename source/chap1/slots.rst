@@ -3,7 +3,8 @@ Karabo Slots
 
 Often, it is needed to define a :class:`Slot`, associated to a function, perhaps
 for users to start a device:
-::
+
+.. code-block:: Python
 
     @Slot(displayedName="Start",
           description="Prints an integer",
@@ -31,26 +32,28 @@ and are executed from the closest, to the furthest: **@coroutine** is called
 first, and then **@Slot**.
 
 The above slot is thus excecuted as:
-::
+
+.. code-block:: Python
 
     Slot(coroutine(start), **kwargs)
 
 and not
-::
+
+.. code-block:: Python
 
     coroutine(Slot(start, **kwargs))
 
 Changes in the ordering will result in code that will run, but lead to
 **undefined behaviours**.
 
-Keeping a Slot (Return with correct state)
+Holding a Slot (Return with correct state)
 ++++++++++++++++++++++++++++++++++++++++++
 In certain cases, it may be useful to keep a slot, to prevent a user to
 interfere with current operation, for example. Since slots are asynchronous,
 some trickery is required. For simplicity, below is an example assuming we read
 out the motor states in a different task.
 
-::
+.. code-block:: Python
 
     @coroutine
     def state_monitor():
@@ -73,4 +76,3 @@ out the motor states in a different task.
         # We wait for our own state change here to exit this slot with
         # the expected state, e.g. ERROR or MOVING.
         yield from waitUntil(lambda: self.state != State.ON)
-
