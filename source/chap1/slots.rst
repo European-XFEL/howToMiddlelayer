@@ -62,7 +62,7 @@ out the motor states in a different task.
             yield from waitUntilNew(self.motor1.state, self.motor2.state)
             state = StateSignifier().returnMostSignificant(
                 [self.motor1.state, self.motor2.state])
-            if state =! self.state:
+            if state != self.state:
                 self.state = state
 
     @Slot(displayedName="Move",
@@ -76,3 +76,4 @@ out the motor states in a different task.
         # We wait for our own state change here to exit this slot with
         # the expected state, e.g. ERROR or MOVING.
         yield from waitUntil(lambda: self.state != State.ON)
+

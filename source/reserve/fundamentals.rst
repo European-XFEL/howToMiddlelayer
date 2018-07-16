@@ -31,18 +31,6 @@ This is why we do that automatically. For the unit part, we use
 :mod:`pint`, while the timestamps part had to be written by us.
 
 
-Device server: Eventloop
-========================
-
-Karabo middlelayer uses Python's asyncio, installing a custom event loop.
-All devices in a device server share the same event loop which is run in a
-single thread. Hence, every blocking call in any device instance results in
-blocking every other device in the same device server.
-However, the device developer is free to start threads using background, which
-starts a thread if used with a function which is not a coroutine.
-The event loop thread pool executor can have 200 threads.
-
-
 Bulk-set of properties
 ======================
 
