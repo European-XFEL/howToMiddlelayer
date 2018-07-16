@@ -87,7 +87,7 @@ Attributes of properties may be accessed during runtime as members of the proper
 +----------------------+------------------------------------+
 | maxSize              | the maximum size of vector         |
 +----------------------+------------------------------------+
-| daqPolicy            | e.g. DaqPolicy.SAVE |
+| daqPolicy            | e.g. DaqPolicy.SAVE                |
 +----------------------+------------------------------------+
 | warnLow              | warn threshold low                 |
 +----------------------+------------------------------------+
