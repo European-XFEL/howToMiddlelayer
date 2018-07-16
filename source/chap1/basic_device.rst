@@ -73,7 +73,7 @@ Attributes of properties may be accessed during runtime as members of the proper
 +----------------------+------------------------------------+
 |**Attribute**         |  **Example**                       |
 +----------------------+------------------------------------+
-| displayType          | returns oct, bin, dec, hex         |
+| displayType          | e.g. oct, bin, dec, hex, directory |
 +----------------------+------------------------------------+
 | minInc               | the inclusive-minimum value        |
 +----------------------+------------------------------------+
@@ -86,6 +86,8 @@ Attributes of properties may be accessed during runtime as members of the proper
 | minSize              | the minimum size of vector         |
 +----------------------+------------------------------------+
 | maxSize              | the maximum size of vector         |
++----------------------+------------------------------------+
+| daqPolicy            | e.g. DaqPolicy.SAVE |
 +----------------------+------------------------------------+
 | warnLow              | warn threshold low                 |
 +----------------------+------------------------------------+

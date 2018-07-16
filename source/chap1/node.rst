@@ -60,7 +60,7 @@ using the :class:`LinearAxis` class above:
             description="The second motor axis.")
 
 The resulting device will have, for example, a node property with key `axis1`
-and a double property with key `axis2.targetPostion`.
+and a double property with key `axis2.targetPosition`.
 
 
 Node: Required Access Level
