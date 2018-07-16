@@ -54,59 +54,61 @@ These configurations know nothing anymore about the meaning of the
 values they contain, yet they are very strictly typed: even different
 bit sizes of integers are conserved.
 
-The following descriptors in the middlelayer api are available for 'simple' types
+**Descriptors** describe the content of a device property. As shown in the *Hello
+World* example, The description is done in their attributes, which come from
+a fixed defined set.
 
-**Bool**, **Char**, **String**, **ComplexDouble**, **ComplexFloat**, **Double**,
-**Float**, **Int8**, **Int16**, **Int32**, **Int64**, **UInt8**, **UInt16**,
-**UInt32**, **UInt64**
+It may be useful to note that instances of this class do not contain any data,
+instead they are describing which values a device property may take and they
+are given as keyword arguments upon initialization.
 
-and for the vector properties:
+.. image:: graphics/descriptors.png
 
-**VectorBool**, **VectorChar**, **VectorString**, **VectorComplexDouble**,
-**VectorComplexFloat**, **VectorDouble**, **VectorFloat**, **VectorInt8**,
-**VectorInt16**, **VectorInt32**, **VectorInt64**, **VectorUInt8**,
-**VectorUInt16**, **VectorUInt32**, **VectorUInt64**
 
 Attributes
 ++++++++++
 
 Attributes of properties may be accessed during runtime as members of the property descriptor.
 
-+------------------+------------------------------------------------------------------------------------+
-|**Attribute**     |  **Example**                                                                       |
-+------------------+------------------------------------------------------------------------------------+
-| Display type     | self.property.descriptor.displayType  # returns oct, bin, dec, hex                 |
-+------------------+------------------------------------------------------------------------------------+
-| Min value        | self.property.descriptor.minInc  # the inclusive-minimum value                     |
-|                  +------------------------------------------------------------------------------------+
-|                  | self.property.descriptor.minExc  # the exclusive-minimum value                     |
-+------------------+------------------------------------------------------------------------------------+
-| Max value        | self.property.descriptor.maxInc  # the inclusive-maximum value                     |
-|                  +------------------------------------------------------------------------------------+
-|                  | self.property.descriptor.maxExc  # the exclusive-maximum value                     |
-+------------------+------------------------------------------------------------------------------------+
-| Warnings         | self.property.descriptor.warnLow  # warn threshold low                             |
-|                  +------------------------------------------------------------------------------------+
-|                  | self.property.descriptor.warnHigh  # warn threshold high                           |
-+------------------+------------------------------------------------------------------------------------+
-| Alarms           | self.property.descriptor.alarmLow  # alarm threshold low                           |
-|                  +------------------------------------------------------------------------------------+
-|                  | self.property.descriptor.alarmHigh  # alarm threshold high                         |
-+------------------+------------------------------------------------------------------------------------+
-| Unit             | self.property.descriptor.unitSymbol  # e.g. Unit.METER                             |
-|                  +------------------------------------------------------------------------------------+
-|                  | self.property.descriptor.metricPrefixSymbol  # e.g. MetricPrefix.MILLI             |
-+------------------+------------------------------------------------------------------------------------+
-| Access modes     | self.property.descriptor.accessMode  # e.g. AccessMode.READONLY                    |
-+------------------+------------------------------------------------------------------------------------+
-| Assignment       | self.property.descriptor.assignment  # e.g. Assignment.OPTIONAL                    |
-+------------------+------------------------------------------------------------------------------------+
-| Default value    | self.property.descriptor.defaultValue  # the default value or None                 |
-+------------------+------------------------------------------------------------------------------------+
-| Access level     | self.property.descriptor.requiredAccessLevel  # e.g. AccessLevel.EXPERT            |
-+------------------+------------------------------------------------------------------------------------+
-| Allowed states   | self.property.descriptor.allowedStates  # the list of allowed states               |
-+------------------+------------------------------------------------------------------------------------+
++----------------------+------------------------------------+
+|**Attribute**         |  **Example**                       |
++----------------------+------------------------------------+
+| displayType          | returns oct, bin, dec, hex         |
++----------------------+------------------------------------+
+| minInc               | the inclusive-minimum value        |
++----------------------+------------------------------------+
+| minExc               | the exclusive-minimum value        |
++----------------------+------------------------------------+
+| maxInc               | the inclusive-maximum value        |
++----------------------+------------------------------------+
+| maxExc               | the exclusive-maximum value        |
++----------------------+------------------------------------+
+| minSize              | the minimum size of vector         |
++----------------------+------------------------------------+
+| maxSize              | the maximum size of vector         |
++----------------------+------------------------------------+
+| warnLow              | warn threshold low                 |
++----------------------+------------------------------------+
+| warnHigh             | warn threshold high                |
++----------------------+------------------------------------+
+| alarmLow             | alarm threshold low                |
++----------------------+------------------------------------+
+| alarmHigh            | alarm threshold high               |
++----------------------+------------------------------------+
+| unitSymbol           | e.g. Unit.METER                    |
++----------------------+------------------------------------+
+| metricPrefixSymbol   | e.g. MetricPrefix.MILLI            |
++----------------------+------------------------------------+
+| accessMode           | e.g. AccessMode.READONLY           |
++----------------------+------------------------------------+
+| assignment           | e.g. Assignment.OPTIONAL           |
++----------------------+------------------------------------+
+| defaultValue         | the default value or None          |
++----------------------+------------------------------------+
+| requiredAccessLevel  | e.g. AccessLevel.EXPERT            |
++----------------------+------------------------------------+
+| allowedStates        | the list of allowed states         |
++----------------------+------------------------------------+
 
 Handling timestamps
 +++++++++++++++++++
