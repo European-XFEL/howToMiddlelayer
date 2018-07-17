@@ -13,16 +13,16 @@ Output Channels
 Firstly, import the required classes::
 
     from karabo.middlelayer import (
-        AccessMode, Configurable, DaqDataType, Float, OutputChannel
+        AccessMode, Configurable, DaqDataType, Double, Node, OutputChannel
     )
 
 Then, define an output channel in your device::
 
-    output = OutputChannel(DataNode,
+    output = OutputChannel(ChannelNode,
                            displayedName="Output",
                            description="Pipeline Output channel")
 
-You'll notice that we referenced **DataNode**. This is the schema of our
+You'll notice that we referenced **ChannelNode**. This is the schema of our
 output channel that defines what data we send and permits other devices
 to manage their expectations.
 
@@ -31,12 +31,17 @@ To define that schema, create a class that inherits from
 
     class DataNode(Configurable):
         daqDataType = DaqDataType.TRAIN
-        floatProperty = Float(defaultValue=0,
-                              accessMode=AccessMode.READONLY)
+
+        doubleProperty = Double(
+            defaultValue=0.0,
+            accessMode=AccessMode.READONLY)
+
+    class ChannelNode(Configurable):
+        data = Node(DataNode)
 
 Notice that this class has a variable `daqDataType` defined. This is to
 enable the DAQ to triage the data. The type can be of either PULSE or TRAIN
-resolution.
+resolution and has to be encapsulated in the Node.
 
 Now that the schema is defined, here's how to send data over the output
 channel::
@@ -44,7 +49,7 @@ channel::
     @Slot(displayedName="Send Pipeline Data")
     @coroutine
     def sendPipeline(self):
-        self.output.schema.floatProperty = 3.5
+        self.output.schema.data.doubleProperty = 3.5
         yield from self.output.writeData()
 
 Input Channels
@@ -53,33 +58,39 @@ Receiving data from a Pipeline Channel is done by decorating a function
 with `InputChannel`::
 
     @InputChannel(displayedName="Input")
-    def onInput(self, data, meta):
+    def input(self, data, meta):
         print("Data", data)
         print("Meta", meta)
 
 The metadata contains information about the data, such as the source,
 whether the data is timestamped, and a timestamp if so.
 
-Good channels share a schema. In the middlelayer API, this is enforced as
-described above. However, devices written in other APIs may not share a schema,
-and thus the data has to be treated as *raw*::
+If the device developer is interested in the bare Hash of the data, one can
+set the *raw* option to True::
 
     @InputChannel(raw=True, displayedName="Input")
-    def onInput(self, data, meta):
+    def input(self, data, meta):
         """ Very Important Processing """
 
-For instance, it could be that a device sends an image on a raw channel,
-encoded not as an image object, but as a *byte array*.
-Deserialising it is done so::
+For image data it is recommended to use the **raw=False** option, as the
+middlelayer device will automatically assign an NDArray to the ImageData,
+accessible via::
 
-    from karabo.midddlelayer import NDArray
+    @InputChannel(displayedName="Input")
+    def input(self, data, meta):
+        image = data.data.image
 
-    @InputChannel(raw=True, displayedName="Input")
-    def onInput(self, data, meta):
-        # Explicitly convert the image data from byte array to numpy array
-        image_data = NDArray().toKaraboValue(data["image.data"])
-        print(isinstance(np.array, image_data))  # prints True
-        image_data = image_data.reshape(data["image.shape"])
+It is possible to react on the **endOfStream** or the **close** signal
+from the output channel via::
+
+    @input.endOfStream
+    def input(self, channel):
+        print("End of Stream handler called by", channel)
+
+    @input.close
+    def input(self, channel):
+        print("Close handler called by", channel)
+
 
 Policies
 --------
@@ -103,7 +114,7 @@ The mode can be set in the GUI, before device instantiation, or as follows::
 The policies are the same on input channels if they are too slow for the fed
 data rate, but in copy mode only::
 
-    self.onInput.onSlowness = "drop"
+    self.input.onSlowness = "drop"
 
 
 Reference Implementation
