@@ -152,3 +152,31 @@ the newer timestamp of ``self.distance`` or ``self.times``::
     newest timestamp, i.e. the time at which the last assignment operation
     on a variable in a calculation occured. Additionally, these timestamps are
     not synchronized with XFEL's timing system, but with the host's local clock.
+
+Logging
++++++++
+
+Logging is the way to share information to developers and maintainers.
+This allows for your messages to be stored to files for analysis at a later time,
+as well as being shared with the GUI under certain conditions.
+
+The middleayer api has its own `Logger` implemented as a `Configurable`.
+It is part of the Device class and no imports are required.
+
+Whilst it can be used either as `self.log` or `self.logger`, the preferred
+style is as follows::
+
+    from karabo.middlelayer import allCompleted
+
+    @coroutine
+    def stopAll(self):
+        self.logger.info("Stopping all devices")
+        done, pending, failed = yield from allCompleted([device.stop() for device
+                                                         in self.devices])
+        if failed:
+            self.logger.error("Some devices could not be stopped!")
+
+.. note::
+
+    Logging is disabled in the constructor (`__init__`).
+    Using prints is forbidden.
