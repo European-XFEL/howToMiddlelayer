@@ -1,11 +1,14 @@
-Default Device Scenes
-=====================
+Device Scenes
+=============
 Karabo provides a protocol for devices to share predefined scenes.
 These allows the author of a device to provide what they think are
 a good starting point. Moreover, these are easily accessible by
 from the topology panel in the GUI:
 
 .. image:: graphics/default_scenes.png
+
+A default scene can also be accessed by double-clicking on a
+device in the topology panel.
 
 This section shows how to enable your device to have builtin scenes.
 
