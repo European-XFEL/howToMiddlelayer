@@ -1,3 +1,5 @@
+.. _table-element
+
 Table Element (VectorHash)
 ==========================
 

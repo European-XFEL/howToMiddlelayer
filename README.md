@@ -27,6 +27,7 @@ Not all are listed here, but these will be, initially, split into six chapters:
     - Schema Injection
     - Queues
     - Table elements
+    - Device Provided Scenes
 
 - 4. Middlelayer Server
     - Eventloop
