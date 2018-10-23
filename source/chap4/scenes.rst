@@ -7,8 +7,7 @@ from the topology panel in the GUI:
 
 .. image:: graphics/default_scenes.png
 
-A default scene can also be accessed by double-clicking on a
-device in the topology panel.
+A default scene can also be accessed by double-clicking on a device.
 
 This section shows how to enable your device to have builtin scenes.
 
