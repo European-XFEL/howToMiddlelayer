@@ -8,7 +8,7 @@ fresh class for every object, which inherits from our class. This new
 class is completely empty, so we can modify it at will. Once we have done
 that::
 
-    from karabo.middlelayer_api.injectable import Injectable
+    from karabo.middlelayer import Device, Injectable
 
     class MyDevice(Injectable, Device):
         @coroutine
@@ -86,8 +86,3 @@ be remembered:
   `publishInjectedParameters` used to inject other classes
 * deleted (del) injected classes are removed from the schema by calling
   `publishInjectedParameters`
-
-
-
-
-
