@@ -156,6 +156,69 @@ looks like:
          parent_component='DisplayComponent', 
          width=436.0, x=19.0, y=484.0)
 
+Linking To Other Devices Scenes
+-------------------------------
+The following applies whether you want to link to another of your scenes or to
+another device's scene.
+
+Let's say that you want to add links in your `overview` scene to your
+`controls` scene.
+
+The :class:`DeviceSceneLinkModel` allows you to specify links to other
+dynamically provided scenes.
+
+In your `scenes.py`, import `DeviceSceneLinkModel` and `SceneTargetWindow` from
+`karabo.common.scenemodel.api` and extend :func:`overview(deviceId)`:
+
+.. code-block:: Python
+
+   from karabo.common.scenemodel.api import DeviceSceneLinkModel, SceneTargetWindow
+
+    def overview(deviceId):
+       # remaining scene stays the same
+
+        link_to_controls = DeviceSceneLinkModel(
+            height=40.0, width=314.0, x=114.0, y=227.0,
+            parent_component='DisplayComponent',
+            keys=['{}.availableScenes'.format(deviceId)], target='controls',
+            text='Controls scene',
+            target_window=SceneTargetWindow.Dialog)
+
+        children = [scene0, scene1, link_to_controls]
+        scene = SceneModel(height=1017.0, width=1867.0, children=children)
+
+       return write_scene(scene)
+
+If you want to link to another device, make :func:`overview` accept another
+`remoteDeviceId` parameter, and point the link to that device:
+
+.. code-block:: Python
+
+   def overview(deviceId, remoteDeviceId):
+       # remaining scene stays the same
+
+       link_to_remote = DeviceSceneLinkModel(
+           height=40.0, width=314.0, x=114.0, y=267.0,
+           parent_component='DisplayComponent',
+           text='Link to other device',
+           keys=['{}.availableScenes'.format(remoteDeviceId)], target='scene',
+           target_window=SceneTargetWindow.Dialog
+        )
+
+        children = [scene0, scene1, link_to_controls, link_to_remote]
+        scene = SceneModel(height=1017.0, width=1867.0, children=children)
+
+       return write_scene(scene)
+
+.. note::
+
+    `remoteDeviceId` is merely the deviceId, here. If you have a proxy,
+    you may want to rethink the arguments to `overview` and pass it `self` or
+    the proxy object. Then you can find out exactly what scenes are available
+    there, e.g.:
+
+    target = 'controls' if 'controls' in px.availableScenes else 'scene'
+    keys=['{}.availableScenes'.format(px.deviceId)], target=target,
 
 Reference Implementations
 -------------------------
