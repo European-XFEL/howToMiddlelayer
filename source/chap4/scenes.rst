@@ -92,7 +92,7 @@ and the scene itself:
                    'origin', self.deviceId,
                    'payload', payload)
 
-.. note:
+.. note::
    Note that we use here `slot`, and not `Slot()`. These are two
    different functions. `slot` provides framework-level slots,
    whereas `Slot` are device-level.
@@ -223,7 +223,9 @@ If you want to link to another device, make :func:`overview` accept another
 Reference Implementations
 -------------------------
 GainCurveScan_: provides a single default scene
+
 Karabacon_: provides several scenes
+
 KEP21_: definition of the scene protocol
 
 .. _GainCurveScan: https://git.xfel.eu/gitlab/karaboDevices/gainCurveScan

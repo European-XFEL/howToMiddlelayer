@@ -59,8 +59,10 @@ These attributes are also key-value pairs stored in a dictionary:
 .. note::
     There are two ways of accessing and setting attributes.
     One is `setAttribute` and `getAttribute`, made to respect the C++
-    implementation.
-    The other consists of using multiple keys and ellipses
+    implementation, the other consists of using multiple keys and ellipses
+
+    With this in mind ``h['one', 'b']`` accesses the `b` attribute, whereas
+    ``h['one.b']`` accesses the value `b` of the inner hash `one`
 
 XML Serialization
 -----------------
@@ -83,8 +85,10 @@ This will result in an XML like the following:
     </root>
 
 As shown here, the `tid` and `source` are also stored as xml attributes of `key`.
-Types, `KRB_*`, are specified using enums defined in the Framework and have the
-values separated by a colon.
+The definition of the entry for key specifies the data type (`KRB_Type`) and 
+any attributes. These types (`KRB_*`) are specified using the types as defined 
+in the Framework and have the values separated by a colon, and are the same type
+accross APIs.
 
 The `root` xml node is there as marker to specify that the information is an
 encoded :class:`Hash`.
@@ -128,8 +132,8 @@ a Hash from another API:
     names, their implementation differ greatly, as the Bound API uses C++ whilst
     the Middlelayer is pure Python, and their usage should not be mixed.
 
-    Trying to serialize a Hash from another API does not work, but
-    deserialization does!
+    Trying to deserialize a Hash from another API does work, but
+    serialization does not!
 
 Binary Serialization
 --------------------
@@ -144,21 +148,59 @@ The same hash will result in a binary object::
 
 Which is decomposed as follows::
 
-    0x01                                         # header, indicating how many entries in hash, here 1
-    0x00 0x00 0x00 0x03 key                      # the first byte defines the length of the key, here of length 3 (k, e, and y), followed by its value
-    0x1c 0x00 0x00 0x00                          # the type of the value for `key`, a string
-    0x02 0x00 0x00 0x0                           # 2 attributes!
-        0x03 tid                                 # the length of the first attribute key, followed by its value
-        0x12 0x00 0x00 0x00                      # the type of the `tid` attribute, uint64
-        0x05 0x00 0x00 0x00 0x00 0x00 0x00       # tid, with a value of 5
-        0x06 source                              # the length of the second attribute key, followed by its value
-        0x1c 0x00 0x00 0x00                      # the type of the `source` attribute
-        0x03 0x00 0x00 0x00 mdl                  # the length of the value of `source` and the value itself †
-    0x05 0x00 0x00 0x00                          # the length of the value for `key`
-    value                                        # the value of the string for the `key` key.
+    0x01 0x00 0x00 0x00                           # header, indicating how many entries in hash, here 1
+    0x03 key                                      # the first byte define the length of the key, here of length 3 (k, e, and y), followed by its value
+    0x1c 0x00 0x00 0x00                           # the type of the value for `key`, a string
+    0x02 0x00 0x00 0x00                           # 2 attributes!
+        0x03 tid                                  # the length of the first attribute key, followed by its value
+        0x12 0x00 0x00 0x00                       # the type of the `tid` attribute, uint64
+        0x05 0x00 0x00 0x00 0x00 0x00 0x00 0x00   # tid, with a value of 5
+        0x06 source                               # the length of the second attribute key, followed by its value
+        0x1c 0x00 0x00 0x00                       # the type of the `source` attribute
+        0x03 0x00 0x00 0x00 mdl                   # the length of the value of `source` and the value itself †
+    0x05 0x00 0x00 0x00                           # the length of the value for `key`
+    value                                         # the value of the string for the `key` key.
 
-†: The reason why the length for the `mdl` value is an uint32, as opposed to
-the length for one of the keys, which are uint8, is that it is a value.
+†: The reason why the length field of the `mdl` value is an uint32, as opposed
+to the length field for one of the keys, which are uint8, is that it is a value.
+
+Cross-API
+*********
+As with xml, all APIs understand the binary format:
+
+.. code-block:: Python
+
+   from karabo.bound import BinarySerializerHash, Hash as Bash
+   from karabo.middlelayer import decodeBinary, encodeBinary
+
+   bash = Bash('key', 'value')
+   bash.setAttribute('key', 'tid', 5)
+   bash.setAttribute('key', 'source', 'bound')
+
+   serializer = BinarySerializerHash.create(Bash('Bin'))
+   bound_binary = serializer.save(bash)  # Results in the binary explained above
+
+   loaded = decodeBinary(bound_binary)
+
+   type(loaded)
+   karabo.middlelayer_api.hash.Hash
+
+   loaded
+   Hash([('key', 'value')])
+
+   loaded[key, ...]
+   {'tid': 5, 'source': 'bound'}
+
+Going from Middlelayer to Bound would be:
+
+.. code-block:: Python
+
+   mdl_binary = encodeBinary(h)
+   loaded = serializer.load(mdl_binary)
+
+   type(loaded)
+   karathon.Hash
+
 
 Table Element
 -------------
@@ -169,7 +211,7 @@ it would be serialized as such:
 .. code-block:: Python
 
     h = Hash()
-    value, attrs = getattr(type(self), 'table').toDataAndAttrs(self.table)
+    value, attrs = self.table.descriptor.toDataAndAttrs(self.table)
     h['table'] = value
     h['table', ...] = attrs
 
@@ -182,5 +224,5 @@ To restore it:
    value = h['table']
    attrs = h['table', ...]
 
-   table = getattr(type(self), 'table').toKaraboValue(value, attrs)
+   table = self.table.descriptor.toKaraboValue(value, attrs)
    setattr(self, 'table', table)
