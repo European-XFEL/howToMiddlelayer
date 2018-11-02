@@ -17,15 +17,16 @@ There are various ways to create a :class:`Hash`:
 
    from karabo.middlelayer import Hash
 
+   value = 'a_string'
    h = Hash()
-   h['key'] = 'value'
+   h['key'] = value
 
-   h = Hash('key', 'value')
+   h = Hash('key', value)
 
-   dict_ = {'key': 'value'}
+   dict_ = {'key': value}
    h = Hash(dict_)
 
-:class:`Hash` can be considered as as supercharged :class:`OrderedDict` 
+:class:`Hash` can be considered as a supercharged :class:`OrderedDict`
 The big difference to normal Python containers is the dot-access method.
 The :class:`Hash` has a built-in knowledge about it containing itself.
 Thus, one can access subhashes by ``hash['key.subhash']``.
@@ -42,7 +43,7 @@ These attributes are also key-value pairs stored in a dictionary:
    h['key', 'source'] = 'mdl'
 
    # It is possible to access a single attribute at a time:
-   h.getAttribute('key', tid')
+   h.getAttribute('key', 'tid')
    5
 
    h['key', 'source']
@@ -81,7 +82,7 @@ This will result in an XML like the following:
 .. code-block:: xml
 
     <root KRB_Artificial="">
-        <key KRB_Type="STRING", tid="KRB_UINT64:5" source="KRB_STRING:mdl">value</key>
+        <key KRB_Type="STRING", tid="KRB_UINT64:5" source="KRB_STRING:mdl">a_string</key>
     </root>
 
 As shown here, the `tid` and `source` are also stored as xml attributes of `key`.
@@ -103,7 +104,8 @@ a Hash from another API:
    from karabo.bound import Hash as Bash
    from karabo.bound import saveToFile as save_bound, loadFromFile as load_bound
 
-   bash = Bash('key', 'value')
+   value = 'a_string'
+   bash = Bash('key', value)
    bash.setAttribute('key', 'tid', 5)
    bash.setAttribute('key', 'source', 'bound')
 
@@ -115,7 +117,7 @@ a Hash from another API:
    karabo.middlelayer_api.hash.Hash
 
    loaded
-   Hash([('key', 'value')])
+   Hash([('key', 'a_string')])
 
    loaded[key, ...]
    {'tid': 5, 'source': 'bound'}
@@ -144,7 +146,7 @@ The same hash will result in a binary object::
 
     0x01 0x00 0x00 0x00 0x03 key 0x1c 0x00 0x00 0x00 0x02 0x00 0x00 0x00 0x03 
     tid 0x12 0x00 0x00 0x00 0x05 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x06 source
-    0x1c 0x00 0x00 0x00 0x03 0x00 0x00 0x00 mdl 0x00 0x00 0x00 value
+    0x1c 0x00 0x00 0x00 0x03 0x00 0x00 0x00 mdl 0x08 0x00 0x00 0x00 a_string
 
 Which is decomposed as follows::
 
@@ -158,11 +160,16 @@ Which is decomposed as follows::
         0x06 source                               # the length of the second attribute key, followed by its value
         0x1c 0x00 0x00 0x00                       # the type of the `source` attribute
         0x03 0x00 0x00 0x00 mdl                   # the length of the value of `source` and the value itself †
-    0x05 0x00 0x00 0x00                           # the length of the value for `key`
-    value                                         # the value of the string for the `key` key.
+    0x08 0x00 0x00 0x00                           # the length of the value for `key`
+    a_string                                      # the value of the string for the `key` key.
 
 †: The reason why the length field of the `mdl` value is an uint32, as opposed
 to the length field for one of the keys, which are uint8, is that it is a value.
+
+.. warning::
+    A :class:`Hash` can contain keys of any length. However, the binary
+    serialization only allowd keys up to 255 bytes. An error will be thrown
+    for longer keys.
 
 Cross-API
 *********
@@ -173,7 +180,8 @@ As with xml, all APIs understand the binary format:
    from karabo.bound import BinarySerializerHash, Hash as Bash
    from karabo.middlelayer import decodeBinary, encodeBinary
 
-   bash = Bash('key', 'value')
+   value = 'a_string'
+   bash = Bash('key', value)
    bash.setAttribute('key', 'tid', 5)
    bash.setAttribute('key', 'source', 'bound')
 
@@ -186,7 +194,7 @@ As with xml, all APIs understand the binary format:
    karabo.middlelayer_api.hash.Hash
 
    loaded
-   Hash([('key', 'value')])
+   Hash([('key', 'a_string')])
 
    loaded[key, ...]
    {'tid': 5, 'source': 'bound'}
