@@ -167,3 +167,95 @@ attribute::
     critical applications: the Karabo team simply cannot guarantee that
     ``pint`` unit handling is preserved in all scenarios, e.g. that a unit
     is not silently dropped.
+
+
+Device States
+=============
+
+Every device has a state, one of these defined in :class:`karabo.middlelayer.State`.
+These are used to show what the device is currently doing, what it can do, and
+which actions are restricted.
+
+For instance, it can be disallowed to call the ``start`` slot if the device is
+in :class:`State.STARTED` or :class:`State.ERROR`.
+Such control can be applied to both slot calls and properties.
+
+The colour coding of the GUI, visible in scenes and the configuration panel is:
+
+.. raw:: html
+   <font color="rgb(255, 170, 0)">State.UNKNOWN</font>
+   <font color="rgb(200, 200, 200)">State.NORMAL</font>
+   <font color="rgb(230, 230, 170)">State.INIT</font>
+   <font color="rgb(255, 0, 255)">State.DISABLED</font>
+   <font color="rgb(255, 0, 0)">State.ERROR</font>
+   <font color="rgb(0, 170, 255)">State.CHANGING</font>
+   <font color="rgb(0, 170, 255)">State.DECREASING</font>
+   <font color="rgb(0, 170, 255)">State.INCREASING</font>
+   <font color="rgb(153, 204, 255)">State.RUNNING</font>
+   <font color="rgb(0, 170, 0)">State.STATIC</font>
+   <font color="rgb(120, 255, 0)">State.ACTIVE</font>
+   <font color="rgb(204, 204, 255)">State.PASSIVE</font>
+
+All other states are derived from these, and will inherit the parent's colour
+and significance.
+
+
+Within the Middlelayer API, the state is represented as a string, with a few
+specific requirements, as defined in :class:`karabo.middlelayer_api.device.Device`
+
+If you have several devices, you can aggregate them together and have a global
+state matching the most significant. This is colloquially called `trumpState`
+and makes use of :func:`karabo.middlelayer.StateSignifier`.
+
+.. code-block:: Python
+
+   from karabo.middlelayer import background, StateSignifier
+
+   @coroutine
+   def onInitialization(self):
+       self.trumpState = StateSignifier()
+       monitor_taks = background(self.monitor_states())
+
+   @coroutine
+   def monitor_states(self):
+       while True:
+           state_list = [dev.state for dev in self.devices]  # Where self.devices is a list of proxies
+           self.state = self.trumpState.returnMostSignificant(state_list)
+           yield from waitUntilNew(*state_list)
+
+It is also possible to define your own rules, as documented in
+:class:`karabo.common.states.StateSignifier`
+
+
+The following shows how to represent and query a remote device's state and
+integrate it in a device:
+
+.. code-block:: Python
+
+   from karabo.middlelayer import (
+       AccessMode, Assignment, background, connectDevice, State, String,
+       waitUntilNew
+    )
+
+   remoteState = String(
+       displayedName="State",
+       enum=State,  # The allowed values
+       displayType="State",  # This type enables color coding in the GUI
+       description="The current state the device is in",
+       accessMode=AccessMode.READONLY,
+       assignment=Assignment.OPTIONAL,
+       defaultValue=State.UNKNOWN
+   )
+
+   @coroutine
+   def onInitialization(self):
+       self.remote_device = yield from connectDevice("some_device")
+       self.watch_task = background(self.watchdog())
+
+   @coroutine
+   def watchdog(self):
+      while True:
+          yield from waitUntilNew(self.remote_device)
+          self.remoteState = self.remote_device.state
+
+However, :ref:`device-node` might be more appropriate

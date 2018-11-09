@@ -1,3 +1,5 @@
+.. _device-nodes
+
 Device Nodes -  The `Middle Layer` Way
 ======================================
 
