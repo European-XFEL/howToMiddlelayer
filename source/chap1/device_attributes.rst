@@ -180,24 +180,7 @@ For instance, it can be disallowed to call the ``start`` slot if the device is
 in :class:`State.STARTED` or :class:`State.ERROR`.
 Such control can be applied to both slot calls and properties.
 
-The colour coding of the GUI, visible in scenes and the configuration panel is:
-
-.. raw:: html
-   <font color="rgb(255, 170, 0)">State.UNKNOWN</font>
-   <font color="rgb(200, 200, 200)">State.NORMAL</font>
-   <font color="rgb(230, 230, 170)">State.INIT</font>
-   <font color="rgb(255, 0, 255)">State.DISABLED</font>
-   <font color="rgb(255, 0, 0)">State.ERROR</font>
-   <font color="rgb(0, 170, 255)">State.CHANGING</font>
-   <font color="rgb(0, 170, 255)">State.DECREASING</font>
-   <font color="rgb(0, 170, 255)">State.INCREASING</font>
-   <font color="rgb(153, 204, 255)">State.RUNNING</font>
-   <font color="rgb(0, 170, 0)">State.STATIC</font>
-   <font color="rgb(120, 255, 0)">State.ACTIVE</font>
-   <font color="rgb(204, 204, 255)">State.PASSIVE</font>
-
-All other states are derived from these, and will inherit the parent's colour
-and significance.
+The states and their hiearchy are documented in the `Framework`__.
 
 
 Within the Middlelayer API, the state is represented as a string, with a few
@@ -259,3 +242,6 @@ integrate it in a device:
           self.remoteState = self.remote_device.state
 
 However, :ref:`device-node` might be more appropriate
+
+.. _framework-states: https://in.xfel.eu/readthedocs/docs/karabo/en/latest/concepts/states.html
+__ framework-states_
