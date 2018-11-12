@@ -183,8 +183,9 @@ Such control can be applied to both slot calls and properties.
 The states and their hiearchy are documented in the `Framework`__.
 
 
-Within the Middlelayer API, the state is represented as a string, with a few
-specific requirements, as defined in :class:`karabo.middlelayer_api.device.Device`
+Within the Middlelayer API, the :class:`State` is an eumerable represented as
+string, with a few specific requirements, as defined in
+:class:`karabo.middlelayer_api.device.Device`
 
 If you have several devices, you can aggregate them together and have a global
 state matching the most significant. This is colloquially called `trumpState`
@@ -206,6 +207,9 @@ and makes use of :func:`karabo.middlelayer.StateSignifier`.
            self.state = self.trumpState.returnMostSignificant(state_list)
            yield from waitUntilNew(*state_list)
 
+As well as getting the most significant state, it will attach the newest
+timestamp to the returned state.
+
 It is also possible to define your own rules, as documented in
 :class:`karabo.common.states.StateSignifier`
 
@@ -222,7 +226,7 @@ integrate it in a device:
 
    remoteState = String(
        displayedName="State",
-       enum=State,  # The allowed values
+       enum=State,
        displayType="State",  # This type enables color coding in the GUI
        description="The current state the device is in",
        accessMode=AccessMode.READONLY,
