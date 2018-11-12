@@ -15,7 +15,7 @@ and the ``TimeoutError``
 
     @Slot()
     @coroutine
-    def do_something(self):
+    def doSomething(self):
         try:
             # start something here, e.g. move some motor
         except CancelledError:
@@ -26,7 +26,7 @@ and the ``TimeoutError``
 
     @Slot()
     @coroutine
-    def do_one_more_thing(self):
+    def doOneMoreThing(self):
         try:
             yield from wait_for(connectDevice("some_device"), timeout=2)
         except TimeoutError:
@@ -36,7 +36,9 @@ and the ``TimeoutError``
 
 Sometimes, however, an exception happens unexpectedly, or should be handled in a quite
 generic fashion. In either case it might be advisable to bring the system back into a
-defined, safe state. This can be done by overwriting the following device methods::
+defined, safe state. This can be done by overwriting the following device methods:
+
+.. code-block:: Python
 
     def onCancelled(self, slot):
         """to be called if a user canceled the operation"""
