@@ -12,6 +12,7 @@ executing commands and waiting on their completion, either synchronously
 or asynchronously.
 
 .. include:: basic_device.rst
+.. include:: code_style.rst
 .. include:: slots.rst
 .. include:: device_attributes.rst
 .. include:: node.rst
