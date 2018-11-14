@@ -27,7 +27,9 @@ output channel that defines what data we send and permits other devices
 to manage their expectations.
 
 To define that schema, create a class that inherits from
-`Configurable`::
+`Configurable`:
+
+.. code-block:: Python
 
     class DataNode(Configurable):
         daqDataType = DaqDataType.TRAIN
@@ -44,21 +46,24 @@ enable the DAQ to triage the data. The type can be of either PULSE or TRAIN
 resolution and has to be encapsulated in the Node.
 
 Now that the schema is defined, here's how to send data over the output
-channel::
+channel:
+
+.. code-block:: Python
 
     @Slot(displayedName="Send Pipeline Data")
-    @coroutine
-    def sendPipeline(self):
+    async def sendPipeline(self):
         self.output.schema.data.doubleProperty = 3.5
-        yield from self.output.writeData()
+        await self.output.writeData()
 
 Input Channels
 --------------
 Receiving data from a Pipeline Channel is done by decorating a function
-with `InputChannel`::
+with `InputChannel`:
+
+.. code-block:: Python
 
     @InputChannel(displayedName="Input")
-    def input(self, data, meta):
+    async def input(self, data, meta):
         print("Data", data)
         print("Meta", meta)
 
@@ -66,29 +71,35 @@ The metadata contains information about the data, such as the source,
 whether the data is timestamped, and a timestamp if so.
 
 If the device developer is interested in the bare Hash of the data, one can
-set the *raw* option to True::
+set the *raw* option to True:
+
+.. code-block:: Python
 
     @InputChannel(raw=True, displayedName="Input")
-    def input(self, data, meta):
+    async def input(self, data, meta):
         """ Very Important Processing """
 
 For image data it is recommended to use the **raw=False** option, as the
 middlelayer device will automatically assign an NDArray to the ImageData,
-accessible via::
+accessible via:
+
+.. code-block:: Python
 
     @InputChannel(displayedName="Input")
-    def input(self, data, meta):
+    async def input(self, data, meta):
         image = data.data.image
 
 It is possible to react on the **endOfStream** or the **close** signal
-from the output channel via::
+from the output channel via:
+
+.. code-block:: Python
 
     @input.endOfStream
-    def input(self, channel):
+    async def input(self, channel):
         print("End of Stream handler called by", channel)
 
     @input.close
-    def input(self, channel):
+    async def input(self, channel):
         print("Close handler called by", channel)
 
 
@@ -119,7 +130,7 @@ data rate, but in copy mode only::
 
 Reference Implementation
 ------------------------
-A reference implementation can be found in pipelineMDL_, where both receiving and
-sending data is shown.
+A reference implementation can be found in pipelineMDL_, where both receiving
+and sending data is shown.
 
 .. _pipelineMDL: https://git.xfel.eu/gitlab/karaboDevices/pipelineMDL

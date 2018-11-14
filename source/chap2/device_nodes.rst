@@ -1,7 +1,7 @@
 .. _device-nodes
 
-Device Nodes -  The `Middle Layer` Way
-======================================
+Device Nodes - The `Middle Layer` Way
+=====================================
 
 Using :func:`connectDevice` or :func:`getDevice` are practical from within
 macros. Unless it is required by strict constraints, the monitoring as
@@ -40,29 +40,28 @@ Monitoring the position of these three motors is done so:
     positions_list = [dev.position for dev in [motor1Proxy,
                                                motor2Proxy,
                                                motor3Proxy]]
-    yield from waitUntilNew(*positions_list)
+    await waitUntilNew(*positions_list)
 
-Setting a parameter is a simple assignment but calling a function uses
-**yield from**:
+Setting a parameter is a simple assignment but calling a function needs
+to be **awaited**:
 
 .. code-block:: Python
 
     self.motor1Proxy.targetPosition = 42
-    yield from self.move()
+    await self.motor1Proxy.move()
 
 Doing so for several devices is done using :func:`gather`:
 
 .. code-block:: Python
 
-    @coroutine
-    def moveSeveral(self, positions):
+    async def moveSeveral(self, positions):
         futures = []
 
         for device, position in zip(self.devices, positions):
-            yield from setWait(device, targetPosition=position)
+            await setWait(device, targetPosition=position)
             futures.append(device.move())
 
-        yield from gather(*futures)
+        await gather(*futures)
 
 Function and parameter calls are now exactly as they were when using
 :func:`getDevice` or :func:`connectDevice`, but now details regarding the

@@ -46,15 +46,15 @@ Your final `scenes.py` should look more or less as follows:
     )
 
    def get_scene(deviceId):
-       scene0 = IntLineEditModel(height=31.0,
-                                 keys=['{}.config.movingAverageCount'.format(deviceId)],
-                                 parent_component='EditableApplyLaterComponent',
-                                 width=67.0, x=227.0, y=18.0)
-       scene1 = LabelModel(font='Ubuntu,11,-1,5,50,0,0,0,0,0', foreground='#000000',
-                           height=27.0, parent_component='DisplayComponent',
-                           text='Running Average Shot Count',
-                           width=206.0, x=16.0, y=15.0)
-       scene = SceneModel(height=1017.0, width=1867.0, children=[scene0, scene1])
+       input = IntLineEditModel(height=31.0,
+                                keys=['{}.config.movingAverageCount'.format(deviceId)],
+                                parent_component='EditableApplyLaterComponent',
+                                width=67.0, x=227.0, y=18.0)
+       label = LabelModel(font='Ubuntu,11,-1,5,50,0,0,0,0,0', foreground='#000000',
+                          height=27.0, parent_component='DisplayComponent',
+                          text='Running Average Shot Count',
+                          width=206.0, x=16.0, y=15.0)
+       scene = SceneModel(height=1017.0, width=1867.0, children=[input, label])
 
        return write_scene(scene)
 
@@ -150,12 +150,13 @@ looks like:
 
 .. code-block:: Python
 
-     scene0 = TableElementModel(
+     table = TableElementModel(
          column_schema='TriggerRow:<root KRB_Artificial="">CONTENT</root>',
          height=196.0, keys=['{}.triggerEnv'.format(deviceId)],
          klass='DisplayTableElement',
          parent_component='DisplayComponent',
-         width=436.0, x=19.0, y=484.0)
+         width=436.0, x=19.0, y=484.0
+    )
 
 Linking To Other Devices Scenes
 -------------------------------
@@ -185,7 +186,7 @@ In your `scenes.py`, import `DeviceSceneLinkModel` and `SceneTargetWindow` from
             text='Controls scene',
             target_window=SceneTargetWindow.Dialog)
 
-        children = [scene0, scene1, link_to_controls]
+        children = [label, input, link_to_controls]
         scene = SceneModel(height=1017.0, width=1867.0, children=children)
 
        return write_scene(scene)
@@ -206,7 +207,7 @@ If you want to link to another device, make :func:`overview` accept another
            target_window=SceneTargetWindow.Dialog
         )
 
-        children = [scene0, scene1, link_to_controls, link_to_remote]
+        children = [label, input, link_to_controls, link_to_remote]
         scene = SceneModel(height=1017.0, width=1867.0, children=children)
 
        return write_scene(scene)

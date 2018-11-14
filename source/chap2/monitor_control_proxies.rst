@@ -10,8 +10,7 @@ inheriting from `Device`:
         def __init__(self, configuration):
             super(MonitorMotor, self).__init__(configuration)
 
-        @coroutine
-        def onInitialization(self):
+        async def onInitialization(self):
             self.state = State.INIT
 
 :class:`Device` is the base class for all middle layer devices. It inherits from
@@ -36,19 +35,18 @@ Device are typically connected to only once during the initialisation, using
         super(MonitorRemote, self).__init__(configuration)
         self.remoteDevice = None
 
-    @coroutine
-    def onInitialization(self):
+    async def onInitialization(self):
         self.state = State.INIT
         self.status = "Waiting for external device"
-        self.remoteDevice = yield from connectDevice(REMOTE_ADDRESS)
+        self.remoteDevice = await connectDevice(REMOTE_ADDRESS)
         self.status = "Connection established"
         self.state = State.STOPPED
 
 This function keeps the connection open until explicitly closing it.
 For a more local and temporary usage, :func:`karabo.middlelayer.getDevice`, can
-be used within a :class:`with` statement:
+be used within a :class:`async with` statement:
 ::
-    with (yield from getDevice(REMOTE_ADDRESS)) as remote_device:
+    async with getDevice(REMOTE_ADDRESS) as remote_device:
         print(remote_device.property)
 
 Continuous Monitoring
@@ -56,21 +54,19 @@ Continuous Monitoring
 You now have a connection to a remote device! You may start awaiting its
 updates by defining a slot and using the waitUntilNew function
 ::
-    from asyncio import coroutine
     from karabo.middlelayer import connectDevice, State, waitUntilNew
     ...
 
     @Slot(displayedName="Start",
           description="Start monitoring the remote device",
           allowedStates={State.OFF})
-    @coroutine
-    def start(self):
+    async def start(self):
         self.state = State.ON
         while True:
-            yield from waitUntilNew(self.remoteDevice.remoteValue)
+            await waitUntilNew(self.remoteDevice.remoteValue)
             print(self.remoteDevice.remoteValue)
 
-By doing a `yield from` in the waitUnitNew coroutine, a non-blocking wait
+By awaiting the :func:`waitUnitNew` coroutine, a non-blocking wait
 for the updated value of the property is executed before proceeding
 to the print statement.
 
@@ -128,12 +124,11 @@ Let us define three motors we want to monitor and control:
             super(ControlMotors, self).__init__(configuration)
             self.device_addresses = {MOTOR_1, MOTOR_2, MOTOR_3}
 
-        @coroutine
-        def onInitialization(self):
+        async def onInitialization(self):
             self.state = State.INIT
             devices_to_connect = [connectDevice(device) for device
                                   in self.device_addresses]
-            connections = yield from gather(*devices_to_connect)
+            connections = await gather(*devices_to_connect)
 
 
 By using :func:`karabo.middlelayer.gather` and
@@ -148,12 +143,11 @@ single one, passing a list of devices as a starred expression:
 
 .. code-block:: Python
 
-    @coroutine
-    def monitorPosition(self):
+    async def monitorPosition(self):
         while True:
 
             positions_list = [dev.position for dev in self.devices]
-            yield from waitUntilNew(*positions_list)
+            await waitUntilNew(*positions_list)
 
             motorPos1 = self.devices[0].position
             motorPos2 = self.devices[1].position
@@ -170,9 +164,9 @@ value, for instance:
     self.remoteMotor.targetPosition = 42
 
 This guarantees to set the property. It is possible, however, to do a blocking
-wait, using :func:`setWait`:
-::
-    yield from setWait(device, targetPosition=42)
+wait, using :func:`setWait`:: 
+
+    await setWait(device, targetPosition=42)
 
 It may be desirable to do so, when the parameter needs to be set before further
 action should be taken. In this example, setting the desired target position is
@@ -180,13 +174,13 @@ done with setWait such that we proceed to moving the motor `only after` the
 device has acknowledged the new target position.
 
 As with properties, functions are directly called. To move the motor to the
-aforementioned position, call the move function:
-::
-    self.remoteMotor.move()
+aforementioned position, await the :func:`move` function::
+
+    await self.remoteMotor.move()
 
 Once the parameters are set, :func:`karabo.middlelayer.background` can be used
-to run the task:
-::
+to run the task::
+
     background(self.remoteMotor.move())
 
 This will create a :class:`KaraboFuture` object of which the status can easily
@@ -197,15 +191,14 @@ done using :func:`gather`:
 
 .. code-block:: Python
 
-    @coroutine
-    def moveSeveral(self, positions):
+    async def moveSeveral(self, positions):
         futures = []
 
         for device, position in zip(self.devices, positions):
-            yield from setWait(device, targetPosition=position)
+            await setWait(device, targetPosition=position)
             futures.append(device.move())
 
-        yield from gather(*futures)
+        await gather(*futures)
 
 Exception Handling with Multiple Sources
 ++++++++++++++++++++++++++++++++++++++++
@@ -213,23 +206,26 @@ A problem that now arises is handling exception should one of the motors
 develop an unexpected behaviour or, more commonly, a user cancelling the task.
 Cancellation raises an :class:`asyncio.CancelledError`, thus extending the above
 function with a try-except:
-::
-    def moveSeveral(self, positions):
+
+.. code-block:: Python
+
+    async def moveSeveral(self, positions):
         futures = []
         for device, position in zip(self.devices, positions):
-            yield from setWait(device, targetPosition=position)
+            await setWait(device, targetPosition=position)
             futures.append(device.move())
 
         try:
-            yield from gather(*futures)
-            yield from self.guardian_yield(self.devices)
+            await gather(*futures)
+            await self.guardian_yield(self.devices)
 
         except CancelledError:
             toCancel = [device.stop() for device in self.devices
                         if device.state == State.MOVING]
-            yield from gather(*toCancel)
+            await gather(*toCancel)
 
-Note that the appropriate policy to adopt is left to the device developer.
+.. note::
+    Note that the appropriate policy to adopt is left to the device developer.
 
 The try-except introduces a :func:`guardian_yield` function. This is required in
 order to remain within the :class:`try` statement, such that any cancellation
@@ -237,9 +233,10 @@ happening whilst executing the futures, will be caught by the :class:`except`.
 
 The suggested solution for the guardian yield is to wait until all the device go
 from their busy state (`State.MOVING`) to their idle (`State.ON`) as follows:
-::
-    @coroutine
-    def guardian_yield(self, devices):
-        yield from waitUntil(lambda: all(dev.state == State.ON for dev in devices))
+
+.. code-block:: Python
+
+    async def guardian_yield(self, devices):
+        await waitUntil(lambda: all(dev.state == State.ON for dev in devices))
 
 
