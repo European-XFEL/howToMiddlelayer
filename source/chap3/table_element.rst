@@ -34,6 +34,7 @@ With :class:`RowSchema`, the definition of the VectorHash is as follows:
                             rows=RowSchema,
                             displayedName="Hot Initialisation",
                             defaultValue=[])
+
 The user will now be presented with an editable table:
 
 .. image:: graphics/VectorHash.png
