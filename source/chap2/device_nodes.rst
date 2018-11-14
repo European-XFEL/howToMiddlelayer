@@ -9,21 +9,22 @@ described in the previous section should be left to the API.
 For middle layer device development, :class:`DeviceNode` is more appropriate and
 is preferred.
 
+.. note::
+    DeviceNodes are **MANDATORY** properties and can only be set before
+    instantiation, e.g. are **INITONLY**!
+
 Defining a remote device is done as follows:
 
 .. code-block:: Python
 
     motor1Proxy = DeviceNode(displayedName="RemoteDevice",
-                             description="Remote motor 1",
-                             accessMode=AccessMode.INITONLY)
+                             description="Remote motor 1")
 
     motor2Proxy = DeviceNode(displayedName="RemoteDevice",
-                             description="Remote motor 2",
-                             accessMode=AccessMode.INITONLY)
+                             description="Remote motor 2")
 
     motor3Proxy = DeviceNode(displayedName="RemoteDevice",
-                             description="Remote motor 3",
-                             accessMode=AccessMode.INITONLY)
+                             description="Remote motor 3")
 
 And that's about it. It is however important to be aware of the workings
 behind the scene, which are similar to what is described in the previous
@@ -66,6 +67,29 @@ Doing so for several devices is done using :func:`gather`:
 Function and parameter calls are now exactly as they were when using
 :func:`getDevice` or :func:`connectDevice`, but now details regarding the
 connection to remote devices are left to the middle layer API.
+
+Proxy connection
+****************
+
+The DeviceNode holds a proxy to a remote device. During initialization the
+DeviceNodes try to establish a proxy connection. Once this is done, the schema
+of the main device will be updated.
+Unfortunately, due to the nature of the DeviceNode, the operator does not see
+if a device using DeviceNodes is fully functional in the beginning, as there is
+no feedback on the connection status.
+
+For this purpose, with **Karabo 2.3.0** a timeout parameter in seconds can be provided.
+
+.. code-block:: Python
+
+    motor1Proxy = DeviceNode(displayedName="RemoteDevice",
+                             description="Remote motor 1",
+                             timeout=1.5)
+
+If the DeviceNode was not able to estasblish the proxy connection within this
+timeframe an error is thrown and the holding device shuts down with an error
+message which is visible in the log files.
+
 
 Reference Implementations
 -------------------------
