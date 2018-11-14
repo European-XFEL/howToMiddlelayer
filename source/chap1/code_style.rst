@@ -1,8 +1,8 @@
 Code Style
 ==========
-While PEP8_ and PEP257_ are styling to follow, there are a few Karabo-specific
-details to take care of to improve code quality, yet keep consistency, for
-better maintainability across Karabo's 3 APIs.
+While PEP8_, PEP20_, and PEP257_ are styling to follow, there are a few
+Karabo-specific details to take care of to improve code quality, yet keep 
+consistency, for better maintainability across Karabo's 3 APIs.
 
 .. note::
     This guide is not holy canon: when in doubt, do what makes most sense for
@@ -25,6 +25,12 @@ project), then in alphabetical order:
    )
 
    from .scenes import control, default
+
+.. warning::
+   Star imports (eg. `from karabo.middlelayer import *`) are strictly forbidden,
+   as it is not clear what is being imported from where, making tools like *pyflakes*
+   ineffective, and increases cognitive load.
+
 
 Class Definitions
 -----------------
@@ -181,4 +187,5 @@ If you stumble upon older syntax, then follow the style of the project.
 You can always create a separate merge request that refactors its syntax.
 
 .. _PEP8: https://www.python.org/dev/peps/pep-0008/ 
+.. _PEP20: https://www.python.org/dev/peps/pep-0020/
 .. _PEP257: https://www.python.org/dev/peps/pep-0257/
