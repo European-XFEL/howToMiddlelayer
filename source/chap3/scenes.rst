@@ -1,5 +1,6 @@
 Device Scenes
 =============
+
 Karabo provides a protocol for devices to share predefined scenes.
 These allows the author of a device to provide what they think are
 a good starting point. Moreover, these are easily accessible by
@@ -26,14 +27,14 @@ Use the *karabo-scene2py* utility to convert the SVG file to Python code:
 
    $ karabo-scene2py scene.svg > scenes.py
 
-As it is generated code, a few modifications are required. Begin by making 
-the file PEP8 compliant, 
+As it is generated code, a few modifications are required. Begin by making
+the file PEP8 compliant,
 
-Then wrap all scene-related code into a single function, which should take a 
+Then wrap all scene-related code into a single function, which should take a
 `deviceId` string argument, and returns `write_scene(scene)`, instead of printing it.
 
 Finally, replace all the hard-coded instance ids in strings with::
-    
+
     '{}.property'.format(deviceId)
 
 Your final `scenes.py` should look more or less as follows:
@@ -45,9 +46,9 @@ Your final `scenes.py` should look more or less as follows:
     )
 
    def get_scene(deviceId):
-       scene0 = IntLineEditModel(height=31.0, 
-                                 keys=['{}.config.movingAverageCount'.format(deviceId)], 
-                                 parent_component='EditableApplyLaterComponent', 
+       scene0 = IntLineEditModel(height=31.0,
+                                 keys=['{}.config.movingAverageCount'.format(deviceId)],
+                                 parent_component='EditableApplyLaterComponent',
                                  width=67.0, x=227.0, y=18.0)
        scene1 = LabelModel(font='Ubuntu,11,-1,5,50,0,0,0,0,0', foreground='#000000',
                            height=27.0, parent_component='DisplayComponent',
@@ -88,7 +89,7 @@ and the scene itself:
        payload = Hash('success', True, 'name', name,
                       'data', get_scene(self.deviceId))
 
-       return Hash('type', 'deviceScene', 
+       return Hash('type', 'deviceScene',
                    'origin', self.deviceId,
                    'payload', payload)
 
@@ -130,7 +131,7 @@ you can define several functions in `scenes.py`, and modify `requestScene` to ch
            payload.set('name', name)
            payload.set('data', scenes.controls(self.deviceId))
 
-       return Hash('type', 'deviceScene', 
+       return Hash('type', 'deviceScene',
                    'origin', self.deviceId,
                    'payload', payload)
 
@@ -141,7 +142,7 @@ you can define several functions in `scenes.py`, and modify `requestScene` to ch
 Providing Table Elements
 ------------------------
 As described in :ref:`table-element`, table elements are vectors of hash,
-the schema is specified as Hash serialized to XML, (which *karabo-scene2py* 
+the schema is specified as Hash serialized to XML, (which *karabo-scene2py*
 takes care of).
 
 In this case, it's fine to break the PEP8 80 characters limit. A table element
@@ -153,7 +154,7 @@ looks like:
          column_schema='TriggerRow:<root KRB_Artificial="">CONTENT</root>',
          height=196.0, keys=['{}.triggerEnv'.format(deviceId)],
          klass='DisplayTableElement',
-         parent_component='DisplayComponent', 
+         parent_component='DisplayComponent',
          width=436.0, x=19.0, y=484.0)
 
 Linking To Other Devices Scenes
