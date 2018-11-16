@@ -1,3 +1,5 @@
+.. _device-attributes
+
 Property and Slot Attributes
 ============================
 
@@ -39,8 +41,7 @@ The definition of such a slot is then as follows:
 
     @Slot(displayedName="Ramp Voltage up",
           requiredAccessLevel=AccessLevel.EXPERT)
-    @coroutine
-    def rampUp(self):
+    async def rampUp(self):
         self.status = "Ramping up voltage"
 
         ... do something
@@ -72,8 +73,7 @@ Then the slot definition will be updated as follows:
     @Slot(displayedName="Ramp Voltage up",
           requiredAccessLevel=AccessLevel.EXPERT
           allowedStates={State.ON})
-    @coroutine
-    def rampUp(self):
+    async def rampUp(self):
         self.status = "Ramping up voltage"
 
         self.state = State.RUNNING
@@ -128,11 +128,13 @@ Handling units
 ++++++++++++++
 
 You can define a unit for a property, which is then used in the
-calculations of this property. In the middlelayer API, units, amongst other
+calculations of this property. In the Middlelayer API, units, amongst other
 things, are implemented using the ``pint`` module.
 
 A unit is declared using the ``unitSymbol`` and optionally, the
-``metricPrefixSymbol`` attributes::
+``metricPrefixSymbol`` attributes:
+
+.. code-block:: Python
 
     distance = Float(
         unitSymbol=Unit.METER,
@@ -162,7 +164,7 @@ attribute::
 
 .. warning::
 
-    While the middlelayer API of Karabo in principle allows for automatic
+    While the Middlelayer API of Karabo in principle allows for automatic
     unit conversion, developers are strongly discouraged to use this feature for
     critical applications: the Karabo team simply cannot guarantee that
     ``pint`` unit handling is preserved in all scenarios, e.g. that a unit
@@ -195,17 +197,15 @@ and makes use of :func:`karabo.middlelayer.StateSignifier`.
 
    from karabo.middlelayer import background, StateSignifier
 
-   @coroutine
-   def onInitialization(self):
+   async def onInitialization(self):
        self.trumpState = StateSignifier()
        monitor_taks = background(self.monitor_states())
 
-   @coroutine
-   def monitor_states(self):
+   async def monitor_states(self):
        while True:
            state_list = [dev.state for dev in self.devices]  # Where self.devices is a list of proxies
            self.state = self.trumpState.returnMostSignificant(state_list)
-           yield from waitUntilNew(*state_list)
+           await waitUntilNew(*state_list)
 
 As well as getting the most significant state, it will attach the newest
 timestamp to the returned state.
@@ -234,15 +234,13 @@ integrate it in a device:
        defaultValue=State.UNKNOWN
    )
 
-   @coroutine
-   def onInitialization(self):
-       self.remote_device = yield from connectDevice("some_device")
+   async def onInitialization(self):
+       self.remote_device = await connectDevice("some_device")
        self.watch_task = background(self.watchdog())
 
-   @coroutine
-   def watchdog(self):
+   async def watchdog(self):
       while True:
-          yield from waitUntilNew(self.remote_device)
+          await waitUntilNew(self.remote_device)
           self.remoteState = self.remote_device.state
 
 However, :ref:`device-node` might be more appropriate

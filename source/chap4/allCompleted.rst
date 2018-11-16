@@ -20,30 +20,33 @@ to devices specified in a clients list of arbitrary length.
 
 ..  code-block:: Python
 
-    @coroutine
-    def do_setup(self):
+    async def do_setup(self):
         self.state = State.STARTING
         self.devices = []
         try:
-            done, pending, error = yield from allCompleted(
+            done, pending, error = await allCompleted(
                 *[connectDevice(c) for c in self.clients],
                 cancel_pending=False,
                 timeout=10)
+
             if pending:
                 self.logger.warning('Missing clients {}'.format(
                       ', '.join([self.clients[k] for k in pending])))
                 for k, v in pending.items():
                     v.cancel()
+
             elif error:
                 self.logger.warning('Error creating client proxy {}'.format(
                       ', '.join([self.clients[k] for k in error])))
                 except_entry = [(k, v.__class__.__name__)
                               for k, v in error.items() if v is not None]
                 pending_entry = [k for k, v in error.items() if v is None]
+
             else:
                 for k, v in done.items():
                     self.devices.append(v)
                 return
+
         except Exception as e:
             self.logger.exception(
                 'unexpected failure creating proxy-devices {}'.format(
@@ -55,14 +58,10 @@ nodes to reach new target positions.
 
 .. code-block:: Python
 
-    @Slot(
-        displayedName="Move",
-        description="Move to absolute position specified by targetPosition.",
-        allowedStates={State.STOPPED}
-    )
-
-    @coroutine
-    def move(self):
+    @Slot(displayedName="Move",
+           description="Move to absolute position specified by targetPosition.",
+           allowedStates={State.STOPPED})
+    async def move(self):
         left, right, back = virtualToActual(
             self.Y.targetPosition,
             self.Pitch.targetPosition,
@@ -75,10 +74,9 @@ nodes to reach new target positions.
         self.right.targetPosition = right
         self.back.targetPosition = back
 
-        yield from allCompleted(
-            moveL=self.left.move(),
-            moveR=self.right.move(),
-            moveB=self.back.move())
+        await allCompleted(moveL=self.left.move(),
+                           moveR=self.right.move(),
+                           moveB=self.back.move())
 
 The following points should be remembered when using the support functions
 

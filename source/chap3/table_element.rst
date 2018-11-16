@@ -52,8 +52,7 @@ As with any Karabo datatypes, data are stored in VectorHash.value:
 .. code-block:: Python
 
     @Slot(displayedName="Save to file")
-    @coroutine
-    def saveToFile(self):
+    async def saveToFile(self):
         self.status = "Saving..."
 
         with open("outputfile.txt", "a") as outfile:
@@ -74,8 +73,7 @@ edits a row, then the VectorHash should be defined within a decorator:
     @VectorHash(rows=RowSchema,
                 displayedName="Hot Initialisation",
                 defaultValue=[])
-    @coroutine
-    def tableUpdate(self, updatedTable):
+    async def tableUpdate(self, updatedTable):
         self.userConfig = updatedTable
         for row in updatedTable.value:
             print(row)

@@ -3,7 +3,6 @@ Start simple: Hello World Device!
 
 Below is the source code of a Hello World! device::
 
-    from asyncio import coroutine
     from karabo.middlelayer import Device, Slot, String
 
 
@@ -16,11 +15,10 @@ Below is the source code of a Hello World! device::
             description="Message printed to console.")
 
         @Slot()
-        def hello(self):
+        async def hello(self):
             print(self.greeting)
 
-        @coroutine
-        def onInitialization(self):
+        async def onInitialization(self):
             """ This method will be called when the device starts.
 
                 Define your actions to be executed after instantiation.
