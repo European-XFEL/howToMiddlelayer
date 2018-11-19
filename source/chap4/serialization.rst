@@ -65,6 +65,10 @@ These attributes are also key-value pairs stored in a dictionary:
     With this in mind ``h['one', 'b']`` accesses the `b` attribute, whereas
     ``h['one.b']`` accesses the value `b` of the inner hash `one`
 
+.. note::
+    the `tid` attribute is used here on purpose: it is a special attribute
+    representing the trainId, and is always an unit64
+
 XML Serialization
 -----------------
 The Middlelayer API offers `saveToFile` and `loadFromFile`, which,
