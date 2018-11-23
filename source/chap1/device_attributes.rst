@@ -126,7 +126,6 @@ voltage of our voltage controller:
 
 Handling units
 ++++++++++++++
-
 You can define a unit for a property, which is then used in the
 calculations of this property. In the Middlelayer API, units, amongst other
 things, are implemented using the ``pint`` module.
@@ -173,7 +172,6 @@ attribute::
 
 Device States
 =============
-
 Every device has a state, one of these defined in :class:`karabo.middlelayer.State`.
 These are used to show what the device is currently doing, what it can do, and
 which actions are restricted.
@@ -189,7 +187,21 @@ Within the Middlelayer API, the :class:`State` is an eumerable represented as
 string, with a few specific requirements, as defined in
 :class:`karabo.middlelayer_api.device.Device`
 
-If you have several devices, you can aggregate them together and have a global
+Although not mandatory, a device can specify which states are legal for it:
+
+.. code-block:: Python
+
+   from karabo.middlelayer import Overwrite, State
+
+   state = Overwrite(defaultValue=State.STOPPED,
+                     displayedName="State",
+                     options={State.STOPPED, State.STARTED, State.ERROR})
+
+If this is not explicitly implemented, the device can go to any state.
+
+State Aggregation
+-----------------
+If you have several proxies, you can aggregate them together and have a global
 state matching the most significant. This is colloquially called `trumpState`
 and makes use of :func:`karabo.middlelayer.StateSignifier`.
 
