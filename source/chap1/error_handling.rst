@@ -33,6 +33,12 @@ There are two types of errors to take care of in Middlelayer API:
         finally:
             # reconnect to the device
 
+
+.. note::
+
+    Both :class:`CancelledError` and :class:`TimeoutError` are imported from
+    `asyncio`.
+
 Sometimes, however, an exception may be raised unexpectedly and has no ways of
 being handled better. :func:`onException` is a mechanism that can be overwritten
 for this usage:
@@ -55,3 +61,36 @@ It is also possible that a user or Middlelayer device will cancel a slot call:
         """To be called if a user cancels a slot call"""
         tasks = [dev.stop() for dev in self.devices()]
         await allCompleted(*tasks)
+
+
+Don't use `try ... except Exception` pattern
++++++++++++++++++++++++++++++++++++++++++++
+
+In the middlelayer API so-called tasks are created. Whenever a device is
+shutdown, all active tasks belonging to this device are cancelled. Tasks might
+be created by the device developer or are still active `Slots`.
+If a task is cancelled, an `CancelledError` is thrown and by
+using a `try ... except Exception` pattern, the exception and underlying action
+will always be fired. In the bottom case, we want to log an error message.
+Since the device is already shutting down, the task created by the log message
+will never be retrieved nor cancelled leaving a remnant on the device server.
+Subsequently, the server cannot shutdown gracefully.
+
+
+..  code-block:: Python
+
+    from asyncio import CancelledError, TimeoutError, wait_for
+    from karabo.middlelayer import connectDevice, Slot
+
+    async def dontDoThisTask(self):
+        while True:
+            try:
+                # Some action here
+            except Exception:
+                self.logger.error("I got cancelled but I cannot log")
+                # This will always be fired
+
+.. warning::
+
+    Always catch a :class:`CancelledError` explicitly when using a
+    `try ... except Exception` pattern!

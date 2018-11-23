@@ -125,12 +125,16 @@ assumes that all values are still valid at composition time, but this
 is the responsibility of the user, and is typically already the case).
 
 All properties in Karabo may have timestamps attached. In the middlelayer API
-they can be accessed from the ``timestamp`` attribute::
+they can be accessed from the ``timestamp`` attribute:
+
+.. code-block:: Python
 
     self.speed.timestamp
 
 They are automatically attached and set to the current time upon
-assignment of a value that does not have a timestamp::
+assignment of a value that does not have a timestamp:
+
+.. code-block:: Python
 
     self.steps = 5  # current time as timestamp attached
 
@@ -142,7 +146,9 @@ function::
 If a value already has a timestamp, it is conserved, even through
 calculations. If several timestamps are used in a calculation, the
 newest timestamp is used. In the following code, ``self.speed`` gets
-the newer timestamp of ``self.distance`` or ``self.times``::
+the newer timestamp of ``self.distance`` or ``self.times``:
+
+.. code-block:: Python
 
     self.speed = 5 * self.distance / self.times[3]
 

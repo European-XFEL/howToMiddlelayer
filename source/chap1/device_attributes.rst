@@ -156,7 +156,9 @@ raised if the units don't match up::
 
 If you need to add a unit to a value which doesn't have one, or remove
 it, there is the ``unit`` object which has all relevant units as its
-attribute::
+attribute:
+
+.. code-block:: Python
 
     self.speed = self.steps * (unit.meters / unit.seconds)
     self.steps = self.distance / (3.5 * unit.meters)
@@ -233,8 +235,7 @@ integrate it in a device:
 
    from karabo.middlelayer import (
        AccessMode, Assignment, background, connectDevice, State, String,
-       waitUntilNew
-    )
+       waitUntilNew)
 
    remoteState = String(
        displayedName="State",
@@ -243,8 +244,7 @@ integrate it in a device:
        description="The current state the device is in",
        accessMode=AccessMode.READONLY,
        assignment=Assignment.OPTIONAL,
-       defaultValue=State.UNKNOWN
-   )
+       defaultValue=State.UNKNOWN)
 
    async def onInitialization(self):
        self.remote_device = await connectDevice("some_device")
