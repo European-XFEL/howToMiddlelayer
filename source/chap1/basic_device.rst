@@ -1,7 +1,9 @@
 Start simple: Hello World Device!
 =================================
 
-Below is the source code of a Hello World! device::
+Below is the source code of a Hello World! device:
+
+.. code-block:: Python
 
     from karabo.middlelayer import Device, Slot, String
 
