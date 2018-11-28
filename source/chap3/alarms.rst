@@ -16,7 +16,7 @@ difference of temperatures:
 .. code-block:: Python
 
     from karabo.middlelayer import (
-        AlarmCondition, background, connectDevice, Device, Float, sleep)
+        AlarmCondition, background, connectDevice, Device, waitUntilNew)
 
     class AlarmDevice(Device):
 
@@ -53,7 +53,8 @@ different steps and information.
 
 .. code-block:: Python
 
-    from karabo.middlelayer import AlarmCondition, Device, Float
+    from karabo.middlelayer import (
+        AlarmCondition, background, connectDevice, Device, Float, waitUntilNew)
 
     class AlarmDevice(Device):
 
