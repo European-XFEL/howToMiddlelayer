@@ -5,7 +5,9 @@ Classes in Karabo may have default properties. A type of motors may have a
 default speed, a camera may have a default frame rate, and so forth.
 
 Let's say a base class for a motor has a default max speed of 60 rpms:
-::
+
+.. code-block:: Python
+
     class MotorTemplate(Configurable):
         maxrpm = Int32(
                     displayedName="Max Rotation Per Minutes",
@@ -25,7 +27,9 @@ parameters and functions remain the same.
 
 It is possible to do so by inheriting from :class:`MotorTemplate`, and using the
 :class:`karabo.middlelayer.Overwrite` element:
-::
+
+.. code-block:: Python
+
     class CustomMotor(MotorTemplate):
         maxrpm = Overwrite(
                     minExc=1,
