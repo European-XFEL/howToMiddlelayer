@@ -2,7 +2,9 @@ Start simple: A single proxy
 ============================
 We recapitulate our knowledge and start simple by creating our device class,
 inheriting from `Device`:
-::
+
+.. code-block:: Python
+
     from karabo.middlelayer import Device, State
 
     class MonitorMotor(Device):
@@ -22,15 +24,19 @@ Connecting to the Remote Device
 To connect to the remote device, we must have its control address.
 In this example, it is registered as "SA1_XTD9_MONO/MOTOR/X".
 
-We must first import the :func:`connectDevice` function
-::
+We must first import the :func:`connectDevice` function:
+
+.. code-block:: Python
+
     from karabo.middlelayer import connectDevice, Device, State
 
     REMOTE_ADDRESS = "SA1_XTD9_MONO/MOTOR/X"
 
 Device are typically connected to only once during the initialisation, using
-:func:`karabo.middlelayer.connectDevice`
-::
+:func:`karabo.middlelayer.connectDevice`:
+
+.. code-block:: Python
+
     def __init__(self, configuration):
         super(MonitorRemote, self).__init__(configuration)
         self.remoteDevice = None
@@ -44,16 +50,23 @@ Device are typically connected to only once during the initialisation, using
 
 This function keeps the connection open until explicitly closing it.
 For a more local and temporary usage, :func:`karabo.middlelayer.getDevice`, can
-be used within a :class:`async with` statement:
-::
-    async with getDevice(REMOTE_ADDRESS) as remote_device:
+be used:
+
+.. code-block:: Python
+
+    with (await getDevice(REMOTE_ADDRESS)) as remote_device:
         print(remote_device.property)
+
+.. note::
+    The ``async with`` statement is not yet supported in Karabo
 
 Continuous Monitoring
 +++++++++++++++++++++
 You now have a connection to a remote device! You may start awaiting its
 updates by defining a slot and using the waitUntilNew function
-::
+
+.. code-block:: Python
+
     from karabo.middlelayer import connectDevice, State, waitUntilNew
     ...
 
@@ -107,18 +120,17 @@ Let us define three motors we want to monitor and control:
         motor1Pos = Int32(
             displayedName="Motor 1 position",
             description="The current position for Motor 1",
-            accessMode=AccessMode.READONLY
-        )
+            accessMode=AccessMode.READONLY)
+
         motor2Pos = Int32(
             displayedName="Motor 2 position",
             description="The current position for Motor 2",
-            accessMode=AccessMode.READONLY
-        )
+            accessMode=AccessMode.READONLY)
+
         motor3Pos = Int32(
             displayedName="Motor 3 position",
             description="The current position for Motor 3",
-            accessMode=AccessMode.READONLY
-        )
+            accessMode=AccessMode.READONLY)
 
         def __init__ self, configuration):
             super(ControlMotors, self).__init__(configuration)
@@ -145,7 +157,6 @@ single one, passing a list of devices as a starred expression:
 
     async def monitorPosition(self):
         while True:
-
             positions_list = [dev.position for dev in self.devices]
             await waitUntilNew(*positions_list)
 
@@ -164,7 +175,9 @@ value, for instance:
     self.remoteMotor.targetPosition = 42
 
 This guarantees to set the property. It is possible, however, to do a blocking
-wait, using :func:`setWait`:: 
+wait, using :func:`setWait`:
+
+.. code-block:: Python
 
     await setWait(device, targetPosition=42)
 
@@ -174,12 +187,16 @@ done with setWait such that we proceed to moving the motor `only after` the
 device has acknowledged the new target position.
 
 As with properties, functions are directly called. To move the motor to the
-aforementioned position, await the :func:`move` function::
+aforementioned position, await the :func:`move` function:
+
+.. code-block:: Python
 
     await self.remoteMotor.move()
 
 Once the parameters are set, :func:`karabo.middlelayer.background` can be used
-to run the task::
+to run the task:
+
+.. code-block:: Python
 
     background(self.remoteMotor.move())
 
@@ -214,17 +231,17 @@ function with a try-except:
         for device, position in zip(self.devices, positions):
             await setWait(device, targetPosition=position)
             futures.append(device.move())
-
         try:
             await gather(*futures)
             await self.guardian_yield(self.devices)
-
         except CancelledError:
             toCancel = [device.stop() for device in self.devices
                         if device.state == State.MOVING]
             await gather(*toCancel)
 
+
 .. note::
+
     Note that the appropriate policy to adopt is left to the device developer.
 
 The try-except introduces a :func:`guardian_yield` function. This is required in
