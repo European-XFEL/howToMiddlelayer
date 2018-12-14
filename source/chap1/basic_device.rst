@@ -71,7 +71,7 @@ Attributes
 Attributes of properties may be accessed during runtime as members of the property descriptor.
 
 +----------------------+------------------------------------+
-|**Attribute**         |  **Example**                       |
+| **Attribute**        |  **Example**                       |
 +----------------------+------------------------------------+
 | displayType          | e.g. oct, bin, dec, hex, directory |
 +----------------------+------------------------------------+
@@ -112,6 +112,8 @@ Attributes of properties may be accessed during runtime as members of the proper
 | allowedStates        | the list of allowed states         |
 +----------------------+------------------------------------+
 
+.. _timestamping
+
 Handling timestamps
 +++++++++++++++++++
 
@@ -146,16 +148,61 @@ function::
 If a value already has a timestamp, it is conserved, even through
 calculations. If several timestamps are used in a calculation, the
 newest timestamp is used. In the following code, ``self.speed`` gets
-the newer timestamp of ``self.distance`` or ``self.times``:
+the timestamp of either ``self.distance`` or ``self.times``, whichever
+is newer:
 
 .. code-block:: Python
 
     self.speed = 5 * self.distance / self.times[3]
 
+Due to this behaviour, using inplace operators, such as ``+=`` is discouraged,
+as the timestamp would be conserved:
+
+.. code-block:: Python
+
+   self.speed = 5  # A new timestamp is attached
+
+   self.speed += 5  # The timestamp is kept
+
+   # The above effectively is 
+   self.speed = self.speed + 5 
+
+   # And whilst the value is 10, we used the newest timestamp available
+   # from either component, here the old one from self.speed, and the value
+   # never gets incremented!
+
+In order to create a new timestamp, the raw value needs to be accessed:
+
+.. code-block:: Python
+
+   self.speed = self.speed.value + 5
+
+Since the value and 5 are both integers, no timestamp is available, and a new
+one is created.
+
+When dealing with several inputs, a function can use the
+:func:`karabo.middlelayer.removeQuantity` decorator, to ease the readability:
+
+.. code-block:: Python
+
+   from karabo.middlelayer import removeQuantity
+
+   steps = Int32()
+   speed = Int32()
+   increment = Int32()
+
+   @removeQuantity
+   increment_all_parameters(self, steps, speed, increment):
+       self.steps = steps + increment
+       self.speed = speed + increment
+
+   @Slot()
+   async def incrementAllParameters(self):
+       self._increment_all_params(self.steps, self.speed, self.increment)
+
 .. warning::
 
-    Developers should be aware that automated timestamp handling defaults to the
-    newest timestamp, i.e. the time at which the last assignment operation
+    Developers should be aware that automated timestamp handling defaults to
+    the newest timestamp, i.e. the time at which the last assignment operation
     on a variable in a calculation occured. Additionally, these timestamps are
     not synchronized with XFEL's timing system, but with the host's local clock.
-
