@@ -70,47 +70,47 @@ Attributes
 
 Attributes of properties may be accessed during runtime as members of the property descriptor.
 
-+----------------------+------------------------------------+
-| **Attribute**        |  **Example**                       |
-+----------------------+------------------------------------+
-| displayType          | e.g. oct, bin, dec, hex, directory |
-+----------------------+------------------------------------+
-| minInc               | the inclusive-minimum value        |
-+----------------------+------------------------------------+
-| minExc               | the exclusive-minimum value        |
-+----------------------+------------------------------------+
-| maxInc               | the inclusive-maximum value        |
-+----------------------+------------------------------------+
-| maxExc               | the exclusive-maximum value        |
-+----------------------+------------------------------------+
-| minSize              | the minimum size of vector         |
-+----------------------+------------------------------------+
-| maxSize              | the maximum size of vector         |
-+----------------------+------------------------------------+
-| daqPolicy            | e.g. DaqPolicy.SAVE                |
-+----------------------+------------------------------------+
-| warnLow              | warn threshold low                 |
-+----------------------+------------------------------------+
-| warnHigh             | warn threshold high                |
-+----------------------+------------------------------------+
-| alarmLow             | alarm threshold low                |
-+----------------------+------------------------------------+
-| alarmHigh            | alarm threshold high               |
-+----------------------+------------------------------------+
-| unitSymbol           | e.g. Unit.METER                    |
-+----------------------+------------------------------------+
-| metricPrefixSymbol   | e.g. MetricPrefix.MILLI            |
-+----------------------+------------------------------------+
-| accessMode           | e.g. AccessMode.READONLY           |
-+----------------------+------------------------------------+
-| assignment           | e.g. Assignment.OPTIONAL           |
-+----------------------+------------------------------------+
-| defaultValue         | the default value or None          |
-+----------------------+------------------------------------+
-| requiredAccessLevel  | e.g. AccessLevel.EXPERT            |
-+----------------------+------------------------------------+
-| allowedStates        | the list of allowed states         |
-+----------------------+------------------------------------+
++---------------------+------------------------------------+
+| **Attribute**       |  **Example**                       |
++---------------------+------------------------------------+
+| displayType         | e.g. oct, bin, dec, hex, directory |
++---------------------+------------------------------------+
+| minInc              | the inclusive-minimum value        |
++---------------------+------------------------------------+
+| minExc              | the exclusive-minimum value        |
++---------------------+------------------------------------+
+| maxInc              | the inclusive-maximum value        |
++---------------------+------------------------------------+
+| maxExc              | the exclusive-maximum value        |
++---------------------+------------------------------------+
+| minSize             | the minimum size of vector         |
++---------------------+------------------------------------+
+| maxSize             | the maximum size of vector         |
++---------------------+------------------------------------+
+| daqPolicy           | e.g. DaqPolicy.SAVE                |
++---------------------+------------------------------------+
+| warnLow             | warn threshold low                 |
++---------------------+------------------------------------+
+| warnHigh            | warn threshold high                |
++---------------------+------------------------------------+
+| alarmLow            | alarm threshold low                |
++---------------------+------------------------------------+
+| alarmHigh           | alarm threshold high               |
++---------------------+------------------------------------+
+| unitSymbol          | e.g. Unit.METER                    |
++---------------------+------------------------------------+
+| metricPrefixSymbol  | e.g. MetricPrefix.MILLI            |
++---------------------+------------------------------------+
+| accessMode          | e.g. AccessMode.READONLY           |
++---------------------+------------------------------------+
+| assignment          | e.g. Assignment.OPTIONAL           |
++---------------------+------------------------------------+
+| defaultValue        | the default value or None          |
++---------------------+------------------------------------+
+| requiredAccessLevel | e.g. AccessLevel.EXPERT            |
++---------------------+------------------------------------+
+| allowedStates       | the list of allowed states         |
++---------------------+------------------------------------+
 
 .. _timestamping
 
@@ -192,7 +192,7 @@ When dealing with several inputs, a function can use the
    increment = Int32()
 
    @removeQuantity
-   increment_all_parameters(self, steps, speed, increment):
+   def _increment_all_parameters(self, steps, speed, increment):
        self.steps = steps + increment
        self.speed = speed + increment
 
