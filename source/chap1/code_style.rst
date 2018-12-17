@@ -123,6 +123,32 @@ style is as follows:
 .. note::
     Logging is disabled in the constructor :func:`__init__`.
 
+Inplace Operators
+-----------------
+Inplace operations on Karabo types are discouraged for reasons documented in
+:ref:`timestamping`.
+
+Don't do:
+
+.. code-block:: Python
+
+   speed = Int32(defaultValue=0)
+
+   @Slot()
+   async def speedUp(self):
+       self.speed += 5
+
+But rather:
+
+.. code-block:: Python
+
+   speed = Int32(defaultValue=0)
+
+   @Slot()
+   async def speedUp(self):
+       self.speed = self.speed.value + 5
+
+
 Exceptions
 ----------
 It is preferred to check for conditions to be correct rather than using
