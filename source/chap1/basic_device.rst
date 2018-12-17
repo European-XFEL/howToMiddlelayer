@@ -79,17 +79,17 @@ The **common** descriptor attributes are:
 +----------------------+------------------------------------+
 | displayType          | e.g. oct, bin, dec, hex, directory |
 +----------------------+------------------------------------+
-| unitSymbol           | e.g. Unit.METER                    |
+| unitSymbol           | e.g. ``Unit.METER``                |
 +----------------------+------------------------------------+
-| metricPrefixSymbol   | e.g. MetricPrefix.MILLI            |
+| metricPrefixSymbol   | e.g. ``MetricPrefix.MILLI``        |
 +----------------------+------------------------------------+
-| accessMode           | e.g. AccessMode.READONLY           |
+| accessMode           | e.g. ``AccessMode.READONLY``       |
 +----------------------+------------------------------------+
-| assignment           | e.g. Assignment.OPTIONAL           |
+| assignment           | e.g. ``Assignment.OPTIONAL``       |
 +----------------------+------------------------------------+
 | defaultValue         | the default value or None          |
 +----------------------+------------------------------------+
-| requiredAccessLevel  | e.g. AccessLevel.EXPERT            |
+| requiredAccessLevel  | e.g. ``AccessLevel.EXPERT``        |
 +----------------------+------------------------------------+
 | allowedStates        | the list of allowed states         |
 +----------------------+------------------------------------+
@@ -97,7 +97,7 @@ The **common** descriptor attributes are:
 +----------------------+------------------------------------+
 | alias                | a string to be used as alias       |
 +----------------------+------------------------------------+
-| daqPolicy            | e.g. DaqPolicy.SAVE                |
+| daqPolicy            | e.g. ``DaqPolicy.SAVE``            |
 +----------------------+------------------------------------+
 
 The min and maxSize attributes are only available for **vectors** if they have
