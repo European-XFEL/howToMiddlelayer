@@ -140,8 +140,10 @@ assignment of a value that does not have a timestamp:
 
     self.steps = 5  # current time as timestamp attached
 
-A different timestamp may be attached using the ``timestamp``
-function::
+A different timestamp may be attached using
+:class:`karabo.middlelayer.Timestamp``:
+
+.. code-block:: Python
 
     self.steps.timestamp = Timestamp("2009-09-01 12:34 UTC")
 
@@ -155,7 +157,7 @@ is newer:
 
     self.speed = 5 * self.distance / self.times[3]
 
-Due to this behaviour, using inplace operators, such as ``+=`` is discouraged,
+Due to this behaviour, using in-place operators, such as ``+=`` is discouraged,
 as the timestamp would be conserved:
 
 .. code-block:: Python
@@ -164,13 +166,15 @@ as the timestamp would be conserved:
 
    self.speed += 5  # The timestamp is kept
 
-   # The above effectively is 
-   self.speed = self.speed + 5 
+The above effectively is:
 
-   # And whilst the value is 10, we used the newest timestamp available
-   # from either component, here the old one from self.speed, and the value
-   # never gets incremented!
+.. code-block:: Python
 
+   self.speed = self.speed + 5
+
+And whilst the value is 10, we used the newest timestamp available
+from either component, here the previous one from ``self.speed``,
+and the timestamp never gets incremented!
 In order to create a new timestamp, the raw value needs to be accessed:
 
 .. code-block:: Python
@@ -179,6 +183,13 @@ In order to create a new timestamp, the raw value needs to be accessed:
 
 Since the value and 5 are both integers, no timestamp is available, and a new
 one is created.
+
+.. warning::
+
+    Developers should be aware that automated timestamp handling defaults to
+    the newest timestamp, i.e. the time at which the last assignment operation
+    on a variable in a calculation occured. Additionally, these timestamps are
+    not synchronized with XFEL's timing system, but with the host's local clock.
 
 When dealing with several inputs, a function can use the
 :func:`karabo.middlelayer.removeQuantity` decorator, to ease the readability:
@@ -199,10 +210,3 @@ When dealing with several inputs, a function can use the
    @Slot()
    async def incrementAllParameters(self):
        self._increment_all_params(self.steps, self.speed, self.increment)
-
-.. warning::
-
-    Developers should be aware that automated timestamp handling defaults to
-    the newest timestamp, i.e. the time at which the last assignment operation
-    on a variable in a calculation occured. Additionally, these timestamps are
-    not synchronized with XFEL's timing system, but with the host's local clock.

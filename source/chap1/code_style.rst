@@ -125,8 +125,8 @@ style is as follows:
 
 Inplace Operators
 -----------------
-Inplace operators on Karabo types is discouraged, and explicit is preferred,
-for reasons documented in :ref:`timestamping`.
+Inplace operations on Karabo types are discouraged for reasons documented in
+:ref:`timestamping`.
 
 Don't do:
 
