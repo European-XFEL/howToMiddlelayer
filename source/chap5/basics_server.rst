@@ -1,3 +1,13 @@
+Device server: Broadcast - Unicast
+==================================
+
+In Karabo messages can be of different with respect to the target, the so called
+**slotInstanceId**. Messages can be either targeted to a single device or all
+devices. If all devices are targeted, we refer to a so-called broadcast message.
+In the middlelayer API the device server will subscribe for all broadcast messages and
+distribute incoming messages to the device children.
+This removes unnecessary messaging overhead and will give a performance boost.
+
 Device server: Eventloop
 ========================
 
