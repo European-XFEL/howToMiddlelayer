@@ -64,53 +64,75 @@ are given as keyword arguments upon initialization.
 
 .. image:: graphics/descriptors.png
 
+.. _attributes
 
 Attributes
 ++++++++++
 
 Attributes of properties may be accessed during runtime as members of the property descriptor.
+Depending on the type of the property, some attributes might not be accessible.
 
-+---------------------+------------------------------------+
-| **Attribute**       |  **Example**                       |
-+---------------------+------------------------------------+
-| displayType         | e.g. oct, bin, dec, hex, directory |
-+---------------------+------------------------------------+
-| minInc              | the inclusive-minimum value        |
-+---------------------+------------------------------------+
-| minExc              | the exclusive-minimum value        |
-+---------------------+------------------------------------+
-| maxInc              | the inclusive-maximum value        |
-+---------------------+------------------------------------+
-| maxExc              | the exclusive-maximum value        |
-+---------------------+------------------------------------+
-| minSize             | the minimum size of vector         |
-+---------------------+------------------------------------+
-| maxSize             | the maximum size of vector         |
-+---------------------+------------------------------------+
-| daqPolicy           | e.g. DaqPolicy.SAVE                |
-+---------------------+------------------------------------+
-| warnLow             | warn threshold low                 |
-+---------------------+------------------------------------+
-| warnHigh            | warn threshold high                |
-+---------------------+------------------------------------+
-| alarmLow            | alarm threshold low                |
-+---------------------+------------------------------------+
-| alarmHigh           | alarm threshold high               |
-+---------------------+------------------------------------+
-| unitSymbol          | e.g. Unit.METER                    |
-+---------------------+------------------------------------+
-| metricPrefixSymbol  | e.g. MetricPrefix.MILLI            |
-+---------------------+------------------------------------+
-| accessMode          | e.g. AccessMode.READONLY           |
-+---------------------+------------------------------------+
-| assignment          | e.g. Assignment.OPTIONAL           |
-+---------------------+------------------------------------+
-| defaultValue        | the default value or None          |
-+---------------------+------------------------------------+
-| requiredAccessLevel | e.g. AccessLevel.EXPERT            |
-+---------------------+------------------------------------+
-| allowedStates       | the list of allowed states         |
-+---------------------+------------------------------------+
+The **common** descriptor attributes are:
+
++----------------------+------------------------------------+
+| **Common Attribute** |  **Example**                       |
++----------------------+------------------------------------+
+| displayType          | e.g. oct, bin, dec, hex, directory |
++----------------------+------------------------------------+
+| unitSymbol           | e.g. Unit.METER                    |
++----------------------+------------------------------------+
+| metricPrefixSymbol   | e.g. MetricPrefix.MILLI            |
++----------------------+------------------------------------+
+| accessMode           | e.g. AccessMode.READONLY           |
++----------------------+------------------------------------+
+| assignment           | e.g. Assignment.OPTIONAL           |
++----------------------+------------------------------------+
+| defaultValue         | the default value or None          |
++----------------------+------------------------------------+
+| requiredAccessLevel  | e.g. AccessLevel.EXPERT            |
++----------------------+------------------------------------+
+| allowedStates        | the list of allowed states         |
++----------------------+------------------------------------+
+| tags                 | a list of strings as property tags |
++----------------------+------------------------------------+
+| alias                | a string to be used as alias       |
++----------------------+------------------------------------+
+| daqPolicy            | e.g. DaqPolicy.SAVE                |
++----------------------+------------------------------------+
+
+The min and maxSize attributes are only available for **vectors** if they have
+been set before:
+
++----------------------+------------------------------------+
+| **Vector Attribute** |  **Example**                       |
++----------------------+------------------------------------+
+| minSize              | the minimum size of vector         |
++----------------------+------------------------------------+
+| maxSize              | the maximum size of vector         |
++----------------------+------------------------------------+
+
+Attributes that are available for **simple types** only (*Float*, *Int32*, etc.):
+
++----------------------+------------------------------------+
+| **Simple Attribute** |  **Example**                       |
++----------------------+------------------------------------+
+| minInc               | the inclusive-minimum value        |
++----------------------+------------------------------------+
+| minExc               | the exclusive-minimum value        |
++----------------------+------------------------------------+
+| maxInc               | the inclusive-maximum value        |
++----------------------+------------------------------------+
+| maxExc               | the exclusive-maximum value        |
++----------------------+------------------------------------+
+| warnLow              | warn threshold low                 |
++----------------------+------------------------------------+
+| warnHigh             | warn threshold high                |
++----------------------+------------------------------------+
+| alarmLow             | alarm threshold low                |
++----------------------+------------------------------------+
+| alarmHigh            | alarm threshold high               |
++----------------------+------------------------------------+
+
 
 .. _timestamping
 
