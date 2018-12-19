@@ -43,9 +43,9 @@ difference of temperatures:
 
 .. note::
 
-    The default value of the ``globalAlarmCondition`` property is `AlarmCondition.NONE`.
-    Other simple settings are `AlarmCondition.WARN`, `AlarmCondition.ALARM` and
-    `AlarmCondition.INTERLOCK`.
+    The default value of the ``globalAlarmCondition`` property is ``AlarmCondition.NONE``.
+    Other simple settings are ``AlarmCondition.WARN``, ``AlarmCondition.ALARM`` and
+    ``AlarmCondition.INTERLOCK``.
 
 The alarm monitoring can also be automatically configured within a property with
 different steps and information.

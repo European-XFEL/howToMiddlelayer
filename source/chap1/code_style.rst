@@ -1,7 +1,7 @@
 Code Style
 ==========
 While PEP8_, PEP20_, and PEP257_ are styling to follow, there are a few
-Karabo-specific details to take care of to improve code quality, yet keep 
+Karabo-specific details to take care of to improve code quality, yet keep
 consistency, for better maintainability across Karabo's 3 APIs.
 
 .. note::
@@ -21,8 +21,7 @@ project), then in alphabetical order:
    import numpy as np
 
    from karabo.middlelayer import (
-       connectDevice, Device, Slot, String
-   )
+       connectDevice, Device, Slot, String)
 
    from .scenes import control, default
 
@@ -53,7 +52,7 @@ Abbreviations in class names should be capitalised:
 
 Class Properties
 ----------------
-Properties part of the device's schema, which are exposed, should be 
+Properties part of the device's schema, which are exposed, should be
 `camelCased`, whereas non-exposed variables should `have_underscores`:
 
 .. code-block:: Python
@@ -63,8 +62,7 @@ Properties part of the device's schema, which are exposed, should be
    someOtherString = String(
        displayedName="Other string",
        defaultValue="Hello",
-       accessMode=AccessMode.READONLY
-   )
+       accessMode=AccessMode.READONLY)
 
    valid_ids = ["44eab", "ff64d"]
 
@@ -159,7 +157,7 @@ Therefore, the following is discouraged:
 
 .. code-block:: Python
 
-   
+
    async def execute_action(self):
        try:
            await self.px.move()
@@ -180,7 +178,7 @@ If exceptions are a must, then follow the :ref:`error-handling`
 
 Asynchronous Syntax
 --------------------
-Karabo 2 originally used Python 3.4, and you may find older asyncio syntax in 
+Karabo 2 originally used Python 3.4, and you may find older asyncio syntax in
 the wild. However, as of Karabo 2.3, it is preferred to make use of the newer
 `async def`/`await` syntax.
 
@@ -212,6 +210,6 @@ Note the removed import for `async def`.
 If you stumble upon older syntax, then follow the style of the project.
 You can always create a separate merge request that refactors its syntax.
 
-.. _PEP8: https://www.python.org/dev/peps/pep-0008/ 
+.. _PEP8: https://www.python.org/dev/peps/pep-0008/
 .. _PEP20: https://www.python.org/dev/peps/pep-0020/
 .. _PEP257: https://www.python.org/dev/peps/pep-0257/

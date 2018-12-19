@@ -20,7 +20,7 @@ to devices specified in a clients list of arbitrary length.
 
 ..  code-block:: Python
 
-    async def do_setup(self):
+    async def setup(self):
         self.state = State.STARTING
         self.devices = []
         try:
@@ -67,8 +67,7 @@ nodes to reach new target positions.
             self.Pitch.targetPosition,
             self.Roll.targetPosition,
             self.Length,
-            self.Width
-        )
+            self.Width)
 
         self.left.targetPosition = left
         self.right.targetPosition = right
@@ -81,7 +80,7 @@ nodes to reach new target positions.
 The following points should be remembered when using the support functions
 
 * Functions wait indefinitely for their completion criteria unless the
-  `timeout` keyword arguement is set with the required timeout seconds,
+  `timeout` keyword argument is set with the required timeout seconds,
   when the function will return (a Timeout exception is not thrown).
 * The returned done, pending and error dictionaries contain k,v pairs,
   where the key is the enumeration number (e.g. 0, 1, 2 and 3 in

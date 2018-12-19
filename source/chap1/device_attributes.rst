@@ -10,7 +10,7 @@ modes.
 
 Required Access Level
 +++++++++++++++++++++
-The `requiredAccessLevel` attribute allows to set at which user level this
+The ``requiredAccessLevel`` attribute allows to set at which user level this
 property may be reconfigured or Slot may be executed.
 For example, when a logged in user does not trump the access level of a slot,
 this slot will not be displayed in the *Configurator* of the *Karabo GUI*,
@@ -48,7 +48,7 @@ The definition of such a slot is then as follows:
 
 .. note::
 
-    The default requiredAccesslevel is `OBSERVER (level 0)`.
+    The default requiredAccesslevel is ``AccessLevel.OBSERVER`` (level 0).
 
 Allowed States
 ++++++++++++++
@@ -121,7 +121,7 @@ voltage of our voltage controller:
 
 .. note::
 
-    The default `accessMode` is `RECONFIGURABLE`, hence the read only nature
+    The default `accessMode` is ``AccessMode.RECONFIGURABLE``, hence the read only nature
     nature of a property has to be explicitly provided.
 
 Handling units
