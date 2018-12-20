@@ -10,13 +10,17 @@ and likewise an input channel can receive data from many outputs.
 
 Output Channels
 ---------------
-Firstly, import the required classes::
+Firstly, import the required classes:
+
+.. code-block:: Python
 
     from karabo.middlelayer import (
         AccessMode, Configurable, DaqDataType, Double, Node, OutputChannel
     )
 
-Then, define an output channel in your device::
+Then, define an output channel in your device:
+
+.. code-block:: Python
 
     output = OutputChannel(ChannelNode,
                            displayedName="Output",
@@ -54,6 +58,15 @@ channel:
     async def sendPipeline(self):
         self.output.schema.data.doubleProperty = 3.5
         await self.output.writeData()
+
+Alternatively, we can send a Hash without setting the property on the device:
+
+.. code-block:: Python
+
+    @Slot(displayedName="Send Pipeline Raw Data")
+    async def sendPipelineRaw(self):
+        await self.output.writeRawData(Hash('data.doubleProperty', 3.5))
+
 
 Input Channels
 --------------
