@@ -257,5 +257,5 @@ integrate it in a device:
 
 However, :ref:`device-node` might be more appropriate
 
-.. _framework-states: https://in.xfel.eu/readthedocs/docs/karabo/en/latest/concepts/states.html
-__ framework-states_
+.. _framework-states: https://in.xfel.eu/readthedocs/docs/karabo/en/latest/library/states.html
+__ states_
