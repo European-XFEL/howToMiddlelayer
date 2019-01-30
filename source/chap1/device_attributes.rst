@@ -202,7 +202,7 @@ Although not mandatory, a device can specify which states are legal for it:
 If this is not explicitly implemented, the device can go to any state.
 
 State Aggregation
------------------
++++++++++++++++++
 If you have several proxies, you can aggregate them together and have a global
 state matching the most significant. This is colloquially called `trumpState`
 and makes use of :func:`karabo.middlelayer.StateSignifier`.

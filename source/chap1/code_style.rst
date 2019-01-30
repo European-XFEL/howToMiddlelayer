@@ -9,7 +9,7 @@ consistency, for better maintainability across Karabo's 3 APIs.
     your particular case.
 
 Imports
--------
++++++++
 Import are first in resolution order (built-ins, external libraries, Karabo,
 project), then in alphabetical order:
 
@@ -32,7 +32,7 @@ project), then in alphabetical order:
 
 
 Class Definitions
------------------
++++++++++++++++++
 Classes should be `CamelCased`:
 
 .. code-block:: Python
@@ -51,7 +51,7 @@ Abbreviations in class names should be capitalised:
        pass
 
 Class Properties
-----------------
+++++++++++++++++
 Properties part of the device's schema, which are exposed, should be
 `camelCased`, whereas non-exposed variables should `have_underscores`:
 
@@ -67,7 +67,7 @@ Properties part of the device's schema, which are exposed, should be
    valid_ids = ["44eab", "ff64d"]
 
 Slots and Methods
------------------
++++++++++++++++++
 Slots are `camelCased`, methods `have_underscores`.
 Slots must not take arguments, apart from `self`.
 
@@ -93,7 +93,7 @@ Mutable objects must not be used as default values in method
 definitions.
 
 Printing and Logging
---------------------
+++++++++++++++++++++
 The use of :func:`print` is disallowed, as it leaves no
 traces behind for troubleshooting.
 
@@ -122,7 +122,7 @@ style is as follows:
     Logging is disabled in the constructor :func:`__init__`.
 
 Inplace Operators
------------------
++++++++++++++++++
 Inplace operations on Karabo types are discouraged for reasons documented in
 :ref:`timestamping`.
 
@@ -148,7 +148,7 @@ But rather:
 
 
 Exceptions
-----------
+++++++++++
 It is preferred to check for conditions to be correct rather than using
 exceptions. This defensive approach is to ensure that no device would be stuck
 or affect other devices running on the same server.
@@ -177,7 +177,7 @@ But rather:
 If exceptions are a must, then follow the :ref:`error-handling`
 
 Asynchronous Syntax
---------------------
++++++++++++++++++++
 Karabo 2 originally used Python 3.4, and you may find older asyncio syntax in
 the wild. However, as of Karabo 2.3, it is preferred to make use of the newer
 `async def`/`await` syntax.

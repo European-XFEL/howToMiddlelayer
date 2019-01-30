@@ -64,7 +64,7 @@ It is also possible that a user or Middlelayer device will cancel a slot call:
 
 
 Don't use `try ... except Exception` pattern
-+++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++
 
 In the middlelayer API so-called tasks are created. Whenever a device is
 shutdown, all active tasks belonging to this device are cancelled. Tasks might
