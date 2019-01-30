@@ -1,4 +1,4 @@
-.. _device-attributes
+.. _device-attributes:
 
 Property and Slot Attributes
 ============================
@@ -255,7 +255,7 @@ integrate it in a device:
           await waitUntilNew(self.remote_device)
           self.remoteState = self.remote_device.state
 
-However, :ref:`device-node` might be more appropriate
+However, :ref:`device node <device-node>` might be more appropriate
 
 .. _framework-states: https://in.xfel.eu/readthedocs/docs/karabo/en/latest/library/states.html
 __ states_

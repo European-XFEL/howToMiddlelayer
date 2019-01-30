@@ -1,4 +1,4 @@
-.. _error-handling
+.. _error-handling:
 
 Error Handling
 ==============
