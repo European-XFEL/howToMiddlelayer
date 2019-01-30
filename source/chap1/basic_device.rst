@@ -64,7 +64,7 @@ are given as keyword arguments upon initialization.
 
 .. image:: graphics/descriptors.png
 
-.. _attributes
+.. _attributes:
 
 Attributes
 ++++++++++
@@ -134,7 +134,7 @@ Attributes that are available for **simple types** only (*Float*, *Int32*, etc.)
 +----------------------+------------------------------------+
 
 
-.. _timestamping
+.. _timestamping:
 
 Handling timestamps
 +++++++++++++++++++

@@ -1,4 +1,4 @@
-.. _table-element
+.. _table-element:
 
 Table Element (VectorHash)
 ==========================
