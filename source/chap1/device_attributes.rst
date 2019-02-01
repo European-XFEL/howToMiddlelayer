@@ -213,7 +213,7 @@ and makes use of :func:`karabo.middlelayer.StateSignifier`.
 
    async def onInitialization(self):
        self.trumpState = StateSignifier()
-       monitor_taks = background(self.monitor_states())
+       monitor_task = background(self.monitor_states())
 
    async def monitor_states(self):
        while True:
