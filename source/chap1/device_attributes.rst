@@ -140,7 +140,7 @@ Legacy devices which do not specify a policy will have an `UNSPECIFIED` policy s
 to all their properties.
 
 .. note::
-    This are applied to leaf properties. Nodes do not have DAQPolicy.
+    This are applied to leaf properties. Nodes do not have DaqPolicy.
 
 Developers should liaise with users to define which properties should be recorded.
 These can be set up programmatically:
@@ -152,7 +152,7 @@ These can be set up programmatically:
     currentVoltage = Double(
         accessMode=AccessMode.READONLY,
         requiredAccessLevel=AccessLevel.OPERATOR,
-        daqPolicy=DAQPolicy.SAVE)
+        daqPolicy=DaqPolicy.SAVE)
 
 Handling units
 ++++++++++++++
