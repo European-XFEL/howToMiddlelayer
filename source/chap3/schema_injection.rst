@@ -87,3 +87,14 @@ be remembered:
   :func:`publishInjectedParameters` used to inject other classes
 * deleted (del) injected classes are removed from the schema by calling
   :func:`publishInjectedParameters`
+
+Injected Properties and DAQ
+---------------------------
+Injected Properties and the DAQ need some ground rules in order to record these
+properties correctly.
+
+In order for the DAQ to record injected properties, the DAQ needs to request the
+updated schema again, using the Run Controller's :func:`applyConfiguration` slot.
+
+This can be prone to operator errors, and therefore it is recommended that only
+properties injected at instantiation to be recorded.

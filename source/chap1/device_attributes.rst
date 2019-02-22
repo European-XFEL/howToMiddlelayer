@@ -124,6 +124,36 @@ voltage of our voltage controller:
     The default `accessMode` is ``AccessMode.RECONFIGURABLE``, hence the read only nature
     nature of a property has to be explicitly provided.
 
+DAQ Policy
+++++++++++
+Not every parameter of a device is interesting to record, such as the provided scenes.
+As such, the policy for each individual property can be set, on a per-instance basis.
+
+These are specified using the :class:`karabo.middlelayer.DaqPolicy` enum:
+
+ - `OMIT`: will not record the property to file;
+ - `SAVE`: will record the property to file;
+ - `UNSPECIFIED`: will adopt the global default DAQ policy. Currently, it is set to
+   record, although this will eventually change to not recorded.
+
+Legacy devices which do not specify a policy will have an `UNSPECIFIED` policy set
+to all their properties.
+
+.. note::
+    This are applied to leaf properties. Nodes do not have DAQPolicy.
+
+Developers should liaise with users to define which properties should be recorded.
+These can be set up programmatically:
+
+.. code-block:: Python
+
+   from karabo.middlelayer import DaqPolicy
+
+    currentVoltage = Double(
+        accessMode=AccessMode.READONLY,
+        requiredAccessLevel=AccessLevel.OPERATOR,
+        daqPolicy=DAQPolicy.SAVE)
+
 Handling units
 ++++++++++++++
 You can define a unit for a property, which is then used in the
