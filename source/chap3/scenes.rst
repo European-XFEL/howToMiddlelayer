@@ -25,19 +25,13 @@ Use the *karabo-scene2py* utility to convert the SVG file to Python code:
 
 .. code-block:: Bash
 
-   $ karabo-scene2py scene.svg > scenes.py
+   $ karabo-scene2py scene.svg SA1_XTD2_UND/MDL/GAINCURVE_SCAN > scenes.py
 
-As it is generated code, a few modifications are required. Begin by making
-the file PEP8 compliant,
+The first argument is the scene file, the second is an optional deviceId to be
+substituted.
 
-Then wrap all scene-related code into a single function, which should take a
-`deviceId` string argument, and returns `write_scene(scene)`, instead of printing it.
-
-Finally, replace all the hard-coded instance ids in strings with::
-
-    '{}.property'.format(deviceId)
-
-Your final `scenes.py` should look more or less as follows:
+As it is generated code, make sure the file is PEP8 compliant. The final
+result should look more or less like the following:
 
 .. code-block:: Python
 
