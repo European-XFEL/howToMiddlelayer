@@ -110,6 +110,8 @@ and reconnection coroutines.
 Let us define three motors we want to monitor and control:
 
 .. code-block:: Python
+   from asyncio import gather
+   from karabo.middlelayer import background
 
     MOTOR_1 = "SA1_XTD9_MONO/MOTOR/X"
     MOTOR_2 = "SA1_XTD9_MONO/MOTOR/Y"
@@ -143,7 +145,7 @@ Let us define three motors we want to monitor and control:
             connections = await gather(*devices_to_connect)
 
 
-By using :func:`karabo.middlelayer.gather` and
+By using :func:`asyncio.gather` and
 :func:`karabo.middlelayer.background`, we simultaneously execute all the tasks
 in `devices_to_connect` and await their outcomes.
 
