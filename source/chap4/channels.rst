@@ -15,7 +15,8 @@ Firstly, import the required classes:
 .. code-block:: Python
 
     from karabo.middlelayer import (
-        AccessMode, Configurable, DaqDataType, Double, Node, OutputChannel
+        AccessMode, Configurable, DaqDataType, Double, InputChannel,
+        Node, OutputChannel, Type
     )
 
 Then, define an output channel in your device:
