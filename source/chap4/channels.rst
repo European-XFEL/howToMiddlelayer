@@ -102,6 +102,18 @@ accessible via:
     async def input(self, data, meta):
         image = data.data.image
 
+If it is needed to use the bare Hash in the case of ImageData, it can be converted to NDArray as:
+
+.. code-block:: Python
+
+    @InputChannel(raw=True, displayedName="Input")
+    async def input(self, data, meta):
+        img_raw = data["data.image.pixels"]
+        img_type = img_raw["type"]
+        dtype = numpy.dtype(Type.types[img_type].numpy)
+        shape = img_raw["shape"]
+        image = numpy.frombuffer(img_raw["data"], dtype=dtype).reshape(shape)
+
 It is possible to react on the **endOfStream** or the **close** signal
 from the output channel via:
 
