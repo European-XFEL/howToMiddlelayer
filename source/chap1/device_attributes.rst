@@ -212,7 +212,7 @@ For instance, it can be disallowed to call the ``start`` slot if the device is
 in :class:`State.STARTED` or :class:`State.ERROR`.
 Such control can be applied to both slot calls and properties.
 
-The states and their hierarchy are documented in the `Framework`__.
+The states and their hierarchy are documented in the Framework__.
 
 
 Within the Middlelayer API, the :class:`State` is an eumerable represented as
@@ -378,5 +378,11 @@ whilst a background task can poll the other parameters in a loop:
 .. note::
     The concepts of background and gather are explained later in chapter 2
 
+Reference Implementation
+------------------------
+* OphirPowerMeter__ is a device interfacing with a meter over tcp making use of
+  tags and aliases
 
-.. __: https://in.xfel.eu/readthedocs/docs/karabo/en/latest/library/states.html
+.. _Framework: https://in.xfel.eu/readthedocs/docs/karabo/en/latest/library/states.html
+.. _OphirPowerMeter: https://git.xfel.eu/gitlab/karaboDevices/OphirPowerMeter
+
