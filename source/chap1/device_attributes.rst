@@ -333,8 +333,10 @@ return a hash with the keys of all properties having a specific tag:
        
        # Get all properties that are to be queried once
        onces = schema.filterByTags("once")     
+       # This returns a Hash which is the subset of the current configuration,
+       # with the property names that have 'once' as one of their tags.
 
-       # Get the hardware commands for each of the properties
+       # Get the hardware commands, aliases, for each of the properties
        tasks = {prop: self.query_device(schema.getAliasAsString(prop)) for prop in once.keys()}
 
        # Query
@@ -372,8 +374,7 @@ whilst a background task can poll the other parameters in a loop:
                 setattr(self, prop, value)
 
 .. note::
-    The concepts of background and gather are explained later 
-    TODO: reviewers, ensure there is a link
+    The concepts of background and gather are explained later in chapter 2
 
 
 .. __: https://in.xfel.eu/readthedocs/docs/karabo/en/latest/library/states.html
