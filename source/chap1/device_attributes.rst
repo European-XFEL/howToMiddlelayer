@@ -289,12 +289,14 @@ However, :ref:`device node <device-node>` might be more appropriate
 
 Tags and Aliases
 ================
-In Karabo, it is possible to give to a property tags and aliases.
-Tags allow to mark a property for certain usage or scenarios, whereas aliases
-are used to keep commands or markers needed when modifying the property.
+In Karabo, it is possible to assign a property with tags and aliases.
+Tags can be multiple per property and can therefore be used to group properties
+together.
+Aliases, which should be treated to be unique, are used to link, for
+instance, hardware commands to Karabo property names.
 
-These are typically used both together, when querying hardware, for instance,
-without the need for keeping several lists of parameters and modes.
+These are typically used both together without the need for keeping several
+lists of parameters and modes.
 
 To begin, mark the properties as desired, here are properties that are polled
 in a loop, and properties that are read once, at startup, for instance:
@@ -307,7 +309,7 @@ in a loop, and properties that are read once, at startup, for instance:
                      description="The hardware is on target position",
                      accessMode=AccessMode.READONLY
                      alias="SEND TARGET",  # The hardware command
-                     tags={"poll"})  # The conditions under which to query
+                     tags={"once", "poll"})  # The conditions under which to query
 
    hwStatus = String(displayedName="HW status",
                      description="status, as provided by the hardware",
