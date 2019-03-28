@@ -212,7 +212,7 @@ For instance, it can be disallowed to call the ``start`` slot if the device is
 in :class:`State.STARTED` or :class:`State.ERROR`.
 Such control can be applied to both slot calls and properties.
 
-The states and their hiearchy are documented in the `Framework`__.
+The states and their hierarchy are documented in the `Framework`__.
 
 
 Within the Middlelayer API, the :class:`State` is an eumerable represented as
@@ -286,5 +286,97 @@ integrate it in a device:
           self.remoteState = self.remote_device.state
 
 However, :ref:`device node <device-node>` might be more appropriate
+
+Tags and Aliases
+================
+In Karabo, it is possible to assign a property with tags and aliases.
+Tags can be multiple per property and can therefore be used to group properties
+together.
+Aliases, which should be treated to be unique, are used to link, for
+instance, hardware commands to Karabo property names.
+
+These are typically used both together without the need for keeping several
+lists of parameters and modes.
+
+To begin, mark the properties as desired, here are properties that are polled
+in a loop, and properties that are read once, at startup, for instance:
+
+.. code-block:: Python
+
+   from karabo middlelayer import AccessMode, Bool, String
+   
+   isAtTarget = Bool(displayedName="At Target",
+                     description="The hardware is on target position",
+                     accessMode=AccessMode.READONLY
+                     alias="SEND TARGET",  # The hardware command
+                     tags={"once", "poll"})  # The conditions under which to query
+
+   hwStatus = String(displayedName="HW status",
+                     description="status, as provided by the hardware",
+                     accessMode.READONLY,
+                     alias="SEND STATUS",  # The hardware command
+                     tags={"poll"})  # The conditions under which to query
+
+   hwVersion = String(displayedName="HW Version",
+                      description="status, as provided by the hardware",
+                      accessMode.READONLY,
+                      alias="SEND VERSION",  # The hardware command
+                      tags={"once"})  # The conditions under which to query
+
+Tags of a property can be multiple, and are contained within a set.
+
+Once this is defined, :func:`karabo.middlelayer.Schema.filterByTags` will
+return a hash with the keys of all properties having a specific tag:
+
+.. code-block:: Python
+
+   async def onInitialization(self):
+       schema = self.getDeviceSchema()
+       
+       # Get all properties that are to be queried once
+       onces = schema.filterByTags("once")     
+       # This returns a Hash which is the subset of the current configuration,
+       # with the property names that have 'once' as one of their tags.
+
+       # Get the hardware commands, aliases, for each of the properties
+       tasks = {prop: self.query_device(schema.getAliasAsString(prop)) for prop in once.keys()}
+
+       # Query
+       results = await gather(tasks)
+
+       # Set the result
+       for prop, value in results.items():
+           setattr(self, prop, value)
+   
+
+whilst a background task can poll the other parameters in a loop:
+
+.. code-block:: Python
+   from karabo.middlelayer import background, gather
+
+   async def onStart(self):
+       schema = self.getDeviceSchema()
+       # Get all properties that are to be polled
+       to_poll = schema.filterByTags("poll")
+
+       # Create a background loop 
+       self.poll_task = background(self.poll(to_poll))
+    
+       
+    async def poll(self, to_poll):
+        while True:
+            # Get the hardware commands for each of the properties
+            tasks = {prop: self.query_device(schema.getAliasAsString(prop)) for prop in to_poll.keys()}
+
+            # Query
+            results = await gather(tasks)
+
+            # Set the result
+            for prop, value in results.items():
+                setattr(self, prop, value)
+
+.. note::
+    The concepts of background and gather are explained later in chapter 2
+
 
 .. __: https://in.xfel.eu/readthedocs/docs/karabo/en/latest/library/states.html
