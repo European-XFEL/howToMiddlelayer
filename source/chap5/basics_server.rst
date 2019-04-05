@@ -29,15 +29,14 @@ a reference timestamp to calculate the trainId's.
 Each device will always calculate the trainId automatically if the device
 server was once connected to a TimeServer.
 
-Autstarting Devices
-===================
+Autostarting Devices
+====================
 
 A server can automatically launch any number of devices upon starting.
-This is done by specifying the `init` flag, which complements the
-`deviceClasses` flag:
+This is done by specifying the `init` flag:
 
 .. code-block:: bash
-   karabo-middlelayerserver deviceClasses=MyDevice init=$INIT_ARGS
+   karabo-middlelayerserver init=$INIT_ARGS
 
 where `$INIT_ARGS` is a JSON string of the following format:
 
@@ -56,13 +55,7 @@ Multiple devices can be added:
     INIT_ARGS='{"Device1": {"classId": "MyDevice", "parameter": 2, "otherParameter": "['a', 'b', 'c']"}
                "GENERATOR": {"classId": "DataGenerator", "autostart": "True"}}'
 
-   karabo-middlelayerserver deviceClasses=MyDevice,DataGenerator init=$INIT_ARGS
-
-.. warning:
-    If `deviceClasses` is not specified, then the server will raise a
-    `RuntimeError`. This is because the `init` block is executed before the
-    server is fully started, having found all available plugins
-    (installed devices.)
+   karabo-middlelayerserver init=$INIT_ARGS
 
 The deployment__ shows examples of middlelayer servers starting the projectDB
 device.
