@@ -28,3 +28,45 @@ On updates of the TimeServer a singleton-like TimeMixin class is updated with
 a reference timestamp to calculate the trainId's.
 Each device will always calculate the trainId automatically if the device
 server was once connected to a TimeServer.
+
+Autstarting Devices
+===================
+
+A server can automatically launch any number of devices upon starting.
+This is done by specifying the `init` flag, which complements the
+`deviceClasses` flag:
+
+.. code-block:: bash
+   karabo-middlelayerserver deviceClasses=MyDevice init=$INIT_ARGS
+
+where `$INIT_ARGS` is a JSON string of the following format:
+
+.. code-block:: bash
+    INIT_ARGS='{"DeviceInstanceId": {"classId": "MyDevice", "parameter": 2, "otherParameter": "['a', 'b', 'c']"}}'
+
+This will launch a device of type `MyDevice` with the id `DeviceInstanceId`,
+and other parameters.
+Mandatory parameters must be specified, else the server will start, but not the
+device.
+Note how the dictionary is surrounded by single quotes.
+
+Multiple devices can be added:
+
+.. code-block:: bash
+    INIT_ARGS='{"Device1": {"classId": "MyDevice", "parameter": 2, "otherParameter": "['a', 'b', 'c']"}
+               "GENERATOR": {"classId": "DataGenerator", "autostart": "True"}}'
+
+   karabo-middlelayerserver deviceClasses=MyDevice,DataGenerator init=$INIT_ARGS
+
+.. warning:
+    If `deviceClasses` is not specified, then the server will raise a
+    `RuntimeError`. This is because the `init` block is executed before the
+    server is fully started, having found all available plugins
+    (installed devices.)
+
+The deployment__ shows examples of middlelayer servers starting the projectDB
+device.
+
+.. _deployment: https://git.xfel.eu/gitlab/Karabo/deployment/merge_requests/827/diffs
+
+
