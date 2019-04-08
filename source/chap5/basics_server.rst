@@ -33,18 +33,20 @@ Autostarting Devices
 ====================
 
 A server can automatically launch any number of devices upon starting.
-This is done by specifying the `init` flag:
+This is done by specifying the ``init`` flag:
 
 .. code-block:: bash
+
    karabo-middlelayerserver init=$INIT_ARGS
 
-where `$INIT_ARGS` is a JSON string of the following format:
+where ``$INIT_ARGS`` is a JSON string of the following format:
 
 .. code-block:: bash
+
     INIT_ARGS='{"DeviceInstanceId": {"classId": "MyDevice", "parameter": 2, "otherParameter": "['a', 'b', 'c']"}}'
 
-This will launch a device of type `MyDevice` with the id `DeviceInstanceId`,
-and other parameters.
+This will launch a device of type ``MyDevice`` with the id
+``DeviceInstanceId``, and other parameters.
 Mandatory parameters must be specified, else the server will start, but not the
 device.
 Note how the dictionary is surrounded by single quotes.
@@ -52,12 +54,13 @@ Note how the dictionary is surrounded by single quotes.
 Multiple devices can be added:
 
 .. code-block:: bash
+
     INIT_ARGS='{"Device1": {"classId": "MyDevice", "parameter": 2, "otherParameter": "['a', 'b', 'c']"}
                "GENERATOR": {"classId": "DataGenerator", "autostart": "True"}}'
 
-   karabo-middlelayerserver init=$INIT_ARGS
+    karabo-middlelayerserver init=$INIT_ARGS
 
-The deployment__ shows examples of middlelayer servers starting the projectDB
+The deployment_ shows examples of middlelayer servers starting the projectDB
 device.
 
 .. _deployment: https://git.xfel.eu/gitlab/Karabo/deployment/merge_requests/827/diffs
