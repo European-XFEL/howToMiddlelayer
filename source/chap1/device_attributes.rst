@@ -313,13 +313,13 @@ in a loop, and properties that are read once, at startup, for instance:
 
    hwStatus = String(displayedName="HW status",
                      description="status, as provided by the hardware",
-                     accessMode.READONLY,
+                     accessMode=AccessMode.READONLY,
                      alias="SEND STATUS",  # The hardware command
                      tags={"poll"})  # The conditions under which to query
 
    hwVersion = String(displayedName="HW Version",
                       description="status, as provided by the hardware",
-                      accessMode.READONLY,
+                      accessMode=AccessMode.READONLY,
                       alias="SEND VERSION",  # The hardware command
                       tags={"once"})  # The conditions under which to query
 

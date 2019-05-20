@@ -66,14 +66,14 @@ and the scene itself:
 
 .. code-block:: Python
 
-   from karabo.middlelayer import accessMode, DaqPolicy, VectoString, slot
+   from karabo.middlelayer import AccessMode, DaqPolicy, VectoString, slot
    from .scenes import get_scene
 
 
    availableScenes = VectorString(
        displayedNamed="Available Scenes",
        displayType="Scenes",
-       accessMode=accessMode.READONLY,
+       accessMode=AccessMode.READONLY,
        defaultValue=["overview"],
        daqPolicy=DaqPolicy.OMIT)
 
@@ -100,13 +100,13 @@ you can define several functions in `scenes.py`, and modify `requestScene` to ch
 
 .. code-block:: Python
 
-   from karabo.middlelayer import accessMode, DaqPolicy, VectoString, slot
+   from karabo.middlelayer import AccessMode, DaqPolicy, VectoString, slot
    import .scenes
 
    availableScenes = VectorString(
        displayedNamed="Available Scenes",
        displayType="Scenes",
-       accessMode=accessMode.READONLY,
+       accessMode=AccessMode.READONLY,
        defaultValue=["overview", "controls"],
        daqPolicy=DaqPolicy.OMIT)
 
