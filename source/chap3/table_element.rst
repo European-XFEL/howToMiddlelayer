@@ -30,10 +30,10 @@ With :class:`RowSchema`, the definition of the VectorHash is as follows:
 .. code-block:: Python
 
     class MyMLDevice(Device):
-        self.userConfig = VectorHash(
-                            rows=RowSchema,
-                            displayedName="Hot Initialisation",
-                            defaultValue=[])
+        userConfig = VectorHash(
+                       rows=RowSchema,
+                       displayedName="Hot Initialisation",
+                       defaultValue=[])
 
 The user will now be presented with an editable table:
 
