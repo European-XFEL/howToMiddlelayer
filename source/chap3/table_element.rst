@@ -33,7 +33,8 @@ With :class:`RowSchema`, the definition of the VectorHash is as follows:
         userConfig = VectorHash(
                        rows=RowSchema,
                        displayedName="Hot Initialisation",
-                       defaultValue=[])
+                       defaultValue=[],
+                       minSize=1, maxSize=4)
 
 The user will now be presented with an editable table:
 
@@ -42,6 +43,8 @@ The user will now be presented with an editable table:
 Note that it is possible to provide the user with predefined entries, such as
 default values or reading a configuration file, by providing a populated array
 in the ``defaultValue`` option.
+The ``minSize`` and ``maxSize`` arguments can limit the table's size if
+needed.
 
 Using Entries
 -------------
