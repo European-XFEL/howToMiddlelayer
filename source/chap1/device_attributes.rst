@@ -165,15 +165,15 @@ A unit is declared using the ``unitSymbol`` and optionally, the
 
 .. code-block:: Python
 
-    distance = Float(
+    distance = Double(
         unitSymbol=Unit.METER,
         metricPrefixSymbol=MetricPrefix.MICRO)
-    times = VectorFloat(
+    times = VectorDouble(
         unitSymbol=Unit.SECOND,
         metricPrefixSymbol=MetricPrefix.MILLI)
-    speed = Float(
+    speed = Double(
         unitSymbol=Unit.METER_PER_SECOND)
-    steps = Float()
+    steps = Double()
 
 Once declared, all calculations have correct units::
 

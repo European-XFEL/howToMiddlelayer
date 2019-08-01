@@ -54,11 +54,11 @@ different steps and information.
 .. code-block:: Python
 
     from karabo.middlelayer import (
-        AlarmCondition, background, connectDevice, Device, Float, waitUntilNew)
+        AlarmCondition, background, connectDevice, Device, Double, waitUntilNew)
 
     class AlarmDevice(Device):
 
-        temperatureDiff = Float(
+        temperatureDiff = Double(
             displayedName="Temperature Difference",
             accessMode=AccessMode.READONLY,
             defaultValue=0.0,

@@ -111,7 +111,7 @@ been set before:
 | maxSize              | the maximum size of vector         |
 +----------------------+------------------------------------+
 
-Attributes that are available for **simple types** only (*Float*, *Int32*, etc.):
+Attributes that are available for **simple types** only (*Double*, *Int32*, etc.):
 
 +----------------------+------------------------------------+
 | **Simple Attribute** |  **Example**                       |
