@@ -210,6 +210,19 @@ Note the removed import for `async def`.
 If you stumble upon older syntax, then follow the style of the project.
 You can always create a separate merge request that refactors its syntax.
 
+Double and Float parameters
++++++++++++++++++++++++++++
+The middlelayer API supports both `Double` and `Float` elements.
+
+However, behind the scenes and at serialisation time, a `Float` value is stored
+as numpy's `float32` type, of which the C type is `double`.
+
+Thus, using `karabo.middlelayer.Float` causes issue at the DAQ level, where we
+describe a C `float` type, but send out a `double`, resulting in an unstable
+behaviour.
+
+Use `karabo.middlelayer.Double` instead of `Float`.
+
 .. _PEP8: https://www.python.org/dev/peps/pep-0008/
 .. _PEP20: https://www.python.org/dev/peps/pep-0020/
 .. _PEP257: https://www.python.org/dev/peps/pep-0257/
