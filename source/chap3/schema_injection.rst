@@ -1,7 +1,6 @@
 Schema injection
 ================
 
-
 A parameter injection is a modification of the class of an object. Since
 we do not want to modify the classes of all instances, we generate a
 fresh class for every object, which inherits from our class. This new
@@ -10,9 +9,9 @@ that:
 
 .. code-block:: Python
 
-    from karabo.middlelayer import Device, Injectable
+    from karabo.middlelayer import Device
 
-    class MyDevice(Injectable, Device):
+    class MyDevice(Device):
 
         async def onInitialization(self):
             # should it be needed to test that the node is there
@@ -26,20 +25,22 @@ that:
 
             # use the property as any other property:
             self.injected_string = "whatever"
-            # the test that the node is there is superflous here
+            # the test that the node is there is superfluous here
             if self.my_node is not None:
                 self.my_node.reached = False
 
     class MyNode(Configurable):
-        reached = Bool(displayedName="On position",
-                       description="On position flag",
-                       defaultValue=True,
-                       accessMode=AccessMode.RECONFIGURABLE
+        reached = Bool(
+            displayedName="On position",
+            description="On position flag",
+            defaultValue=True,
+            accessMode=AccessMode.RECONFIGURABLE
         )
 
 
 Injecting Slots
 ---------------
+
 Slots are decorating functions.
 If you want to add a Slot, or change the function it is bound to (decorating),
 the following will do the trick:
@@ -57,19 +58,16 @@ the following will do the trick:
         await self.publishInjectedParameters()
 
 .. note::
-    They key to that slot will not be `very_private` but instead `injectedSlot`
+    The key to that slot will not be `very_private` but instead `injectedSlot`
     So yes, cool that we can change the behaviour of a slot on the fly by
-    changing the function the slot calls, but they key won't reflect that.
+    changing the function the slot calls, but the key won't reflect that.
 
     If you do change the functions that are called, do put in a log message.
 
 .. warning::
-    Before you do that, take a hard look at yourself.
     Consider instead injecting a node with a proper Slot definition.
 
-
-
-Note that calling inject_something again resets the values of properties to 
+Note that calling `inject_something` again resets the values of properties to
 their defaults.
 Middlelayer class based injection differs strongly from C++ and
 bound api parameter injection, and the following points should
@@ -90,6 +88,7 @@ be remembered:
 
 Injected Properties and DAQ
 ---------------------------
+
 Injected Properties and the DAQ need some ground rules in order to record these
 properties correctly.
 
