@@ -38,7 +38,7 @@ In a synchronous context, setting a parameter is synchronous, hence the code blo
 until the parameter is properly set or an error is raised.
 
 In a coroutine, however, all parameter settings are automatically cached and will
-not be sent before the next ``yield from``. It is guaranteed that parameter
+not be sent before the next ``await``. It is guaranteed that parameter
 settings are properly ordered and are sent before the next slot call in bulk.
 
 As a corollary, setting a parameter multiple times results in only one
@@ -46,7 +46,7 @@ setting on the device of the last value. If this is not desired, use update
 device as follows::
 
     proxy.someValue = 3
-    yield from updateDevice(proxy)
+    await updateDevice(proxy)
     proxy.someValue = 5
 
 
@@ -187,10 +187,9 @@ device not holding the lock. Similarly command execution is
 restricted to the lock holder::
 
     @Slot(displayedName="Perform X-scan")
-    @coroutine
     def perform(self):
         with getDevice("some_device") as device:
-            with (yield from lock(device)):
+            with (await lock(device)):
                 # do something useful here
 
 
@@ -212,8 +211,8 @@ Although property access via device proxies is usually to be preferred, there ar
 where only a single or very few interactions with a remote device are necessary. In such
 a case the following shorthands may be used::
 
-   yield from setWait("deviceId", "someOtherParameter", a)
-   yield from execute("deviceId", "someSlot")
+   await setWait("deviceId", "someOtherParameter", a)
+   await execute("deviceId", "someSlot")
 
 The aforementioned commands are blocking and synchronized coroutines.
 
