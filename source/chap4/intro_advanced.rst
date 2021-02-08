@@ -4,7 +4,8 @@ Advanced Features
 
 The following section describes the advanced features of the middlelayer api.
 
-.. include:: channels.rst
 .. include:: allCompleted.rst
+.. include:: channels.rst
 .. include:: image_data.rst
+.. include:: pipeline_image.rst
 .. include:: serialization.rst
