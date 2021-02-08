@@ -68,6 +68,15 @@ Alternatively, we can send a Hash without setting the property on the device:
     async def sendPipelineRaw(self):
         await self.output.writeRawData(Hash('data.doubleProperty', 3.5))
 
+The output channel can notify all the clients with an end of stream message.
+Typically, this information is used to change the state of the input processing device.
+
+.. code-block:: Python
+
+    @Slot(displayedName="Send EndOfStream")
+    async def sendEndOfStream(self):
+        await self.output.writeEndOfStream()
+
 
 Input Channels
 --------------
@@ -137,14 +146,9 @@ The various behaviours are:
 - queue: put the data in a queue;
 - drop: discard the data;
 - wait: create a background task that waits until the data can be sent;
-- throw: discard the data when serving the data, raises an exception when
-        receiving.
+- queueDrop: cycle the data when the limit of the queue is hit
 
-The default is *wait*, which preserves data integrity.
-
-The mode can be set in the GUI, before device instantiation, or as follows::
-
-    self.output.noInputShared = "drop"
+The default mode is *drop* for performance reasons.
 
 The policies are the same on input channels if they are too slow for the fed
 data rate, but in copy mode only::
