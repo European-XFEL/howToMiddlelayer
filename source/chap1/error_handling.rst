@@ -76,6 +76,7 @@ Since the device is already shutting down, the task created by the log message
 will never be retrieved nor cancelled leaving a remnant on the device server.
 Subsequently, the server cannot shutdown gracefully.
 
+This changed on **Python 3.8** where `CancelledError` is inherits from `BaseException`.
 
 ..  code-block:: Python
 
