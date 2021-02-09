@@ -29,6 +29,17 @@ a reference timestamp to calculate the trainId's.
 Each device will always calculate the trainId automatically if the device
 server was once connected to a TimeServer.
 
+HeartBeat Tracking
+==================
+
+The heartbeat tracking of devices is by default **disabled** in the middlelayer
+device server. The heartbeat can be configured via:
+
+.. code-block:: bash
+
+    karabo-middlelayerserver track=True
+
+
 Autostarting Devices
 ====================
 
