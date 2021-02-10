@@ -1,26 +1,28 @@
 .. _device-attributes:
 
-Property and Slot Attributes
-============================
+Karabo Attributes
+=================
 
-This section describes how attributes can be used in **Properties** and **Slots**.
+This section describes how ``attributes`` can be used in **Properties** and **Slots**.
 
-Slots have two parameters that regulate their access using states and access
+Slots have two important attributes that regulate their access using states and access
 modes.
 
 Required Access Level
 +++++++++++++++++++++
-The ``requiredAccessLevel`` attribute allows to set at which user level this
+
+The ``requiredAccessLevel`` attribute allows to set at which access level this
 property may be reconfigured or Slot may be executed.
-For example, when a logged in user does not trump the access level of a slot,
-this slot will not be displayed in the *Configurator* of the *Karabo GUI*,
-nor will it be available for use in a scene.
-This can be used to hide features from lower level users.
+The minimum ``requiredAccessLevel`` for a reconfigurable property or Slot is at
+least `USER (level 1)` if not explicitly specified.
+
+Furthermore, this feature can be used to hide features from lower level users and
+some user interfaces might hide information depending on the access level.
 
 User levels are defined in :class:`karabo.middlelayer.AccessLevel`, and range
 from `OBSERVER (level 0)` to `ADMIN (level 4)`.
 Consequently, a user with lower level access, such as `OPERATOR
-(level 2)`, will have access to less information than and `EXPERT (level 3)`.
+(level 2)`, will have access to less information than `EXPERT (level 3)`.
 
 First, import :class:`AccessLevel`:
 
@@ -52,16 +54,19 @@ The definition of such a slot is then as follows:
 
 Allowed States
 ++++++++++++++
-In a similar philosophy, it is possible to limit slot calls to specific states
-using the `allowedStates` attribute in the Slot definition.
 
-States are provided and fixed in the Karabo Framework. They are defined
-in :class:`karabo.middlelayer.State`
+The middlelayer API of Karabo uses a simple state machine to protect
+slot execution and property reconfiguration. Therefore, it is possible to
+restrict slot calls to specific states using the `allowedStates` attribute
+in the ``Slot`` definition.
 
-The voltage of our controller can only be ramped up if the device is in the
-state: :class:`State.ON`. In the ramp up we also switch the state, since a ramp
-up action will be already running after the first call.
-Then the slot definition will be updated as follows:
+States are provided and defined in the Karabo Framework in :class:`karabo.middlelayer.State`
+
+In the example below, the voltage of the controller can only be ramped up
+if the device is in the state: :class:`State.ON`.
+In the Slot *rampUp* we also switch the device state to `State.RUNNING`,
+since a ramp up action will be running after the first call. With this protection,
+the procedure of ramping up the device can only be executed again after it has finished.
 
 .. code-block:: Python
 
@@ -85,15 +90,14 @@ It is possible to define an arbitrary quantity of states:
 
           allowedStates={State.ON, State.OFF}
 
-Note that if the list is empty, then the slot will never be callable.
-
 .. note::
 
-    By default every property and Slot may reconfigured or executed for all
-    states, respectively.
+    By default every property and Slot may be reconfigured or executed for **all**
+    device states.
 
 AccessMode
 ++++++++++
+
 The `accessMode` attribute allows to set if a property in a device is a
 **READONLY**, **RECONFIGURABLE** or **INITONLY**.
 
@@ -121,13 +125,15 @@ voltage of our voltage controller:
 
 .. note::
 
-    The default `accessMode` is ``AccessMode.RECONFIGURABLE``, hence the read only nature
-    nature of a property has to be explicitly provided.
+    The default `accessMode` is ``AccessMode.RECONFIGURABLE``. The read only
+    setting of a property has to be provided explicitly.
 
 DAQ Policy
 ++++++++++
-Not every parameter of a device is interesting to record, such as the provided scenes.
-As such, the policy for each individual property can be set, on a per-instance basis.
+
+Not every parameter of a device is interesting to record.
+**As a workaround for a missing DAQ feature**, the policy for each individual
+property can be set, on a per-class basis.
 
 These are specified using the :class:`karabo.middlelayer.DaqPolicy` enum:
 
@@ -142,9 +148,6 @@ to all their properties.
 .. note::
     This are applied to leaf properties. Nodes do not have DaqPolicy.
 
-Developers should liaise with users to define which properties should be recorded.
-These can be set up programmatically:
-
 .. code-block:: Python
 
    from karabo.middlelayer import DaqPolicy
@@ -154,14 +157,15 @@ These can be set up programmatically:
         requiredAccessLevel=AccessLevel.OPERATOR,
         daqPolicy=DaqPolicy.SAVE)
 
-Handling units
+Handling Units
 ++++++++++++++
-You can define a unit for a property, which is then used in the
-calculations of this property. In the Middlelayer API, units, amongst other
-things, are implemented using the ``pint`` module.
 
-A unit is declared using the ``unitSymbol`` and optionally, the
-``metricPrefixSymbol`` attributes:
+You can define a unit for a property, which is then used in the
+calculations of this property. In the Middlelayer API units are implemented
+using the ``pint`` module.
+
+A unit is declared using the ``unitSymbol`` and further extended with the
+``metricPrefixSymbol`` attribute:
 
 .. code-block:: Python
 
@@ -204,9 +208,10 @@ attribute:
 
 Device States
 =============
+
 Every device has a state, one of these defined in :class:`karabo.middlelayer.State`.
-These are used to show what the device is currently doing, what it can do, and
-which actions are restricted.
+They are used to show what the device is currently doing, what it can do, and
+which actions are not allowed.
 
 For instance, it can be disallowed to call the ``start`` slot if the device is
 in :class:`State.STARTED` or :class:`State.ERROR`.
@@ -214,27 +219,29 @@ Such control can be applied to both slot calls and properties.
 
 The states and their hierarchy are documented in the Framework_.
 
-
-Within the Middlelayer API, the :class:`State` is an eumerable represented as
+Within the Middlelayer API, the :class:`State` is an enumerable represented as
 string, with a few specific requirements, as defined in
 :class:`karabo.middlelayer_api.device.Device`
 
-Although not mandatory, a device can specify which states are legal for it:
+Although not mandatory, a device can specify which states are used in the ``options``
+attribute:
 
 .. code-block:: Python
 
    from karabo.middlelayer import Overwrite, State
 
-   state = Overwrite(defaultValue=State.STOPPED,
-                     displayedName="State",
-                     options={State.STOPPED, State.STARTED, State.ERROR})
+   state = Overwrite(
+        defaultValue=State.STOPPED,
+        displayedName="State",
+        options={State.STOPPED, State.STARTED, State.ERROR})
 
-If this is not explicitly implemented, the device can go to any state.
+If this is not explicitly implemented, all states are possible.
 
 State Aggregation
 +++++++++++++++++
+
 If you have several proxies, you can aggregate them together and have a global
-state matching the most significant. This is colloquially called `trumpState`
+state matching the most significant. In the example, this is called `trumpState`
 and makes use of :func:`karabo.middlelayer.StateSignifier`.
 
 .. code-block:: Python
@@ -247,7 +254,8 @@ and makes use of :func:`karabo.middlelayer.StateSignifier`.
 
    async def monitor_states(self):
        while True:
-           state_list = [dev.state for dev in self.devices]  # Where self.devices is a list of proxies
+           # Here self.devices is a list of proxies
+           state_list = [dev.state for dev in self.devices]
            self.state = self.trumpState.returnMostSignificant(state_list)
            await waitUntilNew(*state_list)
 
@@ -256,7 +264,6 @@ timestamp to the returned state.
 
 It is also possible to define your own rules, as documented in
 :class:`karabo.common.states.StateSignifier`
-
 
 The following shows how to represent and query a remote device's state and
 integrate it in a device:
@@ -289,11 +296,12 @@ However, :ref:`device node <device-node>` might be more appropriate
 
 Tags and Aliases
 ================
-In Karabo, it is possible to assign a property with tags and aliases.
-Tags can be multiple per property and can therefore be used to group properties
+
+It is possible to assign a property with tags and aliases.
+
+- Tags can be multiple per property and can therefore be used to group properties
 together.
-Aliases, which should be treated to be unique, are used to link, for
-instance, hardware commands to Karabo property names.
+- Aliases are unique and for instance used to map hardware commands to Karabo property names.
 
 These are typically used both together without the need for keeping several
 lists of parameters and modes.
