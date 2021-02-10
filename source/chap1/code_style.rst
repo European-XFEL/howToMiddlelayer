@@ -1,17 +1,18 @@
 Code Style
 ==========
-While PEP8_, PEP20_, and PEP257_ are styling to follow, there are a few
+
+While PEP8_, PEP20_, and PEP257_ are stylings to follow, there are a few
 Karabo-specific details to take care of to improve code quality, yet keep
 consistency, for better maintainability across Karabo's 3 APIs.
 
-.. note::
-    This guide is not holy canon: when in doubt, do what makes most sense for
-    your particular case.
+An example of a major exception from PEP8_ is that underscores should never be used for
+public device properties or slots.
 
 Imports
 +++++++
-Import are first in resolution order (built-ins, external libraries, Karabo,
-project), then in alphabetical order:
+
+Import follow the PEP8 recommendation and are first in resolution order
+ (built-ins, external libraries, Karabo, project), then in alphabetical order:
 
 .. code-block:: Python
 
@@ -25,14 +26,10 @@ project), then in alphabetical order:
 
    from .scenes import control, default
 
-.. warning::
-   Star imports (eg. `from karabo.middlelayer import *`) are strictly forbidden,
-   as it is not clear what is being imported from where, making tools like *pyflakes*
-   ineffective, and increases cognitive load.
-
 
 Class Definitions
 +++++++++++++++++
+
 Classes should be `CamelCased`:
 
 .. code-block:: Python
@@ -52,6 +49,7 @@ Abbreviations in class names should be capitalised:
 
 Class Properties
 ++++++++++++++++
+
 Properties part of the device's schema, which are exposed, should be
 `camelCased`, whereas non-exposed variables should `have_underscores`:
 
@@ -66,8 +64,10 @@ Properties part of the device's schema, which are exposed, should be
 
    valid_ids = ["44eab", "ff64d"]
 
+
 Slots and Methods
 +++++++++++++++++
+
 Slots are `camelCased`, methods `have_underscores`.
 Slots must not take arguments, apart from `self`.
 
@@ -94,8 +94,6 @@ definitions.
 
 Printing and Logging
 ++++++++++++++++++++
-The use of :func:`print` is disallowed, as it leaves no
-traces behind for troubleshooting.
 
 Logging is the way to share information to developers and maintainers.
 This allows for your messages to be stored to files for analysis at a later
@@ -123,6 +121,7 @@ style is as follows:
 
 Inplace Operators
 +++++++++++++++++
+
 Inplace operations on Karabo types are discouraged for reasons documented in
 :ref:`timestamping`.
 
@@ -149,6 +148,7 @@ But rather:
 
 Exceptions
 ++++++++++
+
 It is preferred to check for conditions to be correct rather than using
 exceptions. This defensive approach is to ensure that no device would be stuck
 or affect other devices running on the same server.
@@ -176,52 +176,19 @@ But rather:
 
 If exceptions are a must, then follow the :ref:`error-handling`
 
-Asynchronous Syntax
-+++++++++++++++++++
-Karabo 2 originally used Python 3.4, and you may find older asyncio syntax in
-the wild. However, as of Karabo 2.3, it is preferred to make use of the newer
-`async def`/`await` syntax.
+Use Double and NOT Float
+++++++++++++++++++++++++
 
-Therefore, what was previously:
+The middlelayer API supports both `Double` and `Float` properties.
 
-.. code-block:: Python
+However, behind the scenes a `Float` value is casted as numpy's `float32` type.
+Casting this value back to float64 may lead to different value. Hence, services on top
+of the framework might cast this value to a string before casting to the built-in python
+float of 64 bit to prevent cast errors.
+Note, that a 32 bit float has a precision of 6, which might be of different expectation
+for a normal python developer.
 
-   from asyncio import coroutine
-
-   @Slot()
-   @coroutine
-   def execute(self):
-       with (yield from getDevice(device_id)) as px:
-           yield from px.move()
-           self.state = px.state
-
-Is now:
-
-.. code-block:: Python
-
-   @Slot()
-   async def execute(self):
-        async with getDevice(device_id) as px:
-           await px.move()
-           self.state = px.state
-
-Note the removed import for `async def`.
-
-If you stumble upon older syntax, then follow the style of the project.
-You can always create a separate merge request that refactors its syntax.
-
-Double and Float parameters
-+++++++++++++++++++++++++++
-The middlelayer API supports both `Double` and `Float` elements.
-
-However, behind the scenes and at serialisation time, a `Float` value is stored
-as numpy's `float32` type, of which the C type is `double`.
-
-Thus, using `karabo.middlelayer.Float` causes issue at the DAQ level, where we
-describe a C `float` type, but send out a `double`, resulting in an unstable
-behaviour.
-
-Use `karabo.middlelayer.Double` instead of `Float`.
+**Use `karabo.middlelayer.Double` instead of `Float`.**
 
 .. _PEP8: https://www.python.org/dev/peps/pep-0008/
 .. _PEP20: https://www.python.org/dev/peps/pep-0020/
