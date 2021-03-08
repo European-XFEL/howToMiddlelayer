@@ -5,19 +5,20 @@ While PEP8_, PEP20_, and PEP257_ are stylings to follow, there are a few
 Karabo-specific details to take care of to improve code quality, yet keep
 consistency, for better maintainability across Karabo's 3 APIs.
 
-An example of a major exception from PEP8_ is that underscores should never be used for
-public device properties or slots.
+An example of a major exception from PEP8_ is that underscores should never be
+used for public device properties or slots.
 
 Imports
 +++++++
 
-Import follow the PEP8 recommendation and are first in resolution order
- (built-ins, external libraries, Karabo, project), then in alphabetical order:
+Imports follow `isort` style: they are first in resolution order (built-ins,
+external libraries, Karabo, project), then in import style (`from imports`,
+`imports`), then in alphabetical order:
 
 .. code-block:: Python
 
-   from asyncio import wait_for
    import sys
+   from asyncio import wait_for
 
    import numpy as np
 
@@ -25,6 +26,13 @@ Import follow the PEP8 recommendation and are first in resolution order
        connectDevice, Device, Slot, String)
 
    from .scenes import control, default
+
+`isort` can automatically fix imports by calling it with the filename:
+
+.. code-block:: bash
+
+    $ isort Keithley6514.py
+    Fixing /data/danilevc/Keithley6514/src/Keithley6514/Keithley6514.py
 
 
 Class Definitions
@@ -182,11 +190,11 @@ Use Double and NOT Float
 The middlelayer API supports both `Double` and `Float` properties.
 
 However, behind the scenes a `Float` value is casted as numpy's `float32` type.
-Casting this value back to float64 may lead to different value. Hence, services on top
-of the framework might cast this value to a string before casting to the built-in python
-float of 64 bit to prevent cast errors.
-Note, that a 32 bit float has a precision of 6, which might be of different expectation
-for a normal python developer.
+Casting this value back to float64 may lead to different value. Hence, services
+on top of the framework might cast this value to a string before casting to the
+built-in python float of 64 bit to prevent cast errors.
+Note, that a 32 bit float has a precision of 6, which might be of different
+expectation for a normal python developer.
 
 **Use `karabo.middlelayer.Double` instead of `Float`.**
 
