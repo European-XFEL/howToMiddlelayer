@@ -1,18 +1,17 @@
 .. _device-nodes
 
-Device Nodes - The `Middle Layer` Way
+Device Nodes
 =====================================
 
-Using :func:`connectDevice` or :func:`getDevice` are practical from within
-macros. Unless it is required by strict constraints, the monitoring as
-described in the previous section should be left to the API.
-For middle layer device development, :class:`DeviceNode` is more appropriate and
-is preferred.
+Next to use :func:`connectDevice` or :func:`getDevice` it is possible in
+middle layer device development to use a  :class:`DeviceNode`.
 
 .. note::
     DeviceNodes are **MANDATORY** properties and can only be set before
     instantiation, e.g. are **INITONLY**!
 
+In contrast to a regular ``Access.MANDATORY`` definition, a ``DeviceNode`` also does not
+accept an empty string.
 Defining a remote device is done as follows:
 
 .. code-block:: Python
@@ -26,9 +25,8 @@ Defining a remote device is done as follows:
     motor3Proxy = DeviceNode(displayedName="RemoteDevice",
                              description="Remote motor 3")
 
-And that's about it. It is however important to be aware of the workings
-behind the scene, which are similar to what is described in the previous
-section.
+However, a ``DeviceNode`` must connect within a certain timeout (default is 2 seconds )
+to the configured remote device, otherwise the device holding a ``DeviceNode`` shuts itself down.
 
 Accessing, setting, and waiting for updates from :class:`DeviceNode` is similar
 to what was done previously.
@@ -67,28 +65,22 @@ Function and parameter calls are now exactly as they were when using
 :func:`getDevice` or :func:`connectDevice`, but now details regarding the
 connection to remote devices are left to the middle layer API.
 
-Proxy connection
-****************
+Timeout parameter
+*****************
 
-The DeviceNode holds a proxy to a remote device. During initialization the
-DeviceNodes try to establish a proxy connection. Once this is done, the schema
-of the main device will be updated.
-Unfortunately, due to the nature of the DeviceNode, the operator does not see
-if a device using DeviceNodes is fully functional in the beginning, as there is
-no feedback on the connection status.
+The ``DeviceNode`` holds a proxy to a remote device. During initialization, the
+DeviceNodes try to establish a proxy connection. Once connected, the deviceId of the
+remote device can be represented, but internally the proxy is retrieved. For this,
+a connection must be established. If this cannot be guaranteed within a certain time,
+the device holding the device nodes will shut itself down.
 
-For this purpose, with **Karabo 2.3.0** a timeout parameter in seconds can be provided.
+A timeout parameter of up to 5 seconds can be provided.
 
 .. code-block:: Python
 
     motor1Proxy = DeviceNode(displayedName="RemoteDevice",
                              description="Remote motor 1",
-                             timeout=1.5)
-
-If the DeviceNode was not able to estasblish the proxy connection within this
-timeframe an error is thrown and the holding device shuts down with an error
-message which is visible in the log files.
-
+                             timeout=4.5)
 
 Reference Implementations
 -------------------------
