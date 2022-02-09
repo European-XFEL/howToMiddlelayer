@@ -59,6 +59,90 @@ needed.
                        minSize=1, maxSize=4)
 
 
+
+Customization
+-------------
+
+The Table Element can be a bit customized with the **displayType** attribute. Specifying
+for example
+
+.. code-block:: Python
+
+    class RowSchema(Configurable):
+        deviceId = String(
+                displayedName="DeviceId",
+                defaultValue="")
+        state = String(
+                defaultValue="UNKNOWN",
+                displayType="State",
+                displayedName="State")
+
+will have a table schema that describes the state column with a displayType ``State``. The graphical user
+interface can then color the column according to state color.
+
+With **Karabo 2.14.X**, the table offers more customization, e.g.
+
+.. code-block:: Python
+
+    class RowSchema(Configurable):
+        progress = Double(
+                displayedName="ProgressBar",
+                displayType="TableProgressBar"
+                defaultValue=0.0,
+                minInc=0.0,
+                maxInc=100.0)
+
+        stringColor = String(
+                defaultValue="anystring",
+                displayType="TableColor|default=white&xfel=orange&desy=blue",
+                displayedName="stringColor")
+
+        numberColor = Int32(
+                displayedName="Number Color",
+                displayType="TableColor|0=red&1=orange&2=blue"
+                defaultValue=0)
+
+
+Hence, for different displayTypes more options are available.
+
+- A progressbar can be declared with ``TableProgressBar`` on a number descriptor.
+- Background coloring can be provided for strings and numbers with the ``TableColor``
+  displayType. The coloring is then appended in an URI scheme (separator `&`) which is
+  append to the displayType after `|`.
+  Declaration of a default background brush can be set with the *default* setting.
+
+
+.. code-block:: Python
+
+    class RowSchema(Configurable):
+        progress = Bool(
+                displayedName="Bool Button",
+                displayType="TableBoolButton"
+                defaultValue=True)
+
+For read only table element a button can be declared via ``TableBoolButton``.
+The button is enabled depending on the boolean setting.
+
+Clicking the button will send a Hash to the device via the slot **requestAction**.
+
+The hash contains keys with data::
+
+    action: TableButton
+    path: the property key
+    table: the table data
+
+The table data itself is a Hash with::
+
+    data = Hash(
+        "rowData", h,
+        "row", row,
+        "column", column,
+        "header", header)
+
+The rowData is a Hash of the row of the table button. The elements `row` and `column`
+provide the indexes of the button and the header the column string.
+
+
 Using Entries
 -------------
 
@@ -82,7 +166,8 @@ Moreover, iterating over the encapsulated numpy array can be done like
     async def doSomethingTable(self):
         # This loops over the array (.value)
         for row in self.userConfig.value:
-            # do something ...
+            # do something ..., e.g. check the first column
+            first_column = row[0]
 
 
 Action on Update
