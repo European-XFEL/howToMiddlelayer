@@ -17,7 +17,8 @@ Contents:
    chap2/intro_device_proxies
    chap3/intro_bread_butter
    chap4/intro_advanced
-   chap5/intro_server
+   chap5/intro_testing
+   chap6/intro_server
 
 
 Indices and tables
