@@ -10,14 +10,14 @@ and likewise an input channel can receive data from many outputs.
 
 Output Channels
 ---------------
+
 Firstly, import the required classes:
 
 .. code-block:: Python
 
     from karabo.middlelayer import (
         AccessMode, Configurable, DaqDataType, Double, InputChannel,
-        Node, OutputChannel, Type
-    )
+        Node, OutputChannel, Type)
 
 Then, define an output channel in your device:
 
