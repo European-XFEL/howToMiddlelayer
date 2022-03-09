@@ -11,4 +11,3 @@ This is available with **Karabo 2.11.0**
 
 .. literalinclude:: code/pipeline_image.py
    :language: python
-   :linenos:
