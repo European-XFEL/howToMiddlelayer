@@ -58,7 +58,9 @@ be used:
         print(remote_device.property)
 
 .. note::
-    The ``async with`` statement is not yet supported in Karabo
+
+    The ``async with`` statement is supported from **Karabo 2.13.0** onwards.
+
 
 Continuous Monitoring
 +++++++++++++++++++++
