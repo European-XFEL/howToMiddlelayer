@@ -67,6 +67,27 @@ the device. Next, we consider the case where we want to update a property
 inside a child of the top level class.
 
 
+Using Overwrite to change attributes
+------------------------------------
+
+:Python:`Overwrite` is used to update the attributes of existing Karabo
+property descriptors. Similar to the description in Chapter `overwrite`_  for the creation of a class,
+the mechanism can be used in schema injection.
+
+.. code-block:: Python
+
+    class Configurator(Device):
+
+        beckhoffComs = String(
+            displayedName="BeckhoffComs in Topic",
+            options=[])
+
+        @Slot("Find BeckhoffComs")
+        async def findBeckhoffComs(self):
+            # Get a list of beckhoffCom deviceIds
+            options = await self.get_beckhoff_coms()
+            self.__class__.beckhoffComs = Overwrite(options=options)
+            await self.publishInjectedParameters()
 
 .. _schema-injection-node:
 
@@ -80,20 +101,19 @@ Also, a modification of any class except for the device's top level class
 will modify the respective instances in ANY of the device instances running on
 the server. Only a device's top level class is protected. A change in a child
 class requires a full reconstruction of the child in a fresh class and an
-injection into the device's top level class. 
+injection into the device's top level class.
 
 As an example on how a schema injection can be used to update the attributes
 of a property inside a node, we update the :Python:`description` attribute
 of a Karabo value :Python:`importantValue` based on the value of a Karabo
 string :Python:`description`. The updated node is injected into the device's
-top level class. Two ways to achieve this are presented in the following.
+top level class.
 
-Example 1
-+++++++++
+Example
++++++++
 
-In the first example, the factory function :Python:`create_test_channel` is
-used to create nodes of the same 'type', which, however, incorporate different
-classes. Here, same 'type' means that all nodes of this 'type' have the same
+The factory function :Python:`create_test_channel` is used to create nodes of the same 'type', which, however,
+incorporate different classes. Here, same 'type' means that all nodes of this 'type' have the same
 layout of Karabo properties, e.g. if there are multiple input channels present
 in a device.
 
@@ -126,7 +146,7 @@ in a device.
 
                 if self.get_root().allow_update:
                     await self.update_important_value_description()
-            
+
             if conf:
                 importantValue = Double(
                     displayedName="Important Value",
@@ -176,94 +196,10 @@ configuration of the node is stored as a Karabo Hash and given to the class
 factory as an argument. From the configuration Hash, the new description
 for the :Python:`importantValue` is extracted. During the schema injection
 the new node instance is initialized with the values of the old node instance
-by passing the configuration Hash of the old node to the 
+by passing the configuration Hash of the old node to the
 :Python:`publishInjectedParameters` function. Note that during the
 initialization the setter functions of the properties are called. To prevent
 an infinite schema injection cascade, the bool :Python:`allow_update` is used.
-
-
-Example 2
-+++++++++
-
-In the second example the class factory :Python:`create_test_channel` is used
-to construct new classes for the nodes that inherit from the existing initial
-class of the node.
-
-
-.. code-block:: Python
-
-    from karabo.middlelayer import (
-        Configurable, Device, Double, isSet, Node, Overwrite, String
-    )
-
-    from ._version import version as deviceVersion
-
-
-    class TestChannel(Configurable):
-
-        async def update_important_value_description(self):
-            dev = next(iter(self._parents))
-            key = self._parents[dev]
-
-            await dev.update_test_channel_important_value_descrpt(key)
-
-        @String(
-            displayedName="description",
-            description="Update description of the Important Value"
-        )
-        async def description(self, val):
-            if not isSet(val) or val.value is None:
-                return
-            self.description = val.value
-
-            if self.get_root().allow_update:
-                await self.update_important_value_description()
-
-        importantValue = Double(
-            displayedName="Important Value",
-            description="Important Value"
-        )
-
-
-    def create_test_channel(conf):
-        class LocalTestChannel(TestChannel):
-            importantValue = Overwrite(description=conf["description"])
-
-        return LocalTestChannel
-
-
-    class SchemaInjectionExample2(Device):
-        __version__ = deviceVersion
-
-        def __init__(self, configuration):
-            super().__init__(configuration)
-
-        testChannel1 = Node(TestChannel)
-        testChannel2 = Node(TestChannel)
-        allow_update = False
-
-        async def update_test_channel_important_value_descrpt(self, node_key):
-            self.allow_update = False
-            h = self.configurationAsHash()[node_key]
-            setattr(self.__class__, node_key, Node(create_test_channel(h)))
-
-            await self.publishInjectedParameters(node_key, h)
-            self.allow_update = True
-
-        async def onInitialization(self):
-            """ This method will be called when the device starts.
-
-                Define your actions to be executed after instantiation.
-            """
-            self.allow_update = True
-
-
-
-:Python:`Overwrite` is used to update the attributes of existing Karabo 
-properties. Like in the first example, the updated node instance is
-initialized with the values of the old node instances by passing the Hash
-to the :Python:`publishInjectedParameters` function.
-
 
 Injecting Slots
 ---------------
