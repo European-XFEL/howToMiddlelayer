@@ -91,115 +91,88 @@ the mechanism can be used in schema injection.
 
 .. _schema-injection-node:
 
-Updating properties inside a node
----------------------------------
+Updating attributes of properties inside a node
+-----------------------------------------------
 
-Suppose in a device there are multiple nodes that are set up from the
-same base class. In this case, there are multiple instances of the same class,
-one in each node, and a modification of this class will modify all nodes.
-Also, a modification of any class except for the device's top level class
-will modify the respective instances in ANY of the device instances running on
-the server. Only a device's top level class is protected. A change in a child
-class requires a full reconstruction of the child in a fresh class and an
-injection into the device's top level class.
+Karabo Devices are instances of a device class (classId). Hence, all instances of the same class
+on the same device server share the same **static** schema and a modification to any class object
+of the schema is propagated to all device children. However, as described above, it
+is possible to modify the top-layer device class.
+**This leads to, that a change in a noded structure requires a full reconstruction
+(using a new class) and injection into the device's top level class
+under the same property key.**
 
-As an example on how a schema injection can be used to update the attributes
-of a property inside a node, we update the :Python:`description` attribute
-of a Karabo value :Python:`importantValue` based on the value of a Karabo
-string :Python:`description`. The updated node is injected into the device's
-top level class.
-
-Example
-+++++++
-
-The factory function :Python:`create_test_channel` is used to create nodes of the same 'type', which, however,
-incorporate different classes. Here, same 'type' means that all nodes of this 'type' have the same
-layout of Karabo properties, e.g. if there are multiple input channels present
-in a device.
+Below is a **MotorDevice** with two different motor axes, `rotary` and `linear` represented
+in a `Node`.
+In the following, we would like to change on runtime the `minInc` and `maxInc` attribute
+of the `targetPosition` property. However, **Schema injection for runtime attributes in mostly
+not worth it and should be avoided**. Nevertheless, this example shows the technical possiblity.
 
 .. code-block:: Python
 
     from karabo.middlelayer import (
-        Configurable, Device, Double, isSet, Node, String
-    )
-
-    from ._version import version as deviceVersion
+        Configurable, Device, Double, isSet, Node, String, Slot, VectorDouble)
 
 
-    def create_test_channel(conf=None):
-        class TestChannel(Configurable):
+    def get_axis_schema(key, limits=None):
 
-            async def update_important_value_description(self):
-                dev = next(iter(self._parents))
-                key = self._parents[dev]
+        class AxisSchema(Configurable):
 
-                await dev.update_test_channel_important_value_descrpt(key)
+            node_key = key
 
-            @String(
-                displayedName="description",
-                description="Update description of the Important Value"
-            )
-            async def description(self, val):
-                if not isSet(val) or val.value is None:
+            @Slot()
+            async def updateLimits(self):
+                await self.get_root().updateAxisLimits(
+                    self.node_key, self.targetLimits.value)
+
+            @VectorDouble(
+                defaultValue=None,
+                minSize=2, maxSize=2,
+                displayedName="Target Limits")
+            async def targetLimits(self, value):
+                if not isSet(value):
+                    self.targetLimits = value
                     return
-                self.description = val.value
+                # Setter function always called in initialization
+                self.targetLimits = value
 
-                if self.get_root().allow_update:
-                    await self.update_important_value_description()
+            targetPosition = Double(
+                displayedName="Value",
+                minInc=limits[0] if limits is not None else None,
+                maxInc=limits[1] if limits is not None else None)
 
-            if conf:
-                importantValue = Double(
-                    displayedName="Important Value",
-                    description=conf["description"]
-                )
-            else:
-                importantValue = Double(
-                    displayedName="Important Value",
-                    description="Important Value"
-                )
-
-        return TestChannel
+        return AxisSchema
 
 
-    class SchemaInjectionExample1(Device):
-        __version__ = deviceVersion
+    class MotorDevice(Device):
 
-        def __init__(self, configuration):
-            super().__init__(configuration)
+        # Node's take classes to build up
+        rotary = Node(get_axis_schema("rotary", None))
+        linear = Node(get_axis_schema("linear", [0, 90]))
 
-        testChannel1 = Node(create_test_channel())
-        testChannel2 = Node(create_test_channel())
-        allow_update = False
-
-        async def update_test_channel_important_value_descrpt(self, node_key):
-            self.allow_update = False
-            h = self.configurationAsHash()[node_key]
-            setattr(self.__class__, node_key, Node(create_test_channel(h)))
-
-            await self.publishInjectedParameters(node_key, h)
-            self.allow_update = True
-
-        async def onInitialization(self):
-            """ This method will be called when the device starts.
-
-                Define your actions to be executed after instantiation.
-            """
-            self.allow_update = True
+        async def updateAxisLimits(self, key, limits):
+            # 1. Get the previous configuration from the node under `key`
+            h = self.configurationAsHash()[key]
+            # 2. Create a new configurable schema for `key` with `limits`
+            conf_schema = get_axis_schema(key, limits)
+            # 3. Set the new node on `key` and inject with previous
+            # configuration `h`
+            setattr(self.__class__, key, Node(conf_schema))
+            await self.publishInjectedParameters(key, h)
 
 
+The factory function :Python:`get_limit_schema` provides each `Node`
+with a `Configurable` class.
+During the creation, the `minInc` and `maxInc` attributes can be assigned to
+the `targetPosition` property.
+Here, the class itself has a `Slot` that propagates to the `MotorDevice`
+to inject a new *Axis* under the same `key` with different limits.
+During a runtime schema injection via the `Slot` *updateLimits*,
+we again create a **new** updated `Configurable` class for the Node - and -
+to make sure that the configuration of the `MotorDevice` is preserved, the
+existing configuration is passed to the :Python:`publishInjectedParameters` method.
+During the initialization, all eventual setters are called as usual.
 
-The factory function :Python:`create_test_channel` ensures that each of the
-nodes has a different class, so that a class update by a schema injection only
-affects a single node. The attribute of a specific property inside a node can
-be assigned during class contruction. In the example, the previous
-configuration of the node is stored as a Karabo Hash and given to the class
-factory as an argument. From the configuration Hash, the new description
-for the :Python:`importantValue` is extracted. During the schema injection
-the new node instance is initialized with the values of the old node instance
-by passing the configuration Hash of the old node to the
-:Python:`publishInjectedParameters` function. Note that during the
-initialization the setter functions of the properties are called. To prevent
-an infinite schema injection cascade, the bool :Python:`allow_update` is used.
 
 Injecting Slots
 ---------------
