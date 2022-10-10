@@ -117,10 +117,10 @@ Hence, for different displayTypes more options are available.
     class RowSchema(Configurable):
         progress = Bool(
                 displayedName="Bool Button",
-                displayType="TableBoolButton"
+                displayType="TableBoolButton",
                 defaultValue=True)
 
-For read only table element a button can be declared via ``TableBoolButton``.
+For **read only** table element a button can be declared via ``TableBoolButton``.
 The button is enabled depending on the boolean setting.
 
 Clicking the button will send a Hash to the device via the slot **requestAction**.
@@ -141,6 +141,33 @@ The table data itself is a Hash with::
 
 The rowData is a Hash of the row of the table button. The elements `row` and `column`
 provide the indexes of the button and the header the column string.
+
+Another option (**since Karabo 2.15.X**) for a button can be the ``TableStringButton``. Besides access level considerations
+this button is always enabled to provide an action on a **deviceScene** or **url**.
+
+.. code-block:: Python
+
+    class RowSchema(Configurable):
+
+        description = String(
+                displayedName="Description",
+                defaultValue="")
+
+        view = String(
+                displayedName="View",
+                displayType="TableStringButton",
+                defaultValue="")
+
+
+The value for both protocols are strings and an example to set a table
+
+.. code-block:: Python
+
+    device_scene = "deviceScene|deviceId=YOURDEVICE&name=YOURSCENENAME"
+    open_url = "url|www.xfel.eu"
+
+    self.table = [Hash("description", "Important device", "view", device_scene),
+                  Hash("description", "Important device doc", "view", open_url)]
 
 
 Using Entries
