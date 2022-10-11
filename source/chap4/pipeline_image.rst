@@ -1,5 +1,5 @@
-Pipeline Example: Images and Output Channel Schema Injection
-============================================================
+Pipeline Device Example: Images and Output Channel Schema Injection
+===================================================================
 
 Karabo has the strong capability of sending ``ImageData`` via network. Since, sometimes
 the data type of the image is not know, the corresponding schema has to be injected.
