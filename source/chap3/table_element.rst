@@ -169,6 +169,19 @@ The value for both protocols are strings and an example to set a table
     self.table = [Hash("description", "Important device", "view", device_scene),
                   Hash("description", "Important device doc", "view", open_url)]
 
+Vector handling in tables is significantly increased in **Karabo 2.16.X**.
+Specifiy a button with ``TableVectorButton`` to launch a list edit dialog
+via a button in the table element.
+
+.. code-block:: Python
+
+    class RowSchema(Configurable):
+
+        devices = VectorString(
+                    displayedName="View",
+                    displayType="TableVectorButton",
+                    defaultValue=[])
+
 
 Using Entries
 -------------
