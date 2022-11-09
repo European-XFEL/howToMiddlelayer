@@ -1,4 +1,4 @@
-.. _device-node:
+.. _nodes:
 
 Nodes
 =====

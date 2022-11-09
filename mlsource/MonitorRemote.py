@@ -1,8 +1,8 @@
-from asyncio import coroutine, sleep, TimeoutError, wait_for
+from asyncio import TimeoutError, coroutine, sleep, wait_for
 
-from karabo.middlelayer import (AccessMode, background, Bool, connectDevice,
-                                Device, isAlive, Int32, Slot, State,
-                                waitUntilNew)
+from karabo.middlelayer import (
+    AccessMode, Bool, Device, Int32, Slot, State, background, connectDevice,
+    isAlive, waitUntilNew)
 
 REMOTE_DEVICE = "remote_server1/remote_dev0"
 

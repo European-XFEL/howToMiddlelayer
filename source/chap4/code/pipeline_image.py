@@ -1,11 +1,9 @@
 from asyncio import sleep
 
 import numpy as np
-
 from karabo.middlelayer import (
-    AccessMode, background, Configurable,
-    DaqDataType, Device, Image, Int32, Node, OutputChannel, Slot,
-    UInt8, UInt32, State)
+    AccessMode, Configurable, DaqDataType, Device, Image, Int32, Node,
+    OutputChannel, Slot, State, UInt8, UInt32, background)
 
 
 def channelSchema(dtype):
