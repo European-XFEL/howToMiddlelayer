@@ -2,6 +2,7 @@
 
 Error Handling
 ==============
+
 Errors happen and When they happen in Python typically an exception is
 raised. The best way to do error handling is to use the usual Python
 try-except-finally statements.

@@ -1,4 +1,4 @@
-from karabo.middlelayer import Device, AsyncTimer
+from karabo.middlelayer import AsyncTimer, Device
 
 STATUS_THROTTLE = 0.5
 STATUS_THROTTLE_MAX = 2

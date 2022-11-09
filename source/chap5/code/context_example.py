@@ -1,6 +1,6 @@
-import pytest
 import uuid
 
+import pytest
 from karabo.middlelayer import Device, Slot, String, connectDevice, isSet
 from karabo.middlelayer.testing import (
     AsyncDeviceContext, create_device_server, event_loop)

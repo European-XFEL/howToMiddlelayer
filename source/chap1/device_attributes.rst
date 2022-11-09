@@ -290,9 +290,10 @@ integrate it in a device:
    async def watchdog(self):
       while True:
           await waitUntilNew(self.remote_device)
-          self.remoteState = self.remote_device.state
+          state = self.remote_device.state
+          self.remoteState != state:
+            self.remoteState = state:
 
-However, :ref:`device node <device-node>` might be more appropriate
 
 Tags and Aliases
 ================
