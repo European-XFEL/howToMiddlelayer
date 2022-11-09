@@ -1,8 +1,13 @@
 import pytest
+import uuid
 
 from karabo.middlelayer import Device, Slot, String, connectDevice, isSet
 from karabo.middlelayer.testing import (
-    AsyncDeviceContext, create_device_server, create_instanceId, event_loop)
+    AsyncDeviceContext, create_device_server, event_loop)
+
+
+def create_instanceId():
+    return f"test-mdl-{uuid.uuid4()}"
 
 
 class WW(Device):
@@ -21,6 +26,7 @@ class WW(Device):
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(30)
 async def test_example_context(event_loop: event_loop):
     # Make sure to create unique instance id's
     deviceId = create_instanceId()
@@ -52,6 +58,7 @@ async def test_example_context(event_loop: event_loop):
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(30)
 async def test_example_server_context(event_loop: event_loop):
     """Example how to start and create a server"""
     serverId = create_instanceId()

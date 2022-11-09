@@ -10,4 +10,5 @@ The following section describes the advanced features of the middlelayer api.
 .. include:: proxy_channels.rst
 .. include:: image_data.rst
 .. include:: pipeline_image.rst
+.. include:: broker_shortcut.rst
 .. include:: serialization.rst
