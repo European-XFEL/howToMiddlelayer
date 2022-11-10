@@ -5,6 +5,7 @@ Bread'N'Butter Features
 The following section describes the Bread'N'Butter features of the middlelayer api.
 
 .. include:: configurables.rst
+.. include:: utils.rst
 .. include:: alarms.rst
 .. include:: table_element.rst
 .. include:: overwrite.rst
