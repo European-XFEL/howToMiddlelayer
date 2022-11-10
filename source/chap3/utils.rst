@@ -56,6 +56,28 @@ please have a look:
     m = maximum([a, b])
     assert m == 3 * unit.meter
     m = minimum([a, b])
-    assert m == 1000 * millimeter)
+    assert m == 1000 * millimeter
     # Timestamp is the newest one -> 1
     assert m.timestamp == t1
+
+
+
+Get and Set Property
+++++++++++++++++++++
+
+Sometimes in scripting it is very convenient to get properties from devices
+or proxies in a ``getattr`` fashion, especially with noded structures.
+Use `get_property` as equivalent to python's builtin ``getattr``. Similarly,
+the `set_property` function is the equivalent to pythons ``setattr``.
+
+.. code-block:: Python
+
+    from karabo.middlelayer import get_property, set_property
+
+        prop = get_property(proxy, "node.subnode.property")
+        # This is equivalent to accessing
+        prop = proxy.node.subnode.property
+
+        # Set a value
+        set_property(proxy, "node.subnode.property", 5)
+        proxy.node.subnode.property = 5
