@@ -35,6 +35,9 @@ class StackedStatus(Device):
         self.stacked_status = []
         self.update()
 
+    async def onDestruction(self):
+        self.status_timer.stop()
+
 
 class QueueStatus(Device):
     """This is a device that has a lot of status updates.
@@ -59,3 +62,6 @@ class QueueStatus(Device):
             self.status = self.status_queue.pop(0)
             # Potential check for status changes before setting
             self.update()
+
+    async def onDestruction(self):
+        self.status_timer.stop()
