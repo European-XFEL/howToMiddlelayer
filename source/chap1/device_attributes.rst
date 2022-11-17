@@ -128,6 +128,57 @@ voltage of our voltage controller:
     The default `accessMode` is ``AccessMode.RECONFIGURABLE``. The read only
     setting of a property has to be provided explicitly.
 
+
+Assignment
+++++++++++
+
+The `assignment` attribute declares the behavior of the property on instantiation
+of the device. Its function is coupled to the `accessMode`.
+It can be either **OPTIONAL**, **MANDATORY** or **INTERNAL**.
+
+Init only properties can only be modified during before instantiation of the
+device.
+
+These assignments are very import in the configuration management.
+
+- **INTERNAL** assigned properties are always erased from configuration and indicate that they are provided
+  from the device internals on startup.
+  This is made visible to the operator, they cannot be edited for example in the graphical user interface.
+
+- **MANDATORY** assigned properties must be provided on instantiation. They are typically left blank,
+  and the operator must provide a value (e.g. host, ip for a camera).
+
+.. code-block:: Python
+
+    from karabo.middlelayer import AccessMode, Assignment, Double, String
+
+    # assignment have no effect
+    currentVoltage = Double(
+        accessMode=AccessMode.READONLY,
+        requiredAccessLevel=AccessLevel.OPERATOR)
+
+    # default assignment is OPTIONAL
+    targetVoltage = Double(
+        defaultValue=20.0
+        requiredAccessLevel=AccessLevel.EXPERT)
+
+    # default accessMode is RECONFIGURABLE
+    # on instantiation, this property is MANDATORY and must be provided
+    host = String(
+        assignment = Assignment.MANDATORY,
+        requiredAccessLevel=AccessLevel.EXPERT)
+
+    # default accessMode is RECONFIGURABLE
+    # on instantiation, this property is INTERNAL. In this case it is read
+    # from hardware, but it can be reconfigured on the online device
+    targetCurrent = Double(
+        assignment = Assignment.INTERNAL,
+        requiredAccessLevel=AccessLevel.ADMIN)
+
+.. note::
+
+    The default `assignment` is ``Assignment.OPTIONAL``.
+
 DAQ Policy
 ++++++++++
 

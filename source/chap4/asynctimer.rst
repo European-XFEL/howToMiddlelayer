@@ -13,3 +13,7 @@ In the code snippet below, two examples of status throttling are depicted utiliz
 
 .. literalinclude:: code/asynctimer.py
    :language: python
+
+
+.. note:: All `AsyncTimers` must be stopped before destruction of the device. A
+          typical method is utilizing `onDestruction`!
