@@ -18,16 +18,8 @@ test_docs:
 internal_mirror_publish:
   stage: mirror
   image: europeanxfel/karabo-ci:miniconda-3-006
-  before_script:
-    - echo "Approved?"
-    - echo $CI_MERGE_REQUEST_APPROVED
-    - echo "And approved end"
-    - echo "And branch name"
-    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-    - echo "And branch name end"
-  only:
-    refs:
-      - merge_requests
+  rules:
+    - if: $CI_MERGE_REQUEST_APPROVED && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
   script:
     - git clone https://gitlab-ci-token:$CI_JOB_TOKEN@git.xfel.eu/Karabo/contriboptouts.git
     - git clone https://gitlab-ci-token:$CI_JOB_TOKEN@git.xfel.eu/karaboDevices/HowToMiddlelayer.git --branch main --single-branch HowToMiddlelayerMain
