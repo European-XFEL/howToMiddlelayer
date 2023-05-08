@@ -1,5 +1,4 @@
 sphinx
-git+https://git.xfel.eu/gitlab/xfel-rtd/rtd-conf.git
 docutils
 slumber
 breathe
