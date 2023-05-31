@@ -1,6 +1,7 @@
 # Copyright (C) European XFEL GmbH Schenefeld. All rights reserved.
 stages:
   - test
+  - mirror
 
 test_docs:
   stage: test
