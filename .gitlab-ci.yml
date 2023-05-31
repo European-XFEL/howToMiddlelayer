@@ -1,5 +1,4 @@
 # Copyright (C) European XFEL GmbH Schenefeld. All rights reserved.
-
 stages:
   - test
   - mirror
@@ -14,25 +13,8 @@ test_docs:
     refs:
       - merge_requests
 
+include:
+  - project: karabo/gitlabci
+    file: .mirror-device.yml
+    ref: main
 
-internal_mirror_publish:
-  stage: mirror
-  image: europeanxfel/karabo-ci:miniconda-3-006
-  rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
-  script:
-    - git clone https://gitlab-ci-token:$CI_JOB_TOKEN@git.xfel.eu/Karabo/contriboptouts.git
-    - git clone https://gitlab-ci-token:$CI_JOB_TOKEN@git.xfel.eu/karaboDevices/HowToMiddlelayer.git --branch main --single-branch HowToMiddlelayerMain
-    - cd HowToMiddlelayerMain
-    - git remote rm origin
-    - git remote add internal_mirror https://oauth2:$HTM_MIRROR_TOKEN@git.xfel.eu/karaboDevices/HowToMiddlelayerMirror.git
-    - git push --mirror internal_mirror
-    - cd ..
-    - rm -rf HowToMiddlelayerMain
-    - git clone https://oauth2:$HTM_MIRROR_TOKEN@git.xfel.eu/karaboDevices/HowToMiddlelayerMirror.git
-    - cd HowToMiddlelayerMirror
-    - git-filter-repo --strip-blobs-bigger-than 100M
-    - git-filter-repo --mailmap ../contriboptouts/karabo-mailmap
-    - git remote add internal_mirror https://oauth2:$HTM_MIRROR_TOKEN@git.xfel.eu/karaboDevices/HowToMiddlelayerMirror.git
-    - git push -u internal_mirror main --force --prune
-    - git push internal_mirror --tags --force
