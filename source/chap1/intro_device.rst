@@ -11,9 +11,9 @@ interacting with other devices via device proxies to enable monitoring of proper
 executing commands and waiting on their completion, either synchronously
 or asynchronously.
 
-.. include:: code_style.rst
 .. include:: basic_device.rst
 .. include:: slots.rst
 .. include:: device_attributes.rst
 .. include:: node.rst
 .. include:: error_handling.rst
+.. include:: code_style.rst
